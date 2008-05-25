@@ -28,7 +28,7 @@
 
 using Hyena.Data;
 
-namespace Hyena.Data.Sqlite
+namespace Hyena.Data
 {
     public interface ICacheableItem
     {

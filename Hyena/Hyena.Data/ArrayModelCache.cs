@@ -30,7 +30,7 @@ using System;
 
 namespace Hyena.Data
 {
-    public abstract class ArrayModelCache<T> : ModelCache<T>
+    public abstract class ArrayModelCache<T> : ModelCache<T> where T : ICacheableItem, new ()
     {
         protected T [] cache;
         protected long offset = -1;
