@@ -30,6 +30,7 @@ namespace Hyena.Data.Gui
 {
     public interface IListView
     {
+        Hyena.Collections.SelectionProxy SelectionProxy { get; }
         Hyena.Collections.Selection Selection { get; }
         
         void ScrollTo (int index);
