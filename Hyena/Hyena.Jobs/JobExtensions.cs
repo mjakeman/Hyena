@@ -1,10 +1,10 @@
 //
-// Timer.cs
+// JobExtensions.cs
 //
 // Author:
-//   Aaron Bockover <abockover@novell.com>
+//   Gabriel Burt <gburt@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc.
+// Copyright (C) 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,36 +27,43 @@
 //
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace Hyena
+namespace Hyena.Jobs
 {
-    public class Timer : IDisposable
+    public static class JobExtensions
     {
-        private DateTime start;
-        private string label;
-
-        public Timer (string format, params object [] vals) : this (String.Format (format, vals))
+        internal static IEnumerable<T> Without<T> (this IEnumerable<T> source, PriorityHints hints) where T : Job
         {
-        }
-        
-        public Timer (string label) 
-        {
-            this.label = label;
-            start = DateTime.Now;
+            return source.Where (j => !j.Has (hints));
         }
 
-        public TimeSpan ElapsedTime {
-            get { return DateTime.Now - start; }
+        internal static IEnumerable<T> With<T> (this IEnumerable<T> source, PriorityHints hints) where T : Job
+        {
+            return source.Where (j => j.Has (hints));
         }
 
-        public void WriteElapsed (string message)
+        internal static IEnumerable<T> SharingResourceWith<T> (this IEnumerable<T> source, Job job) where T : Job
         {
-            Console.Error.WriteLine ("{0} {1} {2}", label, message, ElapsedTime);
+            return source.Where (j => j.Resources.Intersect (job.Resources).Any ());
         }
 
-        public void Dispose ()
+        public static void ForEach<T> (this IEnumerable<T> source, Action<T> func)
         {
-            WriteElapsed ("timer stopped:");
+            foreach (T item in source)
+                func (item);
         }
+
+        public static bool Has<T> (this T job, PriorityHints hints) where T : Job
+        {
+            return (job.PriorityHints & hints) == hints;
+        }
+
+        // Useful..
+        /*public static bool Include (this Enum source, Enum flags)
+        {
+            return ((int)source & (int)flags) == (int)flags;
+        }*/
     }
 }

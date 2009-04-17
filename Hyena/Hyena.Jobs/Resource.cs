@@ -1,10 +1,10 @@
 //
-// Timer.cs
+// Resource.cs
 //
 // Author:
-//   Aaron Bockover <abockover@novell.com>
+//   Gabriel Burt <gburt@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc.
+// Copyright (C) 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,35 +28,16 @@
 
 using System;
 
-namespace Hyena
+namespace Hyena.Jobs
 {
-    public class Timer : IDisposable
+    public class Resource
     {
-        private DateTime start;
-        private string label;
+        // Convenience Resources for programs to use
+        public static readonly Resource Cpu = new Resource { Id = "cpu", Name = "CPU" };
+        public static readonly Resource Disk = new Resource { Id = "disk", Name = "Disk" };
+        public static readonly Resource Database = new Resource { Id = "db", Name = "Database" };
 
-        public Timer (string format, params object [] vals) : this (String.Format (format, vals))
-        {
-        }
-        
-        public Timer (string label) 
-        {
-            this.label = label;
-            start = DateTime.Now;
-        }
-
-        public TimeSpan ElapsedTime {
-            get { return DateTime.Now - start; }
-        }
-
-        public void WriteElapsed (string message)
-        {
-            Console.Error.WriteLine ("{0} {1} {2}", label, message, ElapsedTime);
-        }
-
-        public void Dispose ()
-        {
-            WriteElapsed ("timer stopped:");
-        }
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }
