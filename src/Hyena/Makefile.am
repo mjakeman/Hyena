@@ -9,12 +9,9 @@ ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -d
 ASSEMBLY = ../../bin/Hyena.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
-PROJECT_REFERENCES =  \
-	../../bin/Mono.Data.Sqlite.dll
+PROJECT_REFERENCES =  
 BUILD_DIR = ../../bin
 
-MONO_DATA_SQLITE_DLL_SOURCE=../../bin/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 
 endif
@@ -25,12 +22,9 @@ ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug -d
 ASSEMBLY = ../../bin/Hyena.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
-PROJECT_REFERENCES =  \
-	../../bin/Mono.Data.Sqlite.dll
+PROJECT_REFERENCES =  
 BUILD_DIR = ../../bin
 
-MONO_DATA_SQLITE_DLL_SOURCE=../../bin/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 
 endif
@@ -39,8 +33,6 @@ AL=al2
 SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
-	$(MONO_DATA_SQLITE_DLL) \
-	$(MONO_DATA_SQLITE_DLL_MDB) \
 	$(HYENA_DLL_MDB)  
 
 LINUX_PKGCONFIG = \
@@ -84,14 +76,7 @@ FILES = \
 	Hyena.Query/UserQueryParser.cs \
 	Hyena.Query/XmlQueryParser.cs \
 	Hyena.Query/QueryFieldSet.cs \
-	Hyena.Data.Sqlite/DatabaseColumn.cs \
-	Hyena.Data.Sqlite/DatabaseColumnAttribute.cs \
-	Hyena.Data.Sqlite/SqliteModelProvider.cs \
-	Hyena.Data.Sqlite/HyenaSqliteCommand.cs \
-	Hyena.Data.Sqlite/HyenaSqliteConnection.cs \
-	Hyena.Data.Sqlite/ICacheableDatabaseModel.cs \
 	Hyena.Data/ModelCache.cs \
-	Hyena.Data.Sqlite/SqliteModelCache.cs \
 	Hyena.Query/DateQueryValue.cs \
 	Hyena.Query/FileSizeQueryValue.cs \
 	Hyena.Query/IntegerQueryValue.cs \
@@ -122,7 +107,6 @@ FILES = \
 	Hyena/StringUtil.cs \
 	Hyena.Query/QueryLimit.cs \
 	Hyena.Query/QueryOrder.cs \
-	Hyena.Data.Sqlite/SqliteUtils.cs \
 	Hyena/Log.cs \
 	Hyena/CryptoUtil.cs \
 	Hyena/PlatformUtil.cs \
@@ -134,9 +118,6 @@ FILES = \
 	Hyena.Query/TimeSpanQueryValue.cs \
 	Hyena.Collections/Tests/IntervalHeapTests.cs \
 	Hyena.Collections/Tests/RangeCollectionTests.cs \
-	Hyena.Data.Sqlite/Tests/DbBoundType.cs \
-	Hyena.Data.Sqlite/Tests/SqliteCommandTests.cs \
-	Hyena.Data.Sqlite/Tests/SqliteModelProviderTests.cs \
 	Hyena.Query/Tests/QueryTests.cs \
 	Hyena/Tests/CryptoUtilTests.cs \
 	Hyena/Tests/StringUtilTests.cs \
@@ -158,8 +139,6 @@ FILES = \
 	Hyena.Json/Tests/DeserializerTests.cs \
 	Hyena/Delegates.cs \
 	Hyena.Collections/LruCache.cs \
-	Hyena.Data.Sqlite/HyenaSqliteArrayDataReader.cs \
-	Hyena.Data.Sqlite/Tests/SqliteUtilTests.cs \
 	Hyena.Query/ExactStringQueryValue.cs \
 	Hyena.Jobs/Job.cs \
 	Hyena.Jobs/JobExtensions.cs \
@@ -192,8 +171,6 @@ CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG)
 
 include $(top_srcdir)/Makefile.include
 
-MONO_DATA_SQLITE_DLL = $(BUILD_DIR)/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB = $(BUILD_DIR)/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB = $(BUILD_DIR)/Hyena.dll.mdb
 HYENA_PC = $(BUILD_DIR)/hyena.pc
 

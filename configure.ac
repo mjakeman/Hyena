@@ -65,6 +65,8 @@ src/Mono.Data.Sqlite/mono.data.sqlite.pc
 src/Mono.Data.Sqlite/Makefile
 src/Hyena/hyena.pc
 src/Hyena/Makefile
+src/Hyena.Data.Sqlite/hyena.data.sqlite.pc
+src/Hyena.Data.Sqlite/Makefile
 src/Hyena.Gui/hyena.gui.pc
 src/Hyena.Gui/Makefile
 Makefile

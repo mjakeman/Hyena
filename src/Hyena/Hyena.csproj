@@ -69,14 +69,7 @@
     <Compile Include="Hyena.Query\UserQueryParser.cs" />
     <Compile Include="Hyena.Query\XmlQueryParser.cs" />
     <Compile Include="Hyena.Query\QueryFieldSet.cs" />
-    <Compile Include="Hyena.Data.Sqlite\DatabaseColumn.cs" />
-    <Compile Include="Hyena.Data.Sqlite\DatabaseColumnAttribute.cs" />
-    <Compile Include="Hyena.Data.Sqlite\SqliteModelProvider.cs" />
-    <Compile Include="Hyena.Data.Sqlite\HyenaSqliteCommand.cs" />
-    <Compile Include="Hyena.Data.Sqlite\HyenaSqliteConnection.cs" />
-    <Compile Include="Hyena.Data.Sqlite\ICacheableDatabaseModel.cs" />
     <Compile Include="Hyena.Data\ModelCache.cs" />
-    <Compile Include="Hyena.Data.Sqlite\SqliteModelCache.cs" />
     <Compile Include="Hyena.Query\DateQueryValue.cs" />
     <Compile Include="Hyena.Query\FileSizeQueryValue.cs" />
     <Compile Include="Hyena.Query\IntegerQueryValue.cs" />
@@ -107,7 +100,6 @@
     <Compile Include="Hyena\StringUtil.cs" />
     <Compile Include="Hyena.Query\QueryLimit.cs" />
     <Compile Include="Hyena.Query\QueryOrder.cs" />
-    <Compile Include="Hyena.Data.Sqlite\SqliteUtils.cs" />
     <Compile Include="Hyena\Log.cs" />
     <Compile Include="Hyena\CryptoUtil.cs" />
     <Compile Include="Hyena\PlatformUtil.cs" />
@@ -119,9 +111,6 @@
     <Compile Include="Hyena.Query\TimeSpanQueryValue.cs" />
     <Compile Include="Hyena.Collections\Tests\IntervalHeapTests.cs" />
     <Compile Include="Hyena.Collections\Tests\RangeCollectionTests.cs" />
-    <Compile Include="Hyena.Data.Sqlite\Tests\DbBoundType.cs" />
-    <Compile Include="Hyena.Data.Sqlite\Tests\SqliteCommandTests.cs" />
-    <Compile Include="Hyena.Data.Sqlite\Tests\SqliteModelProviderTests.cs" />
     <Compile Include="Hyena.Query\Tests\QueryTests.cs" />
     <Compile Include="Hyena\Tests\CryptoUtilTests.cs" />
     <Compile Include="Hyena\Tests\StringUtilTests.cs" />
@@ -143,8 +132,6 @@
     <Compile Include="Hyena.Json\Tests\DeserializerTests.cs" />
     <Compile Include="Hyena\Delegates.cs" />
     <Compile Include="Hyena.Collections\LruCache.cs" />
-    <Compile Include="Hyena.Data.Sqlite\HyenaSqliteArrayDataReader.cs" />
-    <Compile Include="Hyena.Data.Sqlite\Tests\SqliteUtilTests.cs" />
     <Compile Include="Hyena.Query\ExactStringQueryValue.cs" />
     <Compile Include="Hyena.Jobs\Job.cs" />
     <Compile Include="Hyena.Jobs\JobExtensions.cs" />
@@ -167,10 +154,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mono.Data.Sqlite\Mono.Data.Sqlite.csproj">
-      <Project>{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}</Project>
-      <Name>Mono.Data.Sqlite</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
