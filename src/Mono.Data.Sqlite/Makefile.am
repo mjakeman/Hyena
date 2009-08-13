@@ -35,8 +35,7 @@ SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 PROGRAMFILES = \
 	$(MONO_DATA_SQLITE_DLL_MDB)  
 
-LINUX_PKGCONFIG = \
-	$(MONO_DATA_SQLITE_PC)  
+LINUX_PKGCONFIG = 
 
 
 RESGEN=resgen2
@@ -72,8 +71,7 @@ DATA_FILES =
 
 RESOURCES = 
 
-EXTRAS = \
-	mono.data.sqlite.pc.in 
+EXTRAS =
 
 REFERENCES =  \
 	System \
@@ -88,9 +86,6 @@ CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG)
 include $(top_srcdir)/Makefile.include
 
 MONO_DATA_SQLITE_DLL_MDB = $(BUILD_DIR)/Mono.Data.Sqlite.dll.mdb
-MONO_DATA_SQLITE_PC = $(BUILD_DIR)/mono.data.sqlite.pc
-
-$(eval $(call emit-deploy-wrapper,MONO_DATA_SQLITE_PC,mono.data.sqlite.pc))
 
 
 $(eval $(call emit_resgen_targets))

@@ -61,7 +61,6 @@ dnl package checks, per config
 
 
 AC_CONFIG_FILES([
-src/Mono.Data.Sqlite/mono.data.sqlite.pc
 src/Mono.Data.Sqlite/Makefile
 src/Hyena/hyena.pc
 src/Hyena/Makefile
