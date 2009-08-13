@@ -1,0 +1,6 @@
+Name: Hyena
+Description: Hyena
+Version: 0.1
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.dll

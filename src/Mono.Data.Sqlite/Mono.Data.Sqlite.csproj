@@ -27,7 +27,7 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>NET_2_0 MONO_BACKWARD_COMPAT</DefineConstants>
+    <DefineConstants>NET_2_0;MONO_BACKWARD_COMPAT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Windows|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
