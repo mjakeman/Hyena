@@ -1,3 +1,6 @@
+Assemblies=@expanded_libdir@/@PACKAGE@/Hyena.dll
+Files=@expanded_libdir@/@PACKAGE@/Hyena.dll.mdb
+
 Name: Hyena
 Description: Hyena
 Version: 0.1

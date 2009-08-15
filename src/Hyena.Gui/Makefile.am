@@ -43,11 +43,7 @@ AL=al2
 SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
-	$(HYENA_DLL) \
-	$(MONO_DATA_SQLITE_DLL) \
-	$(MONO_DATA_SQLITE_DLL_MDB) \
-	$(HYENA_DLL_MDB) \
-	$(HYENA_GUI_DLL_MDB)  
+	$(HYENA_GUI_DLL_MDB)
 
 LINUX_PKGCONFIG = \
 	$(HYENA_GUI_PC)  
@@ -167,7 +163,9 @@ REFERENCES =  \
 	$(GLIB_SHARP_20_LIBS) \
 	System.Xml
 
-DLL_REFERENCES = 
+DLL_REFERENCES = \
+	$(HYENA_DLL) \
+	$(MONO_DATA_SQLITE_DLL)
 
 CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG) 
 
@@ -178,9 +176,11 @@ MONO_DATA_SQLITE_DLL = $(BUILD_DIR)/Mono.Data.Sqlite.dll
 MONO_DATA_SQLITE_DLL_MDB = $(BUILD_DIR)/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB = $(BUILD_DIR)/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB = $(BUILD_DIR)/Hyena.Gui.dll.mdb
+HYENA_GUI_DLL_CONFIG = $(BUILD_DIR)/Hyena.Gui.dll.config
 HYENA_GUI_PC = $(BUILD_DIR)/hyena.gui.pc
 
 $(eval $(call emit-deploy-wrapper,HYENA_GUI_PC,hyena.gui.pc))
+#$(eval $(call emit-deploy-wrapper,HYENA_GUI_DLL_CONFIG,Hyena.Gui.dll.config))
 
 
 $(eval $(call emit_resgen_targets))
@@ -190,3 +190,4 @@ $(build_xamlg_list): %.xaml.g.cs: %.xaml
 $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
 	mkdir -p $(shell dirname $(ASSEMBLY))
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
+	cp Hyena.Gui.dll.config $(BUILD_DIR)

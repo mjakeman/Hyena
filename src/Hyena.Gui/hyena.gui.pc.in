@@ -1,3 +1,6 @@
+Assemblies=@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll
+Files=@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll.config @expanded_libdir@/@PACKAGE@/Hyena.Gui.dll.mdb
+
 Name: Hyena.Gui
 Description: Hyena.Gui
 Version: 0.1
