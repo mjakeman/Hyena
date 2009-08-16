@@ -3,7 +3,7 @@ Files=@expanded_libdir@/@PACKAGE@/Hyena.Data.Sqlite.dll.mdb @expanded_libdir@/@P
 
 Name: Hyena.Data.Sqlite
 Description: Hyena.Data.Sqlite
-Version: 0.1
+Version: @VERSION@
 
 Requires: 
 Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.Data.Sqlite.dll -r:@expanded_libdir@/@PACKAGE@/Mono.Data.Sqlite.dll

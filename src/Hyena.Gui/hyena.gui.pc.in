@@ -3,7 +3,7 @@ Files=@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll.config @expanded_libdir@/@PACKAG
 
 Name: Hyena.Gui
 Description: Hyena.Gui
-Version: 0.1
+Version: @VERSION@
 
 Requires: 
 Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll
