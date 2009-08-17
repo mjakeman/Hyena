@@ -1,0 +1,14 @@
+This is a library of useful GUI and non-GUI C# code, originally used in Banshee.
+
+It is not API stable, and so is not installed to the GAC.  Applications using
+it should make a local copy of whatever pieces you use.  There are variables 
+defined in the pkg-config files that contain assemblies and files needed for 
+a given component of Hyena (eg hyena, hyena.data.sqlite, and hyena.gui).
+
+pkg-config --variable=Assemblies hyena
+pkg-config --variable=Files hyena
+
+You can look at PDF Mod's configure.ac and Makefile.am for an example of how
+to copy the assemblies/files:
+
+http://git.gnome.org/cgit/pdfmod/tree/
