@@ -14,8 +14,6 @@ PROJECT_REFERENCES =  \
 BUILD_DIR = ../../bin
 
 HYENA_DLL_SOURCE=../../bin/Hyena.dll
-MONO_DATA_SQLITE_DLL_SOURCE=../../bin/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
 
@@ -32,8 +30,6 @@ PROJECT_REFERENCES =  \
 BUILD_DIR = ../../bin
 
 HYENA_DLL_SOURCE=../../bin/Hyena.dll
-MONO_DATA_SQLITE_DLL_SOURCE=../../bin/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
 
@@ -43,7 +39,8 @@ AL=al2
 SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
-	$(HYENA_GUI_DLL_MDB)
+	$(HYENA_GUI_DLL_MDB) \
+	$(HYENA_GUI_DLL_CONFIG)
 
 LINUX_PKGCONFIG = \
 	$(HYENA_GUI_PC)  
@@ -151,7 +148,7 @@ DATA_FILES =
 RESOURCES = 
 
 EXTRAS = \
-	hyena.gui.pc.in 
+	hyena.gui.pc.in
 
 REFERENCES =  \
 	ICSharpCode.SharpZipLib \
@@ -164,23 +161,19 @@ REFERENCES =  \
 	System.Xml
 
 DLL_REFERENCES = \
-	$(HYENA_DLL) \
-	$(MONO_DATA_SQLITE_DLL)
+	$(HYENA_DLL)
 
 CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG) 
 
 include $(top_srcdir)/Makefile.include
 
 HYENA_DLL = $(BUILD_DIR)/Hyena.dll
-MONO_DATA_SQLITE_DLL = $(BUILD_DIR)/Mono.Data.Sqlite.dll
-MONO_DATA_SQLITE_DLL_MDB = $(BUILD_DIR)/Mono.Data.Sqlite.dll.mdb
 HYENA_DLL_MDB = $(BUILD_DIR)/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB = $(BUILD_DIR)/Hyena.Gui.dll.mdb
 HYENA_GUI_DLL_CONFIG = $(BUILD_DIR)/Hyena.Gui.dll.config
 HYENA_GUI_PC = $(BUILD_DIR)/hyena.gui.pc
 
 $(eval $(call emit-deploy-wrapper,HYENA_GUI_PC,hyena.gui.pc))
-#$(eval $(call emit-deploy-wrapper,HYENA_GUI_DLL_CONFIG,Hyena.Gui.dll.config))
 
 
 $(eval $(call emit_resgen_targets))
@@ -190,4 +183,4 @@ $(build_xamlg_list): %.xaml.g.cs: %.xaml
 $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
 	mkdir -p $(shell dirname $(ASSEMBLY))
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
-	cp Hyena.Gui.dll.config $(BUILD_DIR)
+	cp $(top_srcdir)/src/Hyena.Gui/Hyena.Gui.dll.config $(BUILD_DIR)
