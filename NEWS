@@ -1,0 +1,9 @@
+==========================
+Version 0.1 - Aug 18, 2009
+==========================
+
+* Initial release
+* Hyena, Hyena.Gui, and Hyena.Data.Sqlite built as
+  separate assemblies and each with their own .pc
+  file for convenient copying into your project.
+  See README for details on using Hyena in your app.
