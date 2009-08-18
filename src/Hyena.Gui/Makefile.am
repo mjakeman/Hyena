@@ -4,7 +4,7 @@ EXTRA_DIST =
 # Warning: This is an automatically generated file, do not edit!
 
 if ENABLE_DEBUG
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(MCS)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
 ASSEMBLY = ../../bin/Hyena.Gui.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -20,7 +20,7 @@ HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
 endif
 
 if ENABLE_WINDOWS
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(MCS)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize- -debug -define:DEBUG
 ASSEMBLY = ../../bin/Hyena.Gui.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -183,4 +183,4 @@ $(build_xamlg_list): %.xaml.g.cs: %.xaml
 $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
 	mkdir -p $(shell dirname $(ASSEMBLY))
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
-	cp $(top_srcdir)/src/Hyena.Gui/Hyena.Gui.dll.config $(BUILD_DIR)
+	cp $(srcdir)/Hyena.Gui.dll.config $(BUILD_DIR)

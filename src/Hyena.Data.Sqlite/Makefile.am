@@ -4,7 +4,7 @@ EXTRA_DIST =
 # Warning: This is an automatically generated file, do not edit!
 
 if ENABLE_DEBUG
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(MCS)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
 ASSEMBLY = ../../bin/Hyena.Data.Sqlite.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -23,7 +23,7 @@ HYENA_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Hyena.Data.Sqlite.dll.mdb
 endif
 
 if ENABLE_WINDOWS
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(MCS)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug -define:DEBUG
 ASSEMBLY = ../../bin/Hyena.Data.Sqlite.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
