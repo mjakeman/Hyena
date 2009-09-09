@@ -1,4 +1,15 @@
 ==========================
+Version 0.2 - Sept 9, 2009
+==========================
+
+Contributors:
+Romain Tartière
+
+Bugs Fixed:
+* Build fix for *bsd
+* Fix dll mappings for *bsd
+
+==========================
 Version 0.1 - Aug 18, 2009
 ==========================
 
