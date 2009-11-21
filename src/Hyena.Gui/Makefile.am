@@ -21,6 +21,7 @@ SOURCES =  \
 	Hyena.Gui/EditableUndoAdapter.cs \
 	Hyena.Gui/GtkUtilities.cs \
 	Hyena.Data.Gui/CellContext.cs \
+	Hyena.Data.Gui/DataViewLayoutStyle.cs \
 	Hyena.Data.Gui/IHeaderCell.cs \
 	Hyena.Widgets/ScrolledWindow.cs \
 	Hyena.Widgets/RoundedFrame.cs \
