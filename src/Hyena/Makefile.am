@@ -92,6 +92,14 @@ SOURCES =  \
 	Hyena.Json/JsonArray.cs \
 	Hyena.Json/Tests/TokenizerTests.cs \
 	Hyena.Json/TokenType.cs \
+	Hyena.Metrics/DbSampleStore.cs \
+	Hyena.Metrics/HttpPoster.cs \
+	Hyena.Metrics/ISampleStore.cs \
+	Hyena.Metrics/MemorySampleStore.cs \
+	Hyena.Metrics/Metric.cs \
+	Hyena.Metrics/MetricsCollection.cs \
+	Hyena.Metrics/Sample.cs \
+	Hyena.Metrics/Tests/MetricsTests.cs \
 	Hyena.Json/Deserializer.cs \
 	Hyena.Json/IJsonCollection.cs \
 	Hyena.Json/Tests/DeserializerTests.cs \
