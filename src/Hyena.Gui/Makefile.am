@@ -56,6 +56,7 @@ SOURCES =  \
 	Hyena.Widgets/EntryPopup.cs \
 	Hyena.Widgets/SimpleTable.cs \
 	Hyena.Gui/PangoCairoHelper.cs \
+	Hyena.Gui/PangoExtensions.cs \
 	Hyena.Widgets/AnimatedBox.cs \
 	Hyena.Widgets/AnimatedHBox.cs \
 	Hyena.Widgets/AnimatedVBox.cs \

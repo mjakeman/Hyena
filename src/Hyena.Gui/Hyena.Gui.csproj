@@ -18,6 +18,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ReleaseVersion>1.3</ReleaseVersion>
+    <RootNamespace>Hyena.Gui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -151,6 +153,9 @@
     <Compile Include="Hyena.Gui\HyenaActionGroup.cs" />
     <Compile Include="Hyena.Widgets\GenericToolItem.cs" />
     <Compile Include="Hyena.Widgets\HigMessageDialog.cs" />
+    <Compile Include="Hyena.Widgets\EntryPopup.cs" />
+    <Compile Include="Hyena.Widgets\SimpleTable.cs" />
+    <Compile Include="Hyena.Gui\PangoExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
