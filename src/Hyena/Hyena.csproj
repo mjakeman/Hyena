@@ -58,6 +58,7 @@
     <Compile Include="Hyena.Data\IPropertyStoreExpose.cs" />
     <Compile Include="Hyena\IUndoAction.cs" />
     <Compile Include="Hyena\UndoManager.cs" />
+    <Compile Include="Hyena\XdgBaseDirectorySpec.cs" />
     <Compile Include="Hyena.Data\ColumnDescription.cs" />
     <Compile Include="Hyena.Data\ICacheableModel.cs" />
     <Compile Include="Hyena.Collections\RangeCollection.cs" />
@@ -143,6 +144,9 @@
     <Compile Include="Hyena\ApplicationContext.cs" />
     <Compile Include="Hyena\ThreadAssist.cs" />
     <Compile Include="Hyena\XdgBaseDirectorySpec.cs" />
+    <Compile Include="Hyena/Hyena.Query/EnumQueryValue.cs" />
+    <Compile Include="Hyena/Hyena/EventArgs.cs" />
+    <Compile Include="Hyena/Hyena/XdgBaseDirectorySpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />
