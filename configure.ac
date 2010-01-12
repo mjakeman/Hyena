@@ -59,6 +59,10 @@ dnl package checks, common for all configs
 PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
 PKG_CHECK_MODULES([GLIB_SHARP_20], [glib-sharp-2.0])
 
+dnl See if Gtk# is recent enought to enable managed widget a11y
+PKG_CHECK_MODULES(GTKSHARP_A11Y, gtk-sharp-2.0 >= 2.12.10, gtksharp_with_a11y=yes, gtksharp_with_a11y=no)
+AM_CONDITIONAL(ENABLE_ATK, test "x$gtksharp_with_a11y" = "xyes")
+
 dnl package checks, per config
 
 
@@ -73,5 +77,13 @@ src/Hyena.Gui/Makefile
 Makefile
 
 ])
+
+cat <<EOF
+
+${PACKAGE}-${VERSION}
+
+Custom a11y:       ${gtksharp_with_a11y} (requires gtk-sharp >= 2.12.10)
+
+EOF
 
 AC_OUTPUT

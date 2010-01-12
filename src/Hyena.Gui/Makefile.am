@@ -17,8 +17,7 @@ HYENA_DLL_SOURCE=../../bin/Hyena.dll
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
 
-endif
-
+else
 if ENABLE_WINDOWS
 ASSEMBLY_COMPILER_COMMAND = $(MCS)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize- -debug -define:DEBUG
@@ -32,7 +31,13 @@ BUILD_DIR = ../../bin
 HYENA_DLL_SOURCE=../../bin/Hyena.dll
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
+else
+ASSEMBLY_COMPILER_FLAGS = ""
+endif
+endif
 
+if ENABLE_ATK
+ASSEMBLY_COMPILER_FLAGS += -define:ENABLE_ATK
 endif
 
 AL=al2
