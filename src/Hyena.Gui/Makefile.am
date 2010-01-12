@@ -3,9 +3,11 @@ EXTRA_DIST =
 
 # Warning: This is an automatically generated file, do not edit!
 
+ASSEMBLY_COMPILER_FLAGS = ""
+
 if ENABLE_DEBUG
 ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
+ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
 ASSEMBLY = ../../bin/Hyena.Gui.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
@@ -16,11 +18,11 @@ BUILD_DIR = ../../bin
 HYENA_DLL_SOURCE=../../bin/Hyena.dll
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
+endif
 
-else
 if ENABLE_WINDOWS
 ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize- -debug -define:DEBUG
+ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize- -debug -define:DEBUG
 ASSEMBLY = ../../bin/Hyena.Gui.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
@@ -31,9 +33,10 @@ BUILD_DIR = ../../bin
 HYENA_DLL_SOURCE=../../bin/Hyena.dll
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
-else
-ASSEMBLY_COMPILER_FLAGS = ""
 endif
+
+if ENABLE_TESTS
+ASSEMBLY_COMPILER_FLAGS += -define:ENABLE_TESTS
 endif
 
 if ENABLE_ATK
@@ -175,6 +178,10 @@ REFERENCES =  \
 	Mono.Cairo \
 	$(GLIB_SHARP_20_LIBS) \
 	System.Xml
+
+if ENABLE_TESTS
+REFERENCES += $(NUNIT_LIBS)
+endif
 
 DLL_REFERENCES = \
 	$(HYENA_DLL)

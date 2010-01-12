@@ -3,9 +3,11 @@ EXTRA_DIST =
 
 # Warning: This is an automatically generated file, do not edit!
 
+ASSEMBLY_COMPILER_FLAGS = ""
+
 if ENABLE_DEBUG
 ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
+ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
 ASSEMBLY = ../../bin/Hyena.Data.Sqlite.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
@@ -24,7 +26,7 @@ endif
 
 if ENABLE_WINDOWS
 ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug -define:DEBUG
+ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -warn:4 -optimize- -debug -define:DEBUG
 ASSEMBLY = ../../bin/Hyena.Data.Sqlite.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
@@ -39,6 +41,10 @@ HYENA_DLL_SOURCE=../../bin/Hyena.dll
 HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
 HYENA_DATA_SQLITE_DLL_MDB_SOURCE=../../bin/Hyena.Data.Sqlite.dll.mdb
 
+endif
+
+if ENABLE_TESTS
+ASSEMBLY_COMPILER_FLAGS += -define:ENABLE_TESTS
 endif
 
 AL=al2
@@ -83,6 +89,10 @@ REFERENCES =  \
 	System.Core \
 	System.Data \
 	System.Xml
+
+if ENABLE_TESTS
+REFERENCES += $(NUNIT_LIBS)
+endif
 
 DLL_REFERENCES = 
 
