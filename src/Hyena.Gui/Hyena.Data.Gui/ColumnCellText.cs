@@ -32,6 +32,7 @@ using Cairo;
 
 using Hyena.Gui;
 using Hyena.Gui.Theming;
+using Hyena.Data.Gui.Accessibility;
 
 namespace Hyena.Data.Gui
 {
@@ -44,7 +45,6 @@ namespace Hyena.Data.Gui
         private Pango.Weight font_weight = Pango.Weight.Normal;
         private Pango.EllipsizeMode ellipsize_mode = Pango.EllipsizeMode.End;
         private Pango.Alignment alignment = Pango.Alignment.Left;
-        private double opacity = 1.0;
         private int text_width;
         private int text_height;
         private string text_format = null;
@@ -56,12 +56,22 @@ namespace Hyena.Data.Gui
         {
         }
 
-        protected void SetMinMaxStrings (object min_max)
+        public override Atk.Object GetAccessible (ICellAccessibleParent parent)
+        {
+            return new ColumnCellTextAccessible (BoundObject, this, parent);
+        }
+
+        public override string GetTextAlternative (object obj)
+        {
+            return GetText (obj);
+        }
+
+        public void SetMinMaxStrings (object min_max)
         {
             SetMinMaxStrings (min_max, min_max);
         }
 
-        protected void SetMinMaxStrings (object min, object max)
+        public void SetMinMaxStrings (object min, object max)
         {
             // Set the min/max strings from the min/max objects
             MinString = GetText (min);
@@ -81,7 +91,7 @@ namespace Hyena.Data.Gui
             context.Context.MoveTo (Spacing, ((int)cellHeight - text_height) / 2);
             Cairo.Color color = context.Theme.Colors.GetWidgetColor (
                 context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, state);
-            color.A = (!context.Sensitive) ? 0.3 : opacity;
+            color.A = context.Opaque ? 1.0 : 0.5;
             context.Context.Color = color;
 
             PangoCairoHelper.ShowLayout (context.Context, context.Layout);
@@ -106,9 +116,13 @@ namespace Hyena.Data.Gui
             is_ellipsized = context.Layout.IsEllipsized;
         }
 
+        private static char[] lfcr = new char[] {'\n', '\r'};
         private void UpdateLayout (Pango.Layout layout, string text)
         {
             string final_text = GetFormattedText (text);
+            if (final_text.IndexOfAny (lfcr) >= 0) {
+                final_text = final_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+            }
             if (use_markup) {
                 layout.SetMarkup (final_text);
             } else {
@@ -170,11 +184,6 @@ namespace Hyena.Data.Gui
         public virtual Pango.EllipsizeMode EllipsizeMode {
             get { return ellipsize_mode; }
             set { ellipsize_mode = value; }
-        }
-
-        public virtual double Opacity {
-            get { return opacity; }
-            set { opacity = value; }
         }
 
         internal static int ComputeRowHeight (Widget widget)

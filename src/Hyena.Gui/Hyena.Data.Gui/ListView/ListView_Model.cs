@@ -35,6 +35,10 @@ namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase
     {
+        #pragma warning disable 0067
+        public event EventHandler ModelChanged;
+        #pragma warning restore 0067
+
         public void SetModel (IListModel<T> model)
         {
             SetModel (model, 0.0);
@@ -73,7 +77,13 @@ namespace Hyena.Data.Gui
             }
 
             RefreshViewForModel (vpos);
+
+            var handler = ModelChanged;
+            if (handler != null) {
+                handler (this, EventArgs.Empty);
+            }
         }
+
 
         private void RefreshViewForModel (double? vpos)
         {
@@ -131,41 +141,41 @@ namespace Hyena.Data.Gui
             get { return model; }
         }
 
-        private string row_sensitive_property_name = "Sensitive";
-        private PropertyInfo row_sensitive_property_info;
-        bool row_sensitive_property_invalid = false;
+        private string row_opaque_property_name = "Sensitive";
+        private PropertyInfo row_opaque_property_info;
+        bool row_opaque_property_invalid = false;
 
-        public string RowSensitivePropertyName {
-            get { return row_sensitive_property_name; }
+        public string RowOpaquePropertyName {
+            get { return row_opaque_property_name; }
             set {
-                if (value == row_sensitive_property_name) {
+                if (value == row_opaque_property_name) {
                     return;
                 }
 
-                row_sensitive_property_name = value;
-                row_sensitive_property_info = null;
-                row_sensitive_property_invalid = false;
+                row_opaque_property_name = value;
+                row_opaque_property_info = null;
+                row_opaque_property_invalid = false;
 
                 InvalidateList ();
             }
         }
 
-        private bool IsRowSensitive (object item)
+        private bool IsRowOpaque (object item)
         {
-            if (item == null || row_sensitive_property_invalid) {
+            if (item == null || row_opaque_property_invalid) {
                 return true;
             }
 
-            if (row_sensitive_property_info == null || row_sensitive_property_info.ReflectedType != item.GetType ()) {
-                row_sensitive_property_info = item.GetType ().GetProperty (row_sensitive_property_name);
-                if (row_sensitive_property_info == null || row_sensitive_property_info.PropertyType != typeof (bool)) {
-                    row_sensitive_property_info = null;
-                    row_sensitive_property_invalid = true;
+            if (row_opaque_property_info == null || row_opaque_property_info.ReflectedType != item.GetType ()) {
+                row_opaque_property_info = item.GetType ().GetProperty (row_opaque_property_name);
+                if (row_opaque_property_info == null || row_opaque_property_info.PropertyType != typeof (bool)) {
+                    row_opaque_property_info = null;
+                    row_opaque_property_invalid = true;
                     return true;
                 }
             }
 
-            return (bool)row_sensitive_property_info.GetValue (item, null);
+            return (bool)row_opaque_property_info.GetValue (item, null);
         }
 
         private string row_bold_property_name = "IsBold";
@@ -204,14 +214,5 @@ namespace Hyena.Data.Gui
 
             return (bool)row_bold_property_info.GetValue (item, null);
         }
-
-        #pragma warning disable 0169
-
-        private bool IsRowSensitive (int index)
-        {
-            return IsRowSensitive (model[index]);
-        }
-
-        #pragma warning restore 0169
     }
 }

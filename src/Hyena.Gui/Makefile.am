@@ -97,6 +97,9 @@ FILES = \
 	Hyena.Gui.Theming/ThemeEngine.cs \
 	Hyena.Gui.Theming/GtkTheme.cs \
 	Hyena.Data.Gui/ListView/ListView_DragAndDrop.cs \
+	Hyena.Gui/BaseWidgetAccessible.cs \
+	Hyena.Widgets/EntryPopup.cs \
+	Hyena.Widgets/SimpleTable.cs \
 	Hyena.Gui/PangoCairoHelper.cs \
 	Hyena.Widgets/AnimatedBox.cs \
 	Hyena.Widgets/AnimatedHBox.cs \
@@ -123,6 +126,14 @@ FILES = \
 	Hyena.Data.Gui/ISizeRequestCell.cs \
 	Hyena.Data.Gui/ITooltipCell.cs \
 	Hyena.Data.Gui/ColumnCellRating.cs \
+	Hyena.Data.Gui/Accessibility/ColumnCellAccessible.cs \
+	Hyena.Data.Gui/Accessibility/ColumnCellTextAccessible.cs \
+	Hyena.Data.Gui/Accessibility/ColumnHeaderCellTextAccessible.cs \
+	Hyena.Data.Gui/Accessibility/ICellAccessibleParent.cs \
+	Hyena.Data.Gui/Accessibility/ListViewAccessible.cs \
+	Hyena.Data.Gui/Accessibility/ListViewAccessible_Selection.cs \
+	Hyena.Data.Gui/Accessibility/ListViewAccessible_Table.cs \
+	Hyena.Data.Gui/ListView/ListView_Accessible.cs \
 	Hyena.Widgets/RatingEntry.cs \
 	Hyena.Widgets/RatingMenuItem.cs \
 	Hyena.Widgets/ComplexMenuItem.cs \

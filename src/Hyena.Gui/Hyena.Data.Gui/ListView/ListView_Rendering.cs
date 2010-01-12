@@ -103,9 +103,13 @@ namespace Hyena.Data.Gui
                 PaintHeader (damage);
             }
 
-            Theme.DrawFrameBorder (cairo_context, Allocation);
+            if (HasFocus)
+                Theme.DrawFrameBorderFocused (cairo_context, Allocation);
+            else
+                Theme.DrawFrameBorder (cairo_context, Allocation);
+
             if (Model != null) {
-                PaintRows(damage);
+                PaintRows (damage);
             }
 
             PaintDraggingColumn (damage);
@@ -131,7 +135,7 @@ namespace Hyena.Data.Gui
             cell_area.Height = header_rendering_alloc.Height;
 
             cell_context.Clip = clip;
-            cell_context.Sensitive = true;
+            cell_context.Opaque = true;
             cell_context.TextAsForeground = true;
 
             bool have_drawn_separator = false;
@@ -159,6 +163,10 @@ namespace Hyena.Data.Gui
         {
             if (ci < 0 || column_cache.Length <= ci)
                 return;
+
+            if (ci == ActiveColumn && HasFocus && HeaderFocused) {
+                Theme.DrawColumnHeaderFocus (cairo_context, area);
+            }
 
             if (dragging) {
                 Theme.DrawColumnHighlight (cairo_context, area,
@@ -260,13 +268,19 @@ namespace Hyena.Data.Gui
                             corners &= ~(CairoCorners.BottomLeft | CairoCorners.BottomRight);
                         }
 
-                        Theme.DrawRowSelection (cairo_context, single_list_alloc.X, single_list_alloc.Y,
-                            single_list_alloc.Width, single_list_alloc.Height, false, true,
-                            Theme.Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected), corners);
+                        if (HasFocus && !HeaderFocused) // Cursor out of selection.
+                            Theme.DrawRowCursor (cairo_context, single_list_alloc.X, single_list_alloc.Y,
+                                                 single_list_alloc.Width, single_list_alloc.Height,
+                                                 CairoExtensions.ColorShade (Theme.Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected), 0.85));
                     }
 
                     if (selection_height > 0) {
-                        Theme.DrawRowSelection (cairo_context, list_rendering_alloc.X, selection_y, list_rendering_alloc.Width, selection_height);
+                        Cairo.Color selection_color = Theme.Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected);
+                        if (!HasFocus || HeaderFocused)
+                            selection_color = CairoExtensions.ColorShade (selection_color, 1.1);
+
+                        Theme.DrawRowSelection (cairo_context, list_rendering_alloc.X, selection_y, list_rendering_alloc.Width, selection_height,
+                                                true, true, selection_color, CairoCorners.All);
                         selection_height = 0;
                     }
 
@@ -285,10 +299,11 @@ namespace Hyena.Data.Gui
             }
 
             if (Selection != null && Selection.Count > 1 &&
-                !selected_focus_alloc.Equals (Rectangle.Zero) && HasFocus) {
-                Theme.DrawRowSelection (cairo_context, selected_focus_alloc.X, selected_focus_alloc.Y,
-                    selected_focus_alloc.Width, selected_focus_alloc.Height, false, true,
-                    Theme.Colors.GetWidgetColor (GtkColorClass.Dark, StateType.Selected));
+                !selected_focus_alloc.Equals (Rectangle.Zero) &&
+                HasFocus && !HeaderFocused) { // Cursor inside selection.
+                Theme.DrawRowCursor (cairo_context, selected_focus_alloc.X, selected_focus_alloc.Y,
+                    selected_focus_alloc.Width, selected_focus_alloc.Height,
+                    Theme.Colors.GetWidgetColor (GtkColorClass.Text, StateType.Selected));
             }
 
             foreach (int ri in selected_rows) {
@@ -320,7 +335,7 @@ namespace Hyena.Data.Gui
             }
 
             object item = model[row_index];
-            bool sensitive = IsRowSensitive (item);
+            bool opaque = IsRowOpaque (item);
             bool bold = IsRowBold (item);
 
             Rectangle cell_area = new Rectangle ();
@@ -334,18 +349,18 @@ namespace Hyena.Data.Gui
 
                 cell_area.Width = column_cache[ci].Width;
                 cell_area.X = column_cache[ci].X1 + area.X;
-                PaintCell (item, ci, row_index, cell_area, sensitive, bold, state, false);
+                PaintCell (item, ci, row_index, cell_area, opaque, bold, state, false);
             }
 
             if (pressed_column_is_dragging && pressed_column_index >= 0) {
                 cell_area.Width = column_cache[pressed_column_index].Width;
                 cell_area.X = pressed_column_x_drag + list_rendering_alloc.X -
                     list_interaction_alloc.X - HadjustmentValue;
-                PaintCell (item, pressed_column_index, row_index, cell_area, sensitive, bold, state, true);
+                PaintCell (item, pressed_column_index, row_index, cell_area, opaque, bold, state, true);
             }
         }
 
-        private void PaintCell (object item, int column_index, int row_index, Rectangle area, bool sensitive, bool bold,
+        private void PaintCell (object item, int column_index, int row_index, Rectangle area, bool opaque, bool bold,
             StateType state, bool dragging)
         {
             ColumnCell cell = column_cache[column_index].Column.GetCell (0);
@@ -368,9 +383,11 @@ namespace Hyena.Data.Gui
             cairo_context.Save ();
             cairo_context.Translate (area.X, area.Y);
             cell_context.Area = area;
-            cell_context.Sensitive = sensitive;
+            cell_context.Opaque = opaque;
             cell.Render (cell_context, dragging ? StateType.Normal : state, area.Width, area.Height);
             cairo_context.Restore ();
+
+            AccessibleCellRedrawn (column_index, row_index);
         }
 
         private void PaintDraggingColumn (Rectangle clip)
@@ -405,7 +422,7 @@ namespace Hyena.Data.Gui
             cairo_context.Stroke ();
         }
 
-        private void InvalidateList ()
+        protected void InvalidateList ()
         {
             if (IsRealized) {
                 QueueDrawArea (list_rendering_alloc.X, list_rendering_alloc.Y, list_rendering_alloc.Width, list_rendering_alloc.Height);
@@ -455,7 +472,7 @@ namespace Hyena.Data.Gui
         }
 
         private int row_height = 32;
-        protected int RowHeight {
+        public int RowHeight {
             get {
                 if (RecomputeRowHeight) {
                     row_height = RowHeightProvider != null

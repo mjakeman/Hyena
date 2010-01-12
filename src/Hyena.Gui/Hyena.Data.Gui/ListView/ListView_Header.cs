@@ -57,6 +57,7 @@ namespace Hyena.Data.Gui
 
         private bool resizable;
         private int header_width;
+        private double list_width, max_width;
         private int sort_column_index = -1;
         private int resizing_column_index = -1;
         private int pressed_column_index = -1;
@@ -72,6 +73,14 @@ namespace Hyena.Data.Gui
 
         private CachedColumn [] column_cache;
         private List<int> elastic_columns;
+
+        public int Width {
+            get { return (int)list_width; }
+        }
+
+        public int MaxWidth {
+            get { return (int)max_width + Theme.TotalBorderWidth*2; }
+        }
 
 #region Columns
 
@@ -191,7 +200,7 @@ namespace Hyena.Data.Gui
 
                 double remaining_width = RecalculateColumnSizes (header_width, header_width);
 
-                while (remaining_width != 0 && elastic_columns.Count > 0) {
+                while (Math.Round (remaining_width) != 0.0 && elastic_columns.Count > 0) {
                     double total_elastic_width = 0.0;
                     foreach (int i in elastic_columns) {
                         total_elastic_width += column_cache[i].ElasticWidth;
@@ -203,6 +212,15 @@ namespace Hyena.Data.Gui
                     column_cache[i].Column.Width = column_cache[i].ElasticWidth / (double)header_width;
                 }
             }
+
+            double tmp_width = 0.0;
+            double tmp_max = 0.0;
+            foreach (var col in column_cache) {
+                tmp_width += col.ElasticWidth;
+                tmp_max += col.MaxWidth == Int32.MaxValue ? col.MinWidth : col.MaxWidth;
+            }
+            list_width = tmp_width;
+            max_width = tmp_max;
         }
 
         private double RecalculateColumnSizes (double total_width, double total_elastic_width)
@@ -244,6 +262,37 @@ namespace Hyena.Data.Gui
             RegenerateColumnCache ();
             UpdateAdjustments ();
             QueueDraw ();
+        }
+
+        protected virtual void OnColumnLeftClicked (Column clickedColumn)
+        {
+            if (Model is ISortable && clickedColumn is ISortableColumn) {
+                ISortableColumn sort_column = clickedColumn as ISortableColumn;
+                ISortable sortable = Model as ISortable;
+
+                // Change the sort-type with every click
+                if (sort_column == ColumnController.SortColumn) {
+                    switch (sort_column.SortType) {
+                        case SortType.Ascending:    sort_column.SortType = SortType.Descending; break;
+                        case SortType.Descending:   sort_column.SortType = SortType.None; break;
+                        case SortType.None:         sort_column.SortType = SortType.Ascending; break;
+                    }
+                }
+
+                // If we're switching from a different column, or we aren't reorderable, make sure sort type isn't None
+                if ((sort_column != ColumnController.SortColumn || !IsEverReorderable) && sort_column.SortType == SortType.None) {
+                    sort_column.SortType = SortType.Ascending;
+                }
+
+                sortable.Sort (sort_column);
+                ColumnController.SortColumn = sort_column;
+                IsReorderable = sortable.SortColumn == null || sortable.SortColumn.SortType == SortType.None;
+
+                Model.Reload ();
+                RecalculateColumnSizes ();
+                RegenerateColumnCache ();
+                InvalidateHeader ();
+            }
         }
 
         protected virtual void OnColumnRightClicked (Column clickedColumn, int x, int y)
@@ -384,6 +433,12 @@ namespace Hyena.Data.Gui
             }
 
             return null;
+        }
+
+        protected int GetColumnWidth (int column_index)
+        {
+            CachedColumn cached_column = column_cache[column_index];
+            return cached_column.Width;
         }
 
         private bool CanResizeColumn (int column_index)
