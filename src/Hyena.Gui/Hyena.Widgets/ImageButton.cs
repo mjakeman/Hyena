@@ -36,7 +36,7 @@ namespace Hyena.Widgets
         public ImageButton (string text, string iconName) : this (text, iconName, Gtk.IconSize.Button)
         {
         }
-        
+
         public ImageButton (string text, string iconName, Gtk.IconSize iconSize) : base ()
         {
             Image image = new Image ();

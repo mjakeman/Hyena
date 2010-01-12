@@ -40,7 +40,7 @@ namespace Hyena.Data.Gui
         private PropertyInfo property_info, sub_property_info;
         private object bound_object;
         private object bound_object_parent;
-            
+
         public ColumnCell (string property, bool expand)
         {
             Property = property;
@@ -54,9 +54,9 @@ namespace Hyena.Data.Gui
                 bound_object = null;
                 return;
             }
-            
+
             bound_object_parent = item;
-            
+
             if (property != null) {
                 EnsurePropertyInfo ();
                 bound_object = property_info.GetValue (bound_object_parent, null);
@@ -74,7 +74,7 @@ namespace Hyena.Data.Gui
         {
             EnsurePropertyInfo (property, ref property_info, bound_object_parent);
         }
-        
+
         private void EnsurePropertyInfo (string name, ref PropertyInfo prop, object obj)
         {
             if (prop == null || prop.ReflectedType != obj.GetType ()) {
@@ -87,15 +87,15 @@ namespace Hyena.Data.Gui
                 }
             }
         }
-        
+
         public virtual void NotifyThemeChange ()
         {
         }
-        
+
         protected Type BoundType {
             get { return bound_object.GetType (); }
         }
-        
+
         protected object BoundObject {
             get { return bound_object; }
             set {
@@ -105,18 +105,18 @@ namespace Hyena.Data.Gui
                 }
             }
         }
-        
+
         protected object BoundObjectParent {
             get { return bound_object_parent; }
         }
-        
+
         public abstract void Render (CellContext context, StateType state, double cellWidth, double cellHeight);
-        
+
         public bool Expand {
             get { return expand; }
             set { expand = value; }
         }
-        
+
         public string Property {
             get { return property; }
             set {

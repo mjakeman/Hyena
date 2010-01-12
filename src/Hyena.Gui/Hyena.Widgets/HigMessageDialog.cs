@@ -25,13 +25,13 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
- 
+
 using System;
 
 namespace Hyena.Widgets
 {
     public class HigMessageDialog : Gtk.Dialog
-    {    
+    {
         private Gtk.AccelGroup accel_group;
         private Gtk.Image image;
         private Gtk.VBox label_vbox;
@@ -82,7 +82,7 @@ namespace Hyena.Widgets
             image.Yalign = 0.1f;
             image.Show ();
             hbox.PackStart (image, false, false, 0);
-            
+
             label_vbox = new Gtk.VBox (false, 0);
             label_vbox.Show ();
             hbox.PackStart (label_vbox, true, true, 0);
@@ -109,7 +109,7 @@ namespace Hyena.Widgets
             label.SetAlignment (0.0f, 0.5f);
             label.Show ();
             label_vbox.PackStart (label, false, false, 0);
-            
+
             switch (buttons) {
             case Gtk.ButtonsType.None:
                 break;
@@ -163,7 +163,7 @@ namespace Hyena.Widgets
             AddButton (button, response, isDefault);
             return button;
         }
-        
+
         public void AddButton (string stock_id, Gtk.ResponseType response, bool isDefault)
         {
             Gtk.Button button = new Gtk.Button (stock_id);
@@ -180,7 +180,7 @@ namespace Hyena.Widgets
                 DefaultResponse = response;
                 button.AddAccelerator ("activate",
                                accel_group,
-                               (uint) Gdk.Key.Return, 
+                               (uint) Gdk.Key.Return,
                                0,
                                Gtk.AccelFlags.Visible);
             }
@@ -199,7 +199,7 @@ namespace Hyena.Widgets
                  return (Gtk.ResponseType)hmd.Run();
              } finally {
                  hmd.Destroy();
-             }    
+             }
         }
 
         //Run and destroy a standard confirmation dialog
@@ -215,23 +215,23 @@ namespace Hyena.Widgets
                  return (Gtk.ResponseType)hmd.Run();
              } finally {
                  hmd.Destroy();
-             }    
+             }
          }
-         
+
          public Gdk.Pixbuf Image {
             set {
                 image.Pixbuf = value;
             }
-             
+
             get {
                 return image.Pixbuf;
             }
         }
-        
+
         public Gtk.Label MessageLabel {
             get { return message_label; }
         }
-        
+
         public Gtk.VBox LabelVBox {
             get { return label_vbox; }
         }

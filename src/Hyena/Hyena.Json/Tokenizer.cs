@@ -1,4 +1,4 @@
-// 
+//
 // Tokenizer.cs
 //
 // Author:
@@ -36,18 +36,18 @@ namespace Hyena.Json
     {
         private StreamReader reader;
         private StringBuilder string_buffer;
-        
+
         private char peek = ' ';
         private int current_line = 1;
         private int current_column = 1;
         private int token_start_line;
         private int token_start_column;
-        
+
         public Tokenizer () { Reset (); }
         public Tokenizer (string input) { SetInput (input); }
         public Tokenizer (Stream stream) { SetInput (stream); }
         public Tokenizer (StreamReader reader) { SetInput (reader); }
-        
+
         private void Reset ()
         {
             peek = ' ';
@@ -56,62 +56,62 @@ namespace Hyena.Json
             token_start_line = 0;
             token_start_column = 0;
         }
-        
+
         public void SetInput (StreamReader reader)
         {
             this.reader = reader;
             Reset ();
         }
-        
+
         public void SetInput (Stream stream)
         {
             SetInput (new StreamReader (stream));
         }
-        
+
         public void SetInput (string input)
         {
             SetInput (new MemoryStream (Encoding.UTF8.GetBytes (input)));
         }
-        
+
         private void ReadChar ()
         {
             peek = (char)reader.Read ();
             current_column++;
         }
-        
+
         private void UnexpectedCharacter (char ch)
         {
-            throw new ApplicationException (String.Format ("Unexpected character '{0}' at [{1}:{2}]", 
+            throw new ApplicationException (String.Format ("Unexpected character '{0}' at [{1}:{2}]",
                 ch, current_line, current_column - 1));
         }
-        
+
         private void InvalidSyntax (string message)
         {
             throw new ApplicationException (String.Format ("Invalid syntax: {0} at [{1}:{2}]",
                 message, current_line, current_column));
         }
-        
+
         private StringBuilder GetStringBuilder ()
         {
             if (string_buffer == null) {
                 string_buffer = new StringBuilder (64);
                 return string_buffer;
             }
-            
+
             string_buffer.Remove (0, string_buffer.Length);
             return string_buffer;
         }
-        
+
         private string LexString ()
         {
             StringBuilder buffer = GetStringBuilder ();
             bool read = true;
-            
+
             while (!reader.EndOfStream) {
                 if (read) {
                     ReadChar ();
                 }
-                
+
                 read = true;
 
                 if (peek == '\\') {
@@ -141,16 +141,16 @@ namespace Hyena.Json
                     buffer.Append (peek);
                 }
             }
-            
+
             if (peek != '"') {
                 InvalidSyntax ("Unterminated string, expected '\"' termination, got '" + peek + "'");
             } else if (!read && reader.EndOfStream) {
                 ReadChar ();
             }
-            
+
             return buffer.ToString ();
         }
-        
+
         private string LexId ()
         {
             StringBuilder buffer = GetStringBuilder ();
@@ -162,42 +162,42 @@ namespace Hyena.Json
 
             return buffer.ToString ();
         }
-        
+
         private double LexInt ()
         {
             return LexInt (false, 0);
         }
-        
+
         private double LexInt (bool hex, int maxDigits)
         {
             double value = 0.0;
             int count = 0;
-            
+
             do {
-                value = (hex ? 16 : 10) * value +  (hex 
+                value = (hex ? 16 : 10) * value +  (hex
                     ? peek >= 'A' && peek <= 'F'
                         ? 10 + peek - 'A'
                         : (peek >= 'a' && peek <= 'f'
                             ? 10 + peek - 'a'
                             : peek - '0')
                     : peek - '0');
-                    
+
                 if (maxDigits > 0 && ++count >= maxDigits) {
                     ReadChar ();
                     return value;
                 }
-                
+
                 ReadChar ();
             } while (Char.IsDigit (peek) || (hex && ((peek >= 'a' && peek <= 'f') || (peek >= 'A' && peek <= 'F'))));
-            
+
             return value;
         }
-        
+
         private double LexFraction ()
         {
             double fraction = 0;
             double d = 10;
-            
+
             while (true) {
                 ReadChar ();
 
@@ -208,10 +208,10 @@ namespace Hyena.Json
                 fraction += (peek - '0') / d;
                 d *= 10;
             }
-            
+
             return fraction;
         }
-        
+
         private double LexNumber ()
         {
             double value = 0.0;
@@ -219,17 +219,17 @@ namespace Hyena.Json
             if (negate) {
                 ReadChar ();
             }
-            
+
             if (peek != '0') {
                 value = LexInt ();
             } else {
                 ReadChar ();
             }
-            
+
             if (peek == '.') {
                 value += LexFraction ();
             }
-            
+
             if (peek == 'e' || peek == 'E') {
                 ReadChar ();
                 if (peek == '-') {
@@ -244,22 +244,22 @@ namespace Hyena.Json
                     InvalidSyntax ("Malformed exponent");
                 }
             }
-            
+
             if (Char.IsDigit (peek)) {
                 InvalidSyntax ("Numbers starting with 0 must be followed by a . or not " +
                     "followed by a digit (octal syntax not legal)");
             }
-            
+
             return negate ? -1.0 * value : value;
         }
-        
+
         public Token Scan ()
         {
             Token token = InnerScan ();
             if (token == null) {
                 return null;
             }
-            
+
             token.SourceLine = token_start_line;
             token.SourceColumn = token_start_column - 1;
             return token;
@@ -303,13 +303,13 @@ namespace Hyena.Json
                                 break;
                         }
                     }
-                
+
                     if (peek != Char.MaxValue) {
                         UnexpectedCharacter (peek);
                     }
                     break;
             }
-            
+
             return null;
         }
     }
