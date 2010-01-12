@@ -72,10 +72,28 @@ namespace Hyena
             }
         }
 
+        public static void BlockingProxyToMain (InvokeHandler handler)
+        {
+            if (!InMainThread) {
+                var reset_event = new System.Threading.ManualResetEvent (false);
+
+                ProxyToMainHandler (delegate {
+                    try {
+                        handler ();
+                    } finally {
+                        reset_event.Set ();
+                    }
+                });
+
+                reset_event.WaitOne ();
+            } else {
+                handler ();
+            }
+        }
+
         public static void ProxyToMain (InvokeHandler handler)
         {
             if (!InMainThread) {
-                //Banshee.ServiceStack.Application.Invoke (handler);
                 ProxyToMainHandler (handler);
             } else {
                 handler ();
