@@ -107,7 +107,9 @@ SOURCES =  \
 	Hyena.Jobs/Tests/SchedulerTests.cs \
 	Hyena/ApplicationContext.cs \
 	Hyena/ThreadAssist.cs \
-	Hyena/XdgBaseDirectorySpec.cs 
+	Hyena/XdgBaseDirectorySpec.cs \
+	System.Web/Helpers.cs \
+	System.Web/HttpUtility.cs
 
 include $(top_srcdir)/build/build.mk
 EXTRA_DIST += hyena.pc.in 

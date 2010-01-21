@@ -147,6 +147,8 @@
     <Compile Include="Hyena/Hyena.Query/EnumQueryValue.cs" />
     <Compile Include="Hyena/Hyena/EventArgs.cs" />
     <Compile Include="Hyena/Hyena/XdgBaseDirectorySpec.cs" />
+    <Compile Include="System.Web\Helpers.cs" />
+    <Compile Include="System.Web\HttpUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />
