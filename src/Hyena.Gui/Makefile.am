@@ -57,6 +57,7 @@ SOURCES =  \
 	Hyena.Gui/ActionManager.cs \
 	Hyena.Gui/BaseWidgetAccessible.cs \
 	Hyena.Gui/CairoExtensions.cs \
+	Hyena.Gui/CairoDamageDebugger.cs \
 	Hyena.Gui/CleanRoomStartup.cs \
 	Hyena.Gui/CompositeUtils.cs \
 	Hyena.Gui/Contrast.cs \
