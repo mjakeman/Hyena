@@ -159,6 +159,10 @@
     <Compile Include="Hyena.Data.Gui\DataViewLayoutGrid.cs" />
     <Compile Include="Hyena.Gui\CairoDamageDebugger.cs" />
     <Compile Include="Hyena.Data.Gui\DataViewChild.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Rect.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Size.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Thickness.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Point.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -177,4 +181,8 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+   <ItemGroup>
+     <Folder Include="Hyena.Data.Gui\Accessibility\" />
+     <Folder Include="Hyena.Gui.Canvas\" />
+   </ItemGroup>
 </Project>
