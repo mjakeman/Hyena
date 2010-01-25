@@ -118,12 +118,6 @@ namespace Hyena.Data.Gui
                 PaintHeader (damage);
             }
 
-            if (HasFocus) {
-                Theme.DrawFrameBorderFocused (cairo_context, Allocation);
-            } else {
-                Theme.DrawFrameBorder (cairo_context, Allocation);
-            }
-
             if (Model != null) {
                 // FIXME: ViewLayout will never be null in
                 // the future, PaintList will go away
@@ -132,6 +126,14 @@ namespace Hyena.Data.Gui
                 } else {
                     PaintView ((Rect)damage);
                 }
+            }
+
+            // Focused frame border is bolder than BorderWidth,
+            // draw it after the rows to avoid visual artifacts.
+            if (HasFocus) {
+                Theme.DrawFrameBorderFocused (cairo_context, Allocation);
+            } else {
+                Theme.DrawFrameBorder (cairo_context, Allocation);
             }
 
             PaintDraggingColumn (damage);
