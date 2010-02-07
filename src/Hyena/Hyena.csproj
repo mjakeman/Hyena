@@ -105,7 +105,6 @@
     <Compile Include="Hyena.Query\QueryOrder.cs" />
     <Compile Include="Hyena\Log.cs" />
     <Compile Include="Hyena\CryptoUtil.cs" />
-    <Compile Include="Hyena\PlatformUtil.cs" />
     <Compile Include="Hyena.Query\IntegerKeyedObjectQueryValue.cs" />
     <Compile Include="Hyena\ConsoleCrayon.cs" />
     <Compile Include="Hyena.Data\ISelectable.cs" />
@@ -151,6 +150,7 @@
     <Compile Include="Hyena/Hyena/XdgBaseDirectorySpec.cs" />
     <Compile Include="System.Web\Helpers.cs" />
     <Compile Include="System.Web\HttpUtility.cs" />
+    <Compile Include="Hyena\PlatformDetection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />

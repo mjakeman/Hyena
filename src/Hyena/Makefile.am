@@ -67,7 +67,7 @@ SOURCES =  \
 	Hyena.Query/QueryOrder.cs \
 	Hyena/Log.cs \
 	Hyena/CryptoUtil.cs \
-	Hyena/PlatformUtil.cs \
+	Hyena/PlatformDetection.cs \
 	Hyena.Query/IntegerKeyedObjectQueryValue.cs \
 	Hyena/ConsoleCrayon.cs \
 	Hyena.Data/ISelectable.cs \
