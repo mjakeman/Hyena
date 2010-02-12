@@ -104,6 +104,7 @@ SOURCES =  \
 	Hyena.Json/Tests/SerializerTests.cs \
 	Hyena.Json/IJsonCollection.cs \
 	Hyena.Json/Tests/DeserializerTests.cs \
+	Hyena.Json/ExtensionMethods.cs \
 	Hyena/Delegates.cs \
 	Hyena.Collections/LruCache.cs \
 	Hyena.Query/ExactStringQueryValue.cs \
