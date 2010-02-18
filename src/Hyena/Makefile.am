@@ -78,6 +78,7 @@ SOURCES =  \
 	Hyena.Collections/Tests/RangeCollectionTests.cs \
 	Hyena.Query/Tests/QueryTests.cs \
 	Hyena/Tests/CryptoUtilTests.cs \
+	Hyena/Tests/DateTimeUtilTests.cs \
 	Hyena/Tests/StringUtilTests.cs \
 	Hyena/Tests/TestBase.cs \
 	Hyena.Data/ICacheableItem.cs \
