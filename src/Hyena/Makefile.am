@@ -102,6 +102,7 @@ SOURCES =  \
 	Hyena.Metrics/Sample.cs \
 	Hyena.Metrics/Tests/MetricsTests.cs \
 	Hyena.Json/Deserializer.cs \
+	Hyena.Json/Serializer.cs \
 	Hyena.Json/Tests/SerializerTests.cs \
 	Hyena.Json/IJsonCollection.cs \
 	Hyena.Json/Tests/DeserializerTests.cs \
