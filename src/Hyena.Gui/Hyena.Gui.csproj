@@ -18,7 +18,6 @@
     <OutputPath>..\..\..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ReleaseVersion>1.3</ReleaseVersion>
     <RootNamespace>Hyena.Gui</RootNamespace>
   </PropertyGroup>
