@@ -109,6 +109,7 @@ SOURCES =  \
 	Hyena/Delegates.cs \
 	Hyena.Collections/LruCache.cs \
 	Hyena.Query/ExactStringQueryValue.cs \
+	Hyena.Query/ExactUriStringQueryValue.cs \
 	Hyena.Jobs/Job.cs \
 	Hyena.Jobs/JobExtensions.cs \
 	Hyena.Jobs/PriorityHints.cs \
