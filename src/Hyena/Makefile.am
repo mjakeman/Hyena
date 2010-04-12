@@ -66,6 +66,7 @@ SOURCES =  \
 	Hyena.Query/QueryLimit.cs \
 	Hyena.Query/QueryOrder.cs \
 	Hyena/Log.cs \
+	Hyena/Paths.cs \
 	Hyena/CryptoUtil.cs \
 	Hyena/PlatformDetection.cs \
 	Hyena.Query/IntegerKeyedObjectQueryValue.cs \
