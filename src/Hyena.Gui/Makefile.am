@@ -59,6 +59,7 @@ SOURCES =  \
 	Hyena.Gui.Theming/Theme.cs \
 	Hyena.Gui.Theming/ThemeContext.cs \
 	Hyena.Gui.Theming/ThemeEngine.cs \
+	Hyena.Gui.Theming/ThemeTestModule.cs \
 	Hyena.Gui/ActionManager.cs \
 	Hyena.Gui/BaseWidgetAccessible.cs \
 	Hyena.Gui/CairoExtensions.cs \
