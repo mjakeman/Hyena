@@ -1,64 +1,10 @@
-
-EXTRA_DIST =  
-
-# Warning: This is an automatically generated file, do not edit!
-
-ASSEMBLY_COMPILER_FLAGS = ""
-
-if ENABLE_DEBUG
-ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize+ -debug -define:DEBUG "-define:NET_2_0"
-ASSEMBLY = ../../bin/Hyena.Gui.dll
-ASSEMBLY_MDB = $(ASSEMBLY).mdb
-COMPILE_TARGET = library
-PROJECT_REFERENCES =  \
-	../../bin/Hyena.dll
-BUILD_DIR = ../../bin
-
-HYENA_DLL_SOURCE=../../bin/Hyena.dll
-HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
-HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
-endif
-
-if ENABLE_WINDOWS
-ASSEMBLY_COMPILER_COMMAND = $(MCS)
-ASSEMBLY_COMPILER_FLAGS +=  -noconfig -codepage:utf8 -unsafe -warn:4 -optimize- -debug -define:DEBUG
-ASSEMBLY = ../../bin/Hyena.Gui.dll
-ASSEMBLY_MDB = $(ASSEMBLY).mdb
-COMPILE_TARGET = library
-PROJECT_REFERENCES =  \
-	../../bin/Hyena.dll
-BUILD_DIR = ../../bin
-
-HYENA_DLL_SOURCE=../../bin/Hyena.dll
-HYENA_DLL_MDB_SOURCE=../../bin/Hyena.dll.mdb
-HYENA_GUI_DLL_MDB_SOURCE=../../bin/Hyena.Gui.dll.mdb
-endif
-
-if ENABLE_TESTS
-ASSEMBLY_COMPILER_FLAGS += -define:ENABLE_TESTS
-endif
-
-if ENABLE_ATK
-ASSEMBLY_COMPILER_FLAGS += -define:ENABLE_ATK
-endif
-
-AL=al2
-SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
-
-PROGRAMFILES = \
-	$(HYENA_GUI_DLL_MDB) \
-	$(HYENA_GUI_DLL_CONFIG)
-
-LINUX_PKGCONFIG = \
-	$(HYENA_GUI_PC)  
-
-
-RESGEN=resgen2
-	
-all: $(ASSEMBLY) $(PROGRAMFILES) $(LINUX_PKGCONFIG) 
-
-FILES = \
+ASSEMBLY = Hyena.Gui
+ASSEMBLY_BUILD_FLAGS = -unsafe
+TARGET = library
+LINK = -r:ICSharpCode.SharpZipLib -r:Mono.Posix -r:System -r:System.Core -r:Mono.Cairo \
+	   $(GTKSHARP_LIBS) $(GLIBSHARP_LIBS) \
+	   -r:$(DIR_BIN)/Hyena.dll
+SOURCES =  \
 	Hyena.Data.Gui/Column.cs \
 	Hyena.Data.Gui/ColumnCell.cs \
 	Hyena.Data.Gui/ColumnCellText.cs \
@@ -162,52 +108,6 @@ FILES = \
 	Hyena.Widgets/GenericToolItem.cs \
 	Hyena.Widgets/HigMessageDialog.cs 
 
-DATA_FILES = 
-
-RESOURCES = 
-
-EXTRAS = \
-	hyena.gui.pc.in
-
-REFERENCES =  \
-	ICSharpCode.SharpZipLib \
-	Mono.Posix \
-	System \
-	System.Core \
-	$(GTK_SHARP_20_LIBS) \
-	Mono.Cairo \
-	$(GLIB_SHARP_20_LIBS) \
-	System.Xml
-
-if ENABLE_TESTS
-REFERENCES += $(NUNIT_LIBS)
-endif
-
-DLL_REFERENCES = \
-	$(HYENA_DLL)
-
-CLEANFILES = $(PROGRAMFILES) $(LINUX_PKGCONFIG) 
-
-include $(top_srcdir)/Makefile.include
-
-HYENA_DLL = $(BUILD_DIR)/Hyena.dll
-HYENA_DLL_MDB = $(BUILD_DIR)/Hyena.dll.mdb
-HYENA_GUI_DLL_MDB = $(BUILD_DIR)/Hyena.Gui.dll.mdb
-HYENA_GUI_DLL_CONFIG = $(BUILD_DIR)/Hyena.Gui.dll.config
-HYENA_GUI_PC = $(BUILD_DIR)/hyena.gui.pc
-
-$(eval $(call emit-deploy-wrapper,HYENA_GUI_PC,hyena.gui.pc))
-
-
-$(eval $(call emit_resgen_targets))
-$(build_xamlg_list): %.xaml.g.cs: %.xaml
-	xamlg '$<'
-
-$(HYENA_GUI_DLL_CONFIG): $(ASSEMBLY)
-
-$(ASSEMBLY_MDB): $(ASSEMBLY)
-
-$(ASSEMBLY): $(build_sources) $(build_resources) $(build_datafiles) $(DLL_REFERENCES) $(PROJECT_REFERENCES) $(build_xamlg_list) $(build_satellite_assembly_list)
-	mkdir -p $(shell dirname $(ASSEMBLY))
-	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$(ASSEMBLY) -target:$(COMPILE_TARGET) $(build_sources_embed) $(build_resources_embed) $(build_references_ref)
-	cp $(srcdir)/Hyena.Gui.dll.config $(BUILD_DIR)
+include $(top_srcdir)/build/build.mk
+EXTRA_DIST += hyena.gui.pc.in Hyena.Gui.dll.config
+module_SCRIPTS += Hyena.Gui.dll.config

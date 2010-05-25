@@ -4,6 +4,7 @@ AC_PREREQ([2.54])
 AC_INIT([hyena], [0.3])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 tar-ustar])
 AM_MAINTAINER_MODE
+AC_SUBST([ACLOCAL_AMFLAGS], ["-I build/m4/shamrock \${ACLOCAL_FLAGS}"])
 
 dnl pkg-config
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
@@ -11,19 +12,11 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-m4_include([expansions.m4])
-
 SHAMROCK_EXPAND_LIBDIR
 SHAMROCK_EXPAND_BINDIR
 SHAMROCK_EXPAND_DATADIR
 
 AC_PROG_INSTALL
-
-AC_PATH_PROG(MCS, gmcs, no)
-if test "x$MCS" = "xno"; then
-        AC_MSG_ERROR([gmcs Not found])
-fi
-
 
 AC_ARG_ENABLE(debug,
 	AC_HELP_STRING([--enable-debug],
@@ -54,14 +47,26 @@ if test -z "$CONFIG_REQUESTED" ; then
 	enable_debug=yes
 fi
 
+dnl Mono and gmcs
+SHAMROCK_CHECK_MONO_MODULE(1.9.1)
+SHAMROCK_FIND_MONO_2_0_COMPILER
+SHAMROCK_FIND_MONO_RUNTIME
+SHAMROCK_CHECK_MONO_2_0_GAC_ASSEMBLIES([	
+	System.Data
+	Mono.Cairo
+	Mono.Posix
+	ICSharpCode.SharpZipLib
+])
 
 dnl package checks, common for all configs
-PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
-PKG_CHECK_MODULES([GLIB_SHARP_20], [glib-sharp-2.0])
+PKG_CHECK_MODULES([GTKSHARP], [gtk-sharp-2.0])
+PKG_CHECK_MODULES([GLIBSHARP], [glib-sharp-2.0])
 
 dnl See if Gtk# is recent enought to enable managed widget a11y
 PKG_CHECK_MODULES(GTKSHARP_A11Y, gtk-sharp-2.0 >= 2.12.10, gtksharp_with_a11y=yes, gtksharp_with_a11y=no)
 AM_CONDITIONAL(ENABLE_ATK, test "x$gtksharp_with_a11y" = "xyes")
+
+AM_CONDITIONAL(GCONF_SCHEMAS_INSTALL, false)
 
 dnl Check for nunit
 NUNIT_REQUIRED=2.4.7
@@ -95,6 +100,10 @@ dnl package checks, per config
 
 
 AC_CONFIG_FILES([
+Makefile
+build/Makefile
+build/m4/Makefile
+
 src/Mono.Data.Sqlite/Makefile
 src/Hyena/hyena.pc
 src/Hyena/Makefile
@@ -102,8 +111,6 @@ src/Hyena.Data.Sqlite/hyena.data.sqlite.pc
 src/Hyena.Data.Sqlite/Makefile
 src/Hyena.Gui/hyena.gui.pc
 src/Hyena.Gui/Makefile
-Makefile
-
 ])
 
 cat <<EOF
