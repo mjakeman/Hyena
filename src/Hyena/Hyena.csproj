@@ -151,14 +151,6 @@
     <Compile Include="System.Web\Helpers.cs" />
     <Compile Include="System.Web\HttpUtility.cs" />
     <Compile Include="Hyena\PlatformDetection.cs" />
-    <Compile Include="Hyena.Metrics\Sample.cs" />
-    <Compile Include="Hyena.Metrics\MetricsCollection.cs" />
-    <Compile Include="Hyena.Metrics\HttpPoster.cs" />
-    <Compile Include="Hyena.Metrics\Metric.cs" />
-    <Compile Include="Hyena.Metrics\DbSampleStore.cs" />
-    <Compile Include="Hyena.Metrics\ISampleStore.cs" />
-    <Compile Include="Hyena.Metrics\Tests\MetricsTests.cs" />
-    <Compile Include="Hyena.Metrics\MemorySampleStore.cs" />
     <Compile Include="Hyena.Json\Tests\SerializerTests.cs" />
     <Compile Include="Hyena.Json\Serializer.cs" />
     <Compile Include="Hyena\Tests\DateTimeUtilTests.cs" />

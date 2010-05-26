@@ -50,6 +50,14 @@
     <Compile Include="Hyena.Data.Sqlite\Tests\SqliteModelProviderTests.cs" />
     <Compile Include="Hyena.Data.Sqlite\HyenaSqliteArrayDataReader.cs" />
     <Compile Include="Hyena.Data.Sqlite\Tests\SqliteUtilTests.cs" />
+    <Compile Include="Hyena.Metrics\DbSampleStore.cs" />
+    <Compile Include="Hyena.Metrics\MetricsCollection.cs" />
+    <Compile Include="Hyena.Metrics\HttpPoster.cs" />
+    <Compile Include="Hyena.Metrics\Metric.cs" />
+    <Compile Include="Hyena.Metrics\ISampleStore.cs" />
+    <Compile Include="Hyena.Metrics\Tests\MetricsTests.cs" />
+    <Compile Include="Hyena.Metrics\MemorySampleStore.cs" />
+    <Compile Include="Hyena.Metrics\Sample.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />

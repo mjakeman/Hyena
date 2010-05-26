@@ -16,7 +16,15 @@ SOURCES =  \
 	Hyena.Data.Sqlite/Tests/SqliteCommandTests.cs \
 	Hyena.Data.Sqlite/Tests/SqliteModelProviderTests.cs \
 	Hyena.Data.Sqlite/HyenaSqliteArrayDataReader.cs \
-	Hyena.Data.Sqlite/Tests/SqliteUtilTests.cs
+	Hyena.Data.Sqlite/Tests/SqliteUtilTests.cs \
+	Hyena.Metrics/DbSampleStore.cs \
+	Hyena.Metrics/HttpPoster.cs \
+	Hyena.Metrics/ISampleStore.cs \
+	Hyena.Metrics/MemorySampleStore.cs \
+	Hyena.Metrics/Metric.cs \
+	Hyena.Metrics/MetricsCollection.cs \
+	Hyena.Metrics/Sample.cs \
+	Hyena.Metrics/Tests/MetricsTests.cs
 
 include $(top_srcdir)/build/build.mk
 EXTRA_DIST += hyena.data.sqlite.pc.in
