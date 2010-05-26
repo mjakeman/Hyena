@@ -2,47 +2,85 @@ ASSEMBLY = Hyena
 TARGET = library
 LINK = -r:Mono.Posix -r:System  -r:System.Core
 SOURCES =  \
+	Hyena.Collections/CollectionExtensions.cs \
+	Hyena.Collections/IStackProvider.cs \
+	Hyena.Collections/IntervalHeap.cs \
+	Hyena.Collections/LruCache.cs \
+	Hyena.Collections/QueuePipeline.cs \
+	Hyena.Collections/QueuePipelineElement.cs \
+	Hyena.Collections/RangeCollection.cs \
+	Hyena.Collections/Selection.cs \
+	Hyena.Collections/SelectionProxy.cs \
+	Hyena.Collections/Tests/IntervalHeapTests.cs \
+	Hyena.Collections/Tests/QueuePipelineTests.cs \
+	Hyena.Collections/Tests/RangeCollectionTests.cs \
+	Hyena.Collections/WriteLineElement.cs \
+	Hyena.CommandLine/CommandLineParser.cs \
+	Hyena.CommandLine/Layout.cs \
+	Hyena.CommandLine/LayoutGroup.cs \
+	Hyena.CommandLine/LayoutOption.cs \
+	Hyena.Data/ArrayModelCache.cs \
 	Hyena.Data/BaseListModel.cs \
+	Hyena.Data/ColumnDescription.cs \
+	Hyena.Data/DictionaryModelCache.cs \
+	Hyena.Data/ICacheableItem.cs \
+	Hyena.Data/ICacheableModel.cs \
 	Hyena.Data/ICareAboutView.cs \
 	Hyena.Data/IFilterable.cs \
 	Hyena.Data/IListModel.cs \
+	Hyena.Data/IPropertyStoreExpose.cs \
+	Hyena.Data/ISelectable.cs \
 	Hyena.Data/ISortable.cs \
 	Hyena.Data/ISortableColumn.cs \
+	Hyena.Data/MemoryListModel.cs \
+	Hyena.Data/ModelCache.cs \
 	Hyena.Data/ModelSelection.cs \
+	Hyena.Data/PropertyStore.cs \
 	Hyena.Data/SortType.cs \
+	Hyena.Jobs/Job.cs \
+	Hyena.Jobs/JobExtensions.cs \
+	Hyena.Jobs/PriorityHints.cs \
+	Hyena.Jobs/Resource.cs \
+	Hyena.Jobs/Scheduler.cs \
+	Hyena.Jobs/SimpleAsyncJob.cs \
+	Hyena.Jobs/Tests/SchedulerTests.cs \
+	Hyena.Json/Deserializer.cs \
+	Hyena.Json/IJsonCollection.cs \
+	Hyena.Json/JsonArray.cs \
+	Hyena.Json/JsonObject.cs \
+	Hyena.Json/Serializer.cs \
+	Hyena.Json/Tests/DeserializerTests.cs \
+	Hyena.Json/Tests/SerializerTests.cs \
+	Hyena.Json/Tests/TokenizerTests.cs \
+	Hyena.Json/Token.cs \
+	Hyena.Json/TokenType.cs \
+	Hyena.Json/Tokenizer.cs \
+	Hyena.Query/AliasedObjectSet.cs \
+	Hyena.Query/DateQueryValue.cs \
+	Hyena.Query/EnumQueryValue.cs \
+	Hyena.Query/ExactStringQueryValue.cs \
+	Hyena.Query/ExactUriStringQueryValue.cs \
+	Hyena.Query/FileSizeQueryValue.cs \
+	Hyena.Query/IntegerKeyedObjectQueryValue.cs \
+	Hyena.Query/IntegerQueryValue.cs \
+	Hyena.Query/NullQueryValue.cs \
+	Hyena.Query/QueryField.cs \
+	Hyena.Query/QueryFieldSet.cs \
+	Hyena.Query/QueryLimit.cs \
 	Hyena.Query/QueryListNode.cs \
 	Hyena.Query/QueryNode.cs \
+	Hyena.Query/QueryOperator.cs \
+	Hyena.Query/QueryOrder.cs \
 	Hyena.Query/QueryParser.cs \
 	Hyena.Query/QueryTermNode.cs \
 	Hyena.Query/QueryToken.cs \
-	Hyena.Data/PropertyStore.cs \
-	Hyena.CommandLine/Layout.cs \
-	Hyena.CommandLine/LayoutOption.cs \
-	Hyena.CommandLine/LayoutGroup.cs \
-	Hyena.CommandLine/CommandLineParser.cs \
-	Hyena.Data/IPropertyStoreExpose.cs \
-	Hyena/IUndoAction.cs \
-	Hyena/UndoManager.cs \
-	Hyena.Data/ColumnDescription.cs \
-	Hyena.Data/ICacheableModel.cs \
-	Hyena.Collections/RangeCollection.cs \
-	Hyena.Collections/IStackProvider.cs \
-	Hyena.Collections/IntervalHeap.cs \
-	Hyena.Collections/Selection.cs \
-	Hyena.Collections/SelectionProxy.cs \
-	Hyena.Query/QueryField.cs \
+	Hyena.Query/QueryValue.cs \
+	Hyena.Query/RelativeTimeSpanQueryValue.cs \
+	Hyena.Query/StringQueryValue.cs \
+	Hyena.Query/Tests/QueryTests.cs \
+	Hyena.Query/TimeSpanQueryValue.cs \
 	Hyena.Query/UserQueryParser.cs \
 	Hyena.Query/XmlQueryParser.cs \
-	Hyena.Query/QueryFieldSet.cs \
-	Hyena.Data/ModelCache.cs \
-	Hyena.Query/DateQueryValue.cs \
-	Hyena.Query/FileSizeQueryValue.cs \
-	Hyena.Query/IntegerQueryValue.cs \
-	Hyena.Query/QueryOperator.cs \
-	Hyena.Query/QueryValue.cs \
-	Hyena.Query/StringQueryValue.cs \
-	Hyena/Timer.cs \
-	Hyena/DateTimeUtil.cs \
 	Hyena.SExpEngine/ArithmeticFunctionSet.cs \
 	Hyena.SExpEngine/CastFunctionSet.cs \
 	Hyena.SExpEngine/CompareFunctionSet.cs \
@@ -59,59 +97,24 @@ SOURCES =  \
 	Hyena.SExpEngine/StringFunctionSet.cs \
 	Hyena.SExpEngine/TreeNode.cs \
 	Hyena.SExpEngine/UtilityFunctionSet.cs \
-	Hyena.Data/ArrayModelCache.cs \
-	Hyena.Data/DictionaryModelCache.cs \
-	Hyena.Query/AliasedObjectSet.cs \
-	Hyena/StringUtil.cs \
-	Hyena.Query/QueryLimit.cs \
-	Hyena.Query/QueryOrder.cs \
+	Hyena/ApplicationContext.cs \
+	Hyena/ConsoleCrayon.cs \
+	Hyena/CryptoUtil.cs \
+	Hyena/DateTimeUtil.cs \
+	Hyena/Delegates.cs \
+	Hyena/EventArgs.cs \
+	Hyena/IUndoAction.cs \
 	Hyena/Log.cs \
 	Hyena/Paths.cs \
-	Hyena/CryptoUtil.cs \
 	Hyena/PlatformDetection.cs \
-	Hyena.Query/IntegerKeyedObjectQueryValue.cs \
-	Hyena/ConsoleCrayon.cs \
-	Hyena.Data/ISelectable.cs \
-	Hyena.Query/NullQueryValue.cs \
-	Hyena.Query/RelativeTimeSpanQueryValue.cs \
-	Hyena.Query/TimeSpanQueryValue.cs \
-	Hyena.Collections/Tests/IntervalHeapTests.cs \
-	Hyena.Collections/Tests/RangeCollectionTests.cs \
-	Hyena.Query/Tests/QueryTests.cs \
+	Hyena/StringUtil.cs \
 	Hyena/Tests/CryptoUtilTests.cs \
 	Hyena/Tests/DateTimeUtilTests.cs \
 	Hyena/Tests/StringUtilTests.cs \
 	Hyena/Tests/TestBase.cs \
-	Hyena.Data/ICacheableItem.cs \
-	Hyena.Collections/CollectionExtensions.cs \
-	Hyena.Collections/QueuePipeline.cs \
-	Hyena.Collections/Tests/QueuePipelineTests.cs \
-	Hyena.Collections/QueuePipelineElement.cs \
-	Hyena.Collections/WriteLineElement.cs \
-	Hyena.Json/Tokenizer.cs \
-	Hyena.Json/Token.cs \
-	Hyena.Json/JsonObject.cs \
-	Hyena.Json/Serializer.cs \
-	Hyena.Json/JsonArray.cs \
-	Hyena.Json/Tests/TokenizerTests.cs \
-	Hyena.Json/TokenType.cs \
-	Hyena.Json/Deserializer.cs \
-	Hyena.Json/Tests/SerializerTests.cs \
-	Hyena.Json/IJsonCollection.cs \
-	Hyena.Json/Tests/DeserializerTests.cs \
-	Hyena/Delegates.cs \
-	Hyena.Collections/LruCache.cs \
-	Hyena.Query/ExactStringQueryValue.cs \
-	Hyena.Query/ExactUriStringQueryValue.cs \
-	Hyena.Jobs/Job.cs \
-	Hyena.Jobs/JobExtensions.cs \
-	Hyena.Jobs/PriorityHints.cs \
-	Hyena.Jobs/Resource.cs \
-	Hyena.Jobs/Scheduler.cs \
-	Hyena.Jobs/SimpleAsyncJob.cs \
-	Hyena.Jobs/Tests/SchedulerTests.cs \
-	Hyena/ApplicationContext.cs \
 	Hyena/ThreadAssist.cs \
+	Hyena/Timer.cs \
+	Hyena/UndoManager.cs \
 	Hyena/XdgBaseDirectorySpec.cs \
 	System.Web/Helpers.cs \
 	System.Web/HttpUtility.cs
