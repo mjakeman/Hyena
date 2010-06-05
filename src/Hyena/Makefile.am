@@ -3,8 +3,8 @@ TARGET = library
 LINK = -r:Mono.Posix -r:System  -r:System.Core
 SOURCES =  \
 	Hyena.Collections/CollectionExtensions.cs \
-	Hyena.Collections/IStackProvider.cs \
 	Hyena.Collections/IntervalHeap.cs \
+	Hyena.Collections/IStackProvider.cs \
 	Hyena.Collections/LruCache.cs \
 	Hyena.Collections/QueuePipeline.cs \
 	Hyena.Collections/QueuePipelineElement.cs \
@@ -53,8 +53,8 @@ SOURCES =  \
 	Hyena.Json/Tests/SerializerTests.cs \
 	Hyena.Json/Tests/TokenizerTests.cs \
 	Hyena.Json/Token.cs \
-	Hyena.Json/TokenType.cs \
 	Hyena.Json/Tokenizer.cs \
+	Hyena.Json/TokenType.cs \
 	Hyena.Query/AliasedObjectSet.cs \
 	Hyena.Query/DateQueryValue.cs \
 	Hyena.Query/EnumQueryValue.cs \

@@ -13,6 +13,7 @@ SOURCES =  \
 	Mono.Data.Sqlite/SQLiteConvert.cs \
 	Mono.Data.Sqlite/SQLiteDataAdapter.cs \
 	Mono.Data.Sqlite/SQLiteDataReader.cs \
+	Mono.Data.Sqlite/SqliteDataSourceEnumerator.cs \
 	Mono.Data.Sqlite/SQLiteEnlistment.cs \
 	Mono.Data.Sqlite/SQLiteException.cs \
 	Mono.Data.Sqlite/SQLiteFactory.cs \
@@ -24,7 +25,6 @@ SOURCES =  \
 	Mono.Data.Sqlite/SQLiteStatement.cs \
 	Mono.Data.Sqlite/SQLiteTransaction.cs \
 	Mono.Data.Sqlite/SR.Designer.cs \
-	Mono.Data.Sqlite/SqliteDataSourceEnumerator.cs \
 	Mono.Data.Sqlite/UnsafeNativeMethods.cs 
 
 include $(top_srcdir)/build/build.mk

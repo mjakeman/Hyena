@@ -30,7 +30,6 @@ SOURCES =  \
 	Hyena.Data.Gui/ITextCell.cs \
 	Hyena.Data.Gui/ITooltipCell.cs \
 	Hyena.Data.Gui/ListView/ListView.cs \
-	Hyena.Data.Gui/ListView/ListViewBase.cs \
 	Hyena.Data.Gui/ListView/ListView_Accessible.cs \
 	Hyena.Data.Gui/ListView/ListView_DragAndDrop.cs \
 	Hyena.Data.Gui/ListView/ListView_Header.cs \
@@ -38,6 +37,7 @@ SOURCES =  \
 	Hyena.Data.Gui/ListView/ListView_Model.cs \
 	Hyena.Data.Gui/ListView/ListView_Rendering.cs \
 	Hyena.Data.Gui/ListView/ListView_Windowing.cs \
+	Hyena.Data.Gui/ListView/ListViewBase.cs \
 	Hyena.Data.Gui/ListViewTestModule.cs \
 	Hyena.Data.Gui/ObjectListView.cs \
 	Hyena.Data.Gui/RowActivatedHandler.cs \
@@ -62,8 +62,8 @@ SOURCES =  \
 	Hyena.Gui.Theming/ThemeTestModule.cs \
 	Hyena.Gui/ActionManager.cs \
 	Hyena.Gui/BaseWidgetAccessible.cs \
-	Hyena.Gui/CairoExtensions.cs \
 	Hyena.Gui/CairoDamageDebugger.cs \
+	Hyena.Gui/CairoExtensions.cs \
 	Hyena.Gui/CleanRoomStartup.cs \
 	Hyena.Gui/CompositeUtils.cs \
 	Hyena.Gui/Contrast.cs \
