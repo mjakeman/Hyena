@@ -55,7 +55,7 @@ namespace Hyena.Gui.Dialogs
             ActionArea.Layout = ButtonBoxStyle.End;
 
             accel_group = new AccelGroup();
-		    AddAccelGroup(accel_group);
+            AddAccelGroup(accel_group);
 
             HBox hbox = new HBox(false, 12);
             hbox.BorderWidth = 5;
@@ -101,12 +101,12 @@ namespace Hyena.Gui.Dialogs
             scroll.AddWithViewport(view);
 
             scroll.SetSizeRequest(450, 250);
-			
-			view.Editable = false;
-			view.Buffer.Text = debugInfo;
-			
-			details_expander.Add(scroll);
-			
+
+            view.Editable = false;
+            view.Buffer.Text = debugInfo;
+
+            details_expander.Add(scroll);
+
             hbox.ShowAll();
 
             AddButton(Stock.Close, ResponseType.Close, true);
@@ -151,15 +151,15 @@ namespace Hyena.Gui.Dialogs
             msg.Append("\nAssembly Version Information:\n\n");
 
             foreach(Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-				AssemblyName name = asm.GetName();
+                AssemblyName name = asm.GetName();
                 msg.AppendFormat("{0} ({1})\n", name.Name, name.Version);
-			}
-			
-			if(Environment.OSVersion.Platform != PlatformID.Unix) {
-			    return msg.ToString();
-			}
-			
-			try {
+            }
+
+            if(Environment.OSVersion.Platform != PlatformID.Unix) {
+                return msg.ToString();
+            }
+
+            try {
                 msg.AppendFormat("\nPlatform Information: {0}", BuildPlatformString());
 
                 msg.Append("\n\nDisribution Information:\n\n");
