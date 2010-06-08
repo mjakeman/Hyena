@@ -29,6 +29,7 @@
 #if ENABLE_TESTS
 
 using System;
+using System.IO;
 using NUnit.Framework;
 using Hyena;
 
@@ -54,6 +55,21 @@ namespace Hyena.Tests
             Assert.IsFalse (CryptoUtil.IsMd5Encoded ("ae2b1fca515949e5g54fb22b8ed95575"));
             Assert.IsFalse (CryptoUtil.IsMd5Encoded (null));
             Assert.IsFalse (CryptoUtil.IsMd5Encoded (""));
+        }
+
+        [Test]
+        public void Md5EncodeStream ()
+        {
+            var file = Path.GetTempFileName ();
+            var tw = new StreamWriter (file);
+            tw.Write ("testing");
+            tw.Close ();
+
+            var stream = new FileStream (file, FileMode.Open);
+            Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", CryptoUtil.Md5EncodeStream (stream));
+            stream.Close ();
+
+            File.Delete (file);
         }
 
         /*[Test]

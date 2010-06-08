@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
@@ -60,6 +61,21 @@ namespace Hyena
                 hash = md5.ComputeHash (encoding.GetBytes (text));
             }
 
+            return ToHex (hash);
+        }
+
+        public static string Md5EncodeStream (Stream stream)
+        {
+            byte [] hash;
+            lock (md5) {
+                hash = md5.ComputeHash (stream);
+            }
+
+            return ToHex (hash);
+        }
+
+        private static string ToHex (byte [] hash)
+        {
             StringBuilder shash = new StringBuilder ();
             for (int i = 0; i < hash.Length; i++) {
                 shash.Append (hash[i].ToString ("x2"));
