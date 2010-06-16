@@ -28,6 +28,18 @@ test:
 	echo "Tests not enabled.  Pass --enable-tests to configure or ./autogen.sh"
 endif
 
+# pkg-config
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_in_files = \
+	src/Hyena/hyena.pc.in \
+	src/Hyena.Data.Sqlite/hyena.data.sqlite.pc.in \
+	src/Hyena.Gui/hyena.gui.pc.in
+pkgconfig_DATA = $(pkgconfig_in_files:.pc.in=.pc)
+EXTRA_DIST = $(pkgconfig_in_files)
+CLEANFILES = $(pkgconfig_DATA)
+%.pc: $(pkgconfig_in_files)
+	sed "s,\@VERSION\@,$(VERSION),g; s,\@prefix\@,$(prefix),g; s,\@libdir\@,$(libdir),g" < $< > $@
+
 MAINTAINERCLEANFILES = \
 	compile \
 	INSTALL \
