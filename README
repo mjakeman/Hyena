@@ -30,7 +30,7 @@ There are three ways to use Hyena in your app:
    back to Hyena.  It also means developers don't have to install Hyena
    themselves from packages or git.
 
-     git submodule add git://git.gnome.org/hyena
+     git submodule add git://git.gnome.org/hyena lib/Hyena
      git submodule update --init
      git add .gitmodules
 
@@ -41,7 +41,7 @@ There are three ways to use Hyena in your app:
 
    You can also include the appropriate .csproj in your .sln.  Set them to
    build under the 'Submodule' configuration, and the binaries will get
-   outputted to ../bin from the Hyena checkout directory.
+   outputted to ../../bin from the Hyena checkout directory.
 
 3) Bundle the .dll files in your project
 

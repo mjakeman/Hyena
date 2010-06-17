@@ -30,7 +30,7 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Submodule|AnyCPU' ">
-    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>NET_2_0</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
