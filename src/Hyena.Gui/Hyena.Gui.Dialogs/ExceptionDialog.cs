@@ -49,7 +49,9 @@ namespace Hyena.Gui.Dialogs
             HasSeparator = false;
             BorderWidth = 5;
             Resizable = false;
-            Title = Catalog.GetString("Banshee Encountered a Fatal Error");
+            //Translators: {0} is substituted with the application name
+            Title = String.Format(Catalog.GetString("{0} Encountered a Fatal Error"),
+                                  ApplicationContext.ApplicationName);
 
             VBox.Spacing = 12;
             ActionArea.Layout = ButtonBoxStyle.End;

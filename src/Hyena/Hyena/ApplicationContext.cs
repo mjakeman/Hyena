@@ -51,6 +51,8 @@ namespace Hyena
             get { return command_line; }
         }
 
+        public static string ApplicationName { get; set; }
+
         private static Layout command_line_layout;
         public static Layout CommandLineLayout {
             get { return command_line_layout; }
