@@ -132,6 +132,11 @@
     <Compile Include="Hyena\Delegates.cs" />
     <Compile Include="Hyena.Collections\LruCache.cs" />
     <Compile Include="Hyena.Query\ExactStringQueryValue.cs" />
+    <Compile Include="Hyena.Downloader\Buffer.cs" />
+    <Compile Include="Hyena.Downloader\DownloadManager.cs" />
+    <Compile Include="Hyena.Downloader\HttpDownloader.cs" />
+    <Compile Include="Hyena.Downloader\HttpDownloaderState.cs" />
+    <Compile Include="Hyena.Downloader\HttpFileDownloader.cs" />
     <Compile Include="Hyena.Jobs\Job.cs" />
     <Compile Include="Hyena.Jobs\JobExtensions.cs" />
     <Compile Include="Hyena.Jobs\PriorityHints.cs" />
