@@ -104,10 +104,10 @@ Makefile
 build/Makefile
 build/m4/Makefile
 
-src/Mono.Data.Sqlite/Makefile
-src/Hyena/Makefile
-src/Hyena.Data.Sqlite/Makefile
-src/Hyena.Gui/Makefile
+Mono.Data.Sqlite/Makefile
+Hyena/Makefile
+Hyena.Data.Sqlite/Makefile
+Hyena.Gui/Makefile
 ])
 
 cat <<EOF
