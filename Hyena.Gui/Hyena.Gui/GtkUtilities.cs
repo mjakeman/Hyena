@@ -142,7 +142,10 @@ namespace Hyena.Gui
 
         public static T StyleGetProperty<T> (Widget widget, string property, T default_value)
         {
-            object result = widget.StyleGetProperty (property);
+            object result = null;
+            try {
+                result = widget.StyleGetProperty (property);
+            } catch {}
             return result != null && result.GetType () == typeof (T) ? (T)result : default_value;
         }
 
