@@ -1,9 +1,12 @@
-Assemblies=@expanded_libdir@/@PACKAGE@/Hyena.dll
-Files=@expanded_libdir@/@PACKAGE@/Hyena.dll.mdb
+prefix=@prefix@
+libdir=@libdir@
+
+Assemblies=${libdir}/@PACKAGE@/Hyena.dll
+Files=${libdir}/@PACKAGE@/Hyena.dll.mdb
 
 Name: Hyena
 Description: Hyena
 Version: @VERSION@
 
 Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.dll
+Libs: -r:${libdir}/@PACKAGE@/Hyena.dll

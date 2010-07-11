@@ -1,9 +1,12 @@
-Assemblies=@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll
-Files=@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll.config @expanded_libdir@/@PACKAGE@/Hyena.Gui.dll.mdb
+prefix=@prefix@
+libdir=@libdir@
+
+Assemblies=${libdir}/@PACKAGE@/Hyena.Gui.dll
+Files=${libdir}/@PACKAGE@/Hyena.Gui.dll.config ${libdir}/@PACKAGE@/Hyena.Gui.dll.mdb
 
 Name: Hyena.Gui
 Description: Hyena.Gui
 Version: @VERSION@
 
 Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.Gui.dll
+Libs: -r:${libdir}/@PACKAGE@/Hyena.Gui.dll

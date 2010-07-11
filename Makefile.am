@@ -38,7 +38,7 @@ pkgconfig_DATA = $(pkgconfig_in_files:.pc.in=.pc)
 EXTRA_DIST = $(pkgconfig_in_files)
 CLEANFILES = $(pkgconfig_DATA)
 %.pc: $(pkgconfig_in_files)
-	sed "s,\@VERSION\@,$(VERSION),g; s,\@prefix\@,$(prefix),g; s,\@libdir\@,$(libdir),g" < $< > $@
+	sed "s,\@VERSION\@,$(VERSION),g; s,\@prefix\@,$(prefix),g; s,\@libdir\@,$(libdir),g; s,\@PACKAGE\@,$(PACKAGE),g" < $< > $@
 
 MAINTAINERCLEANFILES = \
 	compile \

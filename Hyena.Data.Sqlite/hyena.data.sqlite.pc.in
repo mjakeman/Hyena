@@ -1,9 +1,12 @@
-Assemblies=@expanded_libdir@/@PACKAGE@/Hyena.Data.Sqlite.dll @expanded_libdir@/@PACKAGE@/Mono.Data.Sqlite.dll
-Files=@expanded_libdir@/@PACKAGE@/Hyena.Data.Sqlite.dll.mdb @expanded_libdir@/@PACKAGE@/Mono.Data.Sqlite.dll.mdb
+prefix=@prefix@
+libdir=@libdir@
+
+Assemblies=${libdir}/@PACKAGE@/Hyena.Data.Sqlite.dll ${libdir}/@PACKAGE@/Mono.Data.Sqlite.dll
+Files=${libdir}/@PACKAGE@/Hyena.Data.Sqlite.dll.mdb ${libdir}/@PACKAGE@/Mono.Data.Sqlite.dll.mdb
 
 Name: Hyena.Data.Sqlite
 Description: Hyena.Data.Sqlite
 Version: @VERSION@
 
 Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/Hyena.Data.Sqlite.dll -r:@expanded_libdir@/@PACKAGE@/Mono.Data.Sqlite.dll
+Libs: -r:${libdir}/@PACKAGE@/Hyena.Data.Sqlite.dll -r:${libdir}/@PACKAGE@/Mono.Data.Sqlite.dll
