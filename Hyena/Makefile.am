@@ -125,4 +125,3 @@ SOURCES =  \
 	System.Web/HttpUtility.cs
 
 include $(top_srcdir)/build/build.mk
-EXTRA_DIST += hyena.pc.in 

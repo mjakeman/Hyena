@@ -1,4 +1,4 @@
-SUBDIRS = m4
+SUBDIRS = m4 pkg-config
 
 GCONF_SCHEMA_EXTRACTOR_ASSEMBLY = gconf-schema-extractor.exe
 TRANSLATOR_EXTRACTOR_ASSEMBLY = translator-extractor.exe

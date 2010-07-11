@@ -119,5 +119,5 @@ SOURCES =  \
 	Hyena.Widgets/WrapLabel.cs
 
 include $(top_srcdir)/build/build.mk
-EXTRA_DIST += hyena.gui.pc.in Hyena.Gui.dll.config
+EXTRA_DIST += Hyena.Gui.dll.config
 module_SCRIPTS += Hyena.Gui.dll.config

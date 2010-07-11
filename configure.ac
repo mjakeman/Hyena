@@ -103,6 +103,7 @@ AC_CONFIG_FILES([
 Makefile
 build/Makefile
 build/m4/Makefile
+build/pkg-config/Makefile
 
 Mono.Data.Sqlite/Makefile
 Hyena/Makefile

@@ -27,4 +27,3 @@ SOURCES =  \
 	Hyena.Metrics/Tests/MetricsTests.cs
 
 include $(top_srcdir)/build/build.mk
-EXTRA_DIST += hyena.data.sqlite.pc.in
