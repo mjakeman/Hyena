@@ -1,6 +1,6 @@
 // 
-// HttpDownloaderState.cs
-//  
+// HttpStringDownloader.cs
+// 
 // Author:
 //   Aaron Bockover <abockover@novell.com>
 // 
@@ -25,22 +25,43 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 
 namespace Hyena.Downloader
 {
-    public class HttpDownloaderState
+    public class HttpStringDownloader : HttpDownloader
     {
-        public DateTime StartTime { get; internal set; }
-        public DateTime FinishTime { get; internal set; }
-        public double PercentComplete { get; internal set; }
-        public double TransferRate { get; internal set; }
-        public Buffer Buffer { get; internal set; }
-        public long TotalBytesRead { get; internal set; }
-        public long TotalBytesExpected { get; internal set; }
-        public bool Success { get; internal set; }
-        public bool Working { get; internal set; }
-        public string ContentType { get; internal set; }
-        public string CharacterSet { get; internal set; }
-        public Exception FailureException { get; internal set; }
+        private Encoding detected_encoding;
+
+        public string Content { get; private set; }
+        public Encoding Encoding { get; set; }
+        public new Action<HttpStringDownloader> Finished { get; set; }
+
+        protected override void OnBufferUpdated ()
+        {
+            var default_encoding = Encoding.UTF8;
+
+            if (detected_encoding == null && !String.IsNullOrEmpty (State.CharacterSet)) {
+                try {
+                    detected_encoding = Encoding.GetEncoding (State.CharacterSet);
+                } catch {
+                }
+            }
+
+            if (detected_encoding == null) {
+                detected_encoding = default_encoding;
+            }
+
+            Content += (Encoding ?? detected_encoding).GetString (State.Buffer.Data, 0, State.Buffer.Length);
+        }
+
+        protected override void OnFinished ()
+        {
+            base.OnFinished ();
+            var handler = Finished;
+            if (handler != null) {
+                handler (this);
+            }
+        }
     }
 }

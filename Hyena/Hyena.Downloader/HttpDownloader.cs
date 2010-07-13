@@ -47,7 +47,8 @@ namespace Hyena.Downloader
         public Uri Uri { get; set; }
         public TimeSpan ProgressEventRaiseLimit { get; set; }
         public HttpDownloaderState State { get; private set; }
-        
+        public string [] AcceptContentTypes { get; set; }
+
         private int buffer_size = 8192;
         public int BufferSize {
             get { return buffer_size; }
@@ -152,7 +153,23 @@ namespace Hyena.Downloader
                         State.Success = false;
                         raise = true;
                         return;
+                    } else if (AcceptContentTypes != null) {
+                        var accepted = false;
+                        foreach (var type in AcceptContentTypes) {
+                            if (type == response.ContentType) {
+                                accepted = true;
+                                break;
+                            }
+                        }
+                        if (!accepted) {
+                            throw new WebException ("Invalid content type: " +
+                                response.ContentType + "; expected one of: " +
+                                String.Join (", ", AcceptContentTypes));
+                        }
                     }
+
+                    State.ContentType = response.ContentType;
+                    State.CharacterSet = response.CharacterSet;
 
                     State.TotalBytesExpected = response.ContentLength;
 

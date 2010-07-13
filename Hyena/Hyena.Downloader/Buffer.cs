@@ -30,7 +30,7 @@ namespace Hyena.Downloader
 {
     public class Buffer
     {
-        public long Length { get; set; }
+        public int Length { get; set; }
         public DateTime TimeStamp { get; set; }
         public byte [] Data { get; set; }
     }
