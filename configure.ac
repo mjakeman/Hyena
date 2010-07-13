@@ -67,6 +67,7 @@ PKG_CHECK_MODULES(GTKSHARP_A11Y, gtk-sharp-2.0 >= 2.12.10, gtksharp_with_a11y=ye
 AM_CONDITIONAL(ENABLE_ATK, test "x$gtksharp_with_a11y" = "xyes")
 
 AM_CONDITIONAL(GCONF_SCHEMAS_INSTALL, false)
+AM_CONDITIONAL(HYENA_PKG_CONFIG, true)
 
 dnl Check for nunit
 NUNIT_REQUIRED=2.4.7

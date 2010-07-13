@@ -1,3 +1,4 @@
+if HYENA_PKG_CONFIG
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_in_files = $(wildcard hyena*.pc.in)
 pkgconfig_DATA = $(pkgconfig_in_files:.pc.in=.pc)
@@ -9,3 +10,4 @@ EXTRA_DIST = $(pkgconfig_in_files)
 
 CLEANFILES = $(pkgconfig_DATA)
 MAINTAINERCLEANFILES = Makefile.in
+endif
