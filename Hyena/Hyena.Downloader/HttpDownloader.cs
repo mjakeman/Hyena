@@ -271,7 +271,11 @@ namespace Hyena.Downloader
         {
             var handler = Finished;
             if (handler != null) {
-                handler (this);
+                try {
+                    handler (this);
+                } catch (Exception e) {
+                    Log.Exception (String.Format ("HttpDownloader.Finished handler ({0})", Uri), e);
+                }
             } 
 
             if (sync_event != null) {
