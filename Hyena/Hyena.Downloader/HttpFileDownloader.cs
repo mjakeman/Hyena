@@ -66,9 +66,13 @@ namespace Hyena.Downloader
         protected override void OnFinished ()
         {
             if (file_stream != null) {
-                file_stream.Close ();
-                file_stream = null;
-                OnFileFinished ();
+                try {
+                    file_stream.Close ();
+                    file_stream = null;
+                    OnFileFinished ();
+                } catch (Exception e) {
+                    Log.Exception (String.Format ("HttpFileDownloader.OnFinished ({0})", Uri), e);
+                }
             }
 
             base.OnFinished ();

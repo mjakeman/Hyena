@@ -57,11 +57,16 @@ namespace Hyena.Downloader
 
         protected override void OnFinished ()
         {
-            base.OnFinished ();
             var handler = Finished;
             if (handler != null) {
-                handler (this);
+                try {
+                    handler (this);
+                } catch (Exception e) {
+                    Log.Exception (String.Format ("HttpStringDownloader.Finished handler ({0})", Uri), e);
+                }
             }
+
+            base.OnFinished ();
         }
     }
 }
