@@ -31,6 +31,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using Hyena;
 
@@ -144,6 +145,19 @@ bar"));
             Assert.AreEqual ("foobazbar", StringUtil.RemoveHtml ("foo<a href=\"http://lkjdflkjdflkjj\">baz</a>bar"));
             Assert.AreEqual ("foobaz foo bar", StringUtil.RemoveHtml (@"foo<a
 href=http://lkjdflkjdflkjj>baz foo< /a> bar"));
+        }
+
+        [Test]
+        public void TestJoin ()
+        {
+            var s = new string [] { "foo", "bar" };
+            Assert.AreEqual ("foo, bar", s.Join (", "));
+            Assert.AreEqual ("foobar", s.Join (""));
+            Assert.AreEqual ("foobar", s.Join (null));
+            Assert.AreEqual ("", new string [] {}.Join (", "));
+
+            s = new string [] { "foo", "bar", "baz" };
+            Assert.AreEqual ("foo -- bar -- baz", s.Join (" -- "));
         }
     }
 

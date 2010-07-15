@@ -337,5 +337,20 @@ namespace Hyena
             }
             return s;
         }
+
+        public static string Join (this IEnumerable<string> strings, string sep)
+        {
+            var sb = new StringBuilder ();
+            foreach (var str in strings) {
+                sb.Append (str);
+                sb.Append (sep);
+            }
+
+            if (sb.Length > 0 && sep != null) {
+                sb.Length -= sep.Length;
+            }
+
+            return sb.ToString ();
+        }
     }
 }
