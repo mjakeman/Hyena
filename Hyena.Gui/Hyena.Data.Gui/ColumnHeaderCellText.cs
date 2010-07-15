@@ -43,6 +43,7 @@ namespace Hyena.Data.Gui
 
         public ColumnHeaderCellText (DataHandler data_handler) : base (null, true)
         {
+            UseMarkup = true;
             this.data_handler = data_handler;
         }
 
