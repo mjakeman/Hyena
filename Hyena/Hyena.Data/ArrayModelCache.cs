@@ -38,7 +38,7 @@ namespace Hyena.Data
 
         public ArrayModelCache (ICacheableModel model) : base (model)
         {
-            cache = new T [model.FetchCount];
+            cache = new T [Model.FetchCount];
         }
 
         public override bool ContainsKey (long i)
@@ -49,8 +49,8 @@ namespace Hyena.Data
 
         public override void Add (long i, T item)
         {
-            if (cache.Length != model.FetchCount) {
-                cache = new T [model.FetchCount];
+            if (cache.Length != Model.FetchCount) {
+                cache = new T [Model.FetchCount];
                 Clear ();
             }
 

@@ -33,7 +33,8 @@ namespace Hyena.Data
 {
     public abstract class ModelCache<T> where T : ICacheableItem, new ()
     {
-        protected ICacheableModel model;
+        private ICacheableModel model;
+        protected ICacheableModel Model { get { return model; } }
 
         public ModelCache (ICacheableModel model)
         {
