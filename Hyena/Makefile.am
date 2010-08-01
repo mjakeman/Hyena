@@ -1,6 +1,6 @@
 ASSEMBLY = Hyena
 TARGET = library
-LINK = -r:Mono.Posix -r:System  -r:System.Core
+LINK = -r:Mono.Posix -r:System  -r:System.Core $(GLIBSHARP_LIBS)
 SOURCES =  \
 	Hyena.Collections/CollectionExtensions.cs \
 	Hyena.Collections/IntervalHeap.cs \
@@ -113,6 +113,7 @@ SOURCES =  \
 	Hyena/Log.cs \
 	Hyena/Paths.cs \
 	Hyena/PlatformDetection.cs \
+	Hyena/SafeUri.cs \
 	Hyena/StringUtil.cs \
 	Hyena/Tests/CryptoUtilTests.cs \
 	Hyena/Tests/DateTimeUtilTests.cs \
@@ -126,3 +127,6 @@ SOURCES =  \
 	System.Web/HttpUtility.cs
 
 include $(top_srcdir)/build/build.mk
+
+EXTRA_DIST += Hyena.dll.config
+module_SCRIPTS += Hyena.dll.config
