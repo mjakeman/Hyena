@@ -53,9 +53,9 @@ namespace Hyena.Data.Gui.Accessibility
 
             cell_cache = new Dictionary<int, ColumnCellAccessible> ();
 
-            list_view.ModelChanged += (o, a) => OnModelChanged ();
-            list_view.ModelReloaded += (o, a) => OnModelChanged ();
-            OnModelChanged ();
+            list_view.ModelChanged += OnModelChanged;
+            list_view.ModelReloaded += OnModelChanged;
+            OnModelChanged (null, null);
 
             list_view.SelectionProxy.FocusChanged += OnSelectionFocusChanged;
             list_view.ActiveColumnChanged += OnSelectionFocusChanged;
@@ -126,7 +126,13 @@ namespace Hyena.Data.Gui.Accessibility
             return RefAt (row, col);
         }
 
-        private void OnModelChanged ()
+
+        private void OnModelChanged (object o, EventArgs a)
+        {
+            ThreadAssist.ProxyToMain (EmitModelChanged);
+        }
+
+        private void EmitModelChanged ()
         {
             GLib.Signal.Emit (this, "model_changed");
             cell_cache.Clear ();
@@ -137,6 +143,11 @@ namespace Hyena.Data.Gui.Accessibility
         }
 
         private void OnSelectionFocusChanged (object o, EventArgs a)
+        {
+            ThreadAssist.ProxyToMain (EmitDescendantChanged);
+        }
+
+        private void EmitDescendantChanged ()
         {
             var cell = ActiveCell;
             if (cell != null) {
