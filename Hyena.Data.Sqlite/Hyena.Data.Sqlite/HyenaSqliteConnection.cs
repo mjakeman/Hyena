@@ -114,6 +114,8 @@ namespace Hyena.Data.Sqlite
             set { warn_if_called_from_thread = value; }
         }
 
+        public string ServerVersion { get { return connection.ServerVersion; } }
+
         public event EventHandler<ExecutingEventArgs> Executing;
 
         public HyenaSqliteConnection(string dbpath)
