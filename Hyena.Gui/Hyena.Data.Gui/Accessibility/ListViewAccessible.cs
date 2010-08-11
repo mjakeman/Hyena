@@ -157,10 +157,15 @@ namespace Hyena.Data.Gui.Accessibility
 
         private Atk.Object ActiveCell {
             get {
-                if (list_view.HeaderFocused)
+                if (list_view.HeaderFocused) {
                     return OnRefChild (list_view.ActiveColumn);
-                else
-                    return RefAt (list_view.Selection.FocusedIndex, list_view.ActiveColumn);
+                } else {
+                    if (list_view.Selection != null) {
+                        return RefAt (list_view.Selection.FocusedIndex, list_view.ActiveColumn);
+                    } else {
+                        return null;
+                    }
+                }
             }
         }
 
