@@ -92,29 +92,31 @@ namespace Hyena.Data.Gui.Accessibility
         {
             ColumnCellAccessible child;
 
-            if (cell_cache.ContainsKey (index)) {
-                return cell_cache[index];
+            lock (cell_cache) {
+                if (cell_cache.ContainsKey (index)) {
+                    return cell_cache[index];
+                }
+
+                // FIXME workaround to prevent crashing on Grid ListViews
+                if (list_view.ColumnController == null)
+                    return null;
+
+                var columns = list_view.ColumnController.Where (c => c.Visible);
+
+                if (index - n_columns < 0) {
+                    child = columns.ElementAtOrDefault (index)
+                                   .HeaderCell
+                                   .GetAccessible (this) as ColumnCellAccessible;
+                } else {
+                    int column = (index - n_columns) % n_columns;
+                    int row = (index - n_columns) / n_columns;
+                    var cell = columns.ElementAtOrDefault (column).GetCell (0);
+                    cell.BindListItem (list_view.Model[row]);
+                    child = (ColumnCellAccessible) cell.GetAccessible (this);
+                }
+
+                cell_cache.Add (index, child);
             }
-
-            // FIXME workaround to prevent crashing on Grid ListViews
-            if (list_view.ColumnController == null)
-                return null;
-
-            var columns = list_view.ColumnController.Where (c => c.Visible);
-
-            if (index - n_columns < 0) {
-                child = columns.ElementAtOrDefault (index)
-                               .HeaderCell
-                               .GetAccessible (this) as ColumnCellAccessible;
-            } else {
-                int column = (index - n_columns) % n_columns;
-                int row = (index - n_columns) / n_columns;
-                var cell = columns.ElementAtOrDefault (column).GetCell (0);
-                cell.BindListItem (list_view.Model[row]);
-                child = (ColumnCellAccessible) cell.GetAccessible (this);
-            }
-
-            cell_cache.Add (index, child);
 
             return child;
         }
@@ -129,7 +131,9 @@ namespace Hyena.Data.Gui.Accessibility
         private void OnModelChanged ()
         {
             GLib.Signal.Emit (this, "model_changed");
-            cell_cache.Clear ();
+            lock (cell_cache) {
+                cell_cache.Clear ();
+            }
             /*var handler = ModelChanged;
             if (handler != null) {
                 handler (this, EventArgs.Empty);
@@ -169,10 +173,11 @@ namespace Hyena.Data.Gui.Accessibility
 
         public int GetCellIndex (ColumnCellAccessible cell)
         {
-            foreach (KeyValuePair<int, ColumnCellAccessible> kv in cell_cache)
-            {
-                if ((ColumnCellAccessible)kv.Value == cell)
-                    return (int)kv.Key;
+            lock (cell_cache) {
+                foreach (KeyValuePair<int, ColumnCellAccessible> kv in cell_cache) {
+                    if ((ColumnCellAccessible)kv.Value == cell)
+                        return (int)kv.Key;
+                }
             }
 
             return -1;
@@ -245,8 +250,10 @@ namespace Hyena.Data.Gui.Accessibility
             else
                 index = column;
 
-            if (cell_cache.ContainsKey (index)) {
-                cell_cache[index].Redrawn ();
+            lock (cell_cache) {
+                if (cell_cache.ContainsKey (index)) {
+                    cell_cache[index].Redrawn ();
+                }
             }
         }
 
