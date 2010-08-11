@@ -129,7 +129,7 @@ namespace Hyena.Jobs
 
         internal void Preempt ()
         {
-            Log.Debug ("Preemptd", Title);
+            Log.Debug ("Preempting", Title);
             Pause (false);
         }
 
