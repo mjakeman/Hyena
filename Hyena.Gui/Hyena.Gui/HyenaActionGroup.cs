@@ -55,6 +55,12 @@ namespace Hyena.Gui
             ui_merge_ids.Add (ActionManager.AddUiFromFile (ui_file, System.Reflection.Assembly.GetCallingAssembly ()));
         }
 
+        public void AddUiFromString (string ui_string)
+        {
+            Hyena.ThreadAssist.AssertInMainThread ();
+            ui_merge_ids.Add (ActionManager.UIManager.AddUiFromString (ui_string));
+        }
+
         public void Register ()
         {
             if (ActionManager.FindActionGroup (this.Name) == null) {
