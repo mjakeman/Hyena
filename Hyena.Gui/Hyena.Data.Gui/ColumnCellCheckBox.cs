@@ -33,6 +33,8 @@ namespace Hyena.Data.Gui
 {
     public class ColumnCellCheckBox : ColumnCell, IInteractiveCell, ISizeRequestCell
     {
+        public event EventHandler Toggled;
+
         public ColumnCellCheckBox (string property, bool expand) : base (property, expand)
         {
         }
@@ -66,6 +68,11 @@ namespace Hyena.Data.Gui
             if (last_pressed_bound != null && last_pressed_bound.Equals (BoundObjectParent)) {
                 Value = !Value;
                 last_pressed_bound = null;
+
+                var handler = Toggled;
+                if (handler != null) {
+                    handler (BoundObjectParent, EventArgs.Empty);
+                }
             }
 
             return true;
