@@ -159,6 +159,16 @@ href=http://lkjdflkjdflkjj>baz foo< /a> bar"));
             s = new string [] { "foo", "bar", "baz" };
             Assert.AreEqual ("foo -- bar -- baz", s.Join (" -- "));
         }
+
+        [Test]
+        public void TestSubstringBetween ()
+        {
+            Assert.AreEqual ("bar", "foobarbaz".SubstringBetween ("foo", "baz"));
+            Assert.AreEqual ("barfoobam", "erefoobarfoobambazabc".SubstringBetween ("foo", "baz"));
+            Assert.AreEqual (null, "foobar".SubstringBetween ("foo", "baz"));
+            Assert.AreEqual (null,  "bar".SubstringBetween ("foo", "baz"));
+            Assert.AreEqual (null,  "".SubstringBetween ("foo", "baz"));
+        }
     }
 
     [TestFixture]

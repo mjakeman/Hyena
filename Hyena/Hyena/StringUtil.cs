@@ -329,6 +329,21 @@ namespace Hyena
             }
         }
 
+        public static string SubstringBetween (this string input, string start, string end)
+        {
+            int s = input.IndexOf (start);
+            if (s == -1)
+                return null;
+
+            s += start.Length;
+            int l = Math.Min (input.Length - 1, input.IndexOf (end, s)) - s;
+            if (l > 0 && s + l < input.Length) {
+                return input.Substring (s, l);
+            } else {
+                return null;
+            }
+        }
+
         private static readonly char[] escaped_like_chars = new char[] {'\\', '%', '_'};
         public static string EscapeLike (string s)
         {
