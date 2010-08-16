@@ -6,7 +6,8 @@ DLL_MAP_VERIFIER_ASSEMBLY = dll-map-verifier.exe
 ADDIN_XML_STRING_EXTRACTOR_ASSEMBLY = addin-xml-string-extractor.exe
 GOBJECT_INTPTR_CTOR_VERIFIER_ASSEMBLY = gobject-intptr-ctor-verifier.exe
 
-ALL_TARGETS = $(TRANSLATOR_EXTRACTOR_ASSEMBLY) $(DLL_MAP_VERIFIER_ASSEMBLY) $(ADDIN_XML_STRING_EXTRACTOR_ASSEMBLY) $(GOBJECT_INTPTR_CTOR_VERIFIER_ASSEMBLY)
+ALL_TARGETS = $(DLL_MAP_VERIFIER_ASSEMBLY) $(ADDIN_XML_STRING_EXTRACTOR_ASSEMBLY) $(GOBJECT_INTPTR_CTOR_VERIFIER_ASSEMBLY)
+#ALL_TARGETS += $(TRANSLATOR_EXTRACTOR_ASSEMBLY)
 
 if GCONF_SCHEMAS_INSTALL
 bansheedir = $(pkglibdir)
@@ -18,11 +19,11 @@ endif
 
 all: $(ALL_TARGETS)
 
-dnl $(TRANSLATOR_EXTRACTOR_ASSEMBLY): TranslatorExtractor.cs
-dnl	if [ "x$(top_srcdir)" = "x$(top_builddir)" ]; then \
-dnl		$(MCS) -out:$@ $< && LC_ALL=en_US.UTF-8 $(MONO) $@ $(top_builddir)/po > \
-dnl			$(top_srcdir)/src/Core/Banshee.Core/Resources/translators.xml; \
-dnl	fi;
+# $(TRANSLATOR_EXTRACTOR_ASSEMBLY): TranslatorExtractor.cs
+#	if [ "x$(top_srcdir)" = "x$(top_builddir)" ]; then \
+#		$(MCS) -out:$@ $< && LC_ALL=en_US.UTF-8 $(MONO) $@ $(top_builddir)/po > \
+#			$(top_srcdir)/src/Core/Banshee.Core/Resources/translators.xml; \
+#	fi;
 
 $(DLL_MAP_VERIFIER_ASSEMBLY): DllMapVerifier.cs
 	$(MCS) -out:$@ $<
