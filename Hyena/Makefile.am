@@ -43,6 +43,7 @@ SOURCES =  \
 	Hyena.Downloader/HttpDownloaderState.cs \
 	Hyena.Downloader/HttpFileDownloader.cs \
 	Hyena.Downloader/HttpStringDownloader.cs \
+	Hyena.Downloader/Tests/HttpTestServer.cs \
 	Hyena.Jobs/Job.cs \
 	Hyena.Jobs/JobExtensions.cs \
 	Hyena.Jobs/PriorityHints.cs \
