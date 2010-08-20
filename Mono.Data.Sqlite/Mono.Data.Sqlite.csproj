@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <ProjectGuid>{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <UseParentDirectoryAsNamespace>true</UseParentDirectoryAsNamespace>
@@ -45,12 +45,20 @@
     <Compile Include="Mono.Data.Sqlite\SQLite3.cs" />
     <Compile Include="Mono.Data.Sqlite\SQLite3_UTF16.cs" />
     <Compile Include="Mono.Data.Sqlite\SQLiteBase.cs" />
-    <Compile Include="Mono.Data.Sqlite\SQLiteCommand.cs" />
-    <Compile Include="Mono.Data.Sqlite\SQLiteCommandBuilder.cs" />
-    <Compile Include="Mono.Data.Sqlite\SQLiteConnection.cs" />
+    <Compile Include="Mono.Data.Sqlite\SQLiteCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mono.Data.Sqlite\SQLiteCommandBuilder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mono.Data.Sqlite\SQLiteConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Mono.Data.Sqlite\SQLiteConnectionStringBuilder.cs" />
     <Compile Include="Mono.Data.Sqlite\SQLiteConvert.cs" />
-    <Compile Include="Mono.Data.Sqlite\SQLiteDataAdapter.cs" />
+    <Compile Include="Mono.Data.Sqlite\SQLiteDataAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Mono.Data.Sqlite\SQLiteDataReader.cs" />
     <Compile Include="Mono.Data.Sqlite\SQLiteEnlistment.cs" />
     <Compile Include="Mono.Data.Sqlite\SQLiteException.cs" />
@@ -82,5 +90,6 @@
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
+    <VisualStudio />
   </ProjectExtensions>
 </Project>
