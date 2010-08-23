@@ -59,10 +59,14 @@ namespace Hyena.Widgets
             WidgetFlags |= Gtk.WidgetFlags.NoWindow;
         }
 
-        public RatingEntry (int rating)
+        public RatingEntry (int rating) : this (rating, new RatingRenderer ())
         {
-            renderer = new RatingRenderer ();
-            renderer.Value = rating;
+        }
+
+        protected RatingEntry (int rating, RatingRenderer renderer)
+        {
+            this.renderer = renderer;
+            this.renderer.Value = rating;
             CanFocus = true;
             Name = "GtkEntry";
         }

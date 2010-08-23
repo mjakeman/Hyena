@@ -103,7 +103,7 @@ namespace Hyena.Gui
             }
         }
 
-        private void ComputePosition (Gdk.Rectangle area, out double x, out double y)
+        protected void ComputePosition (Gdk.Rectangle area, out double x, out double y)
         {
             double cell_width = area.Width - 2 * Xpad;
             double cell_height = area.Height - 2 * Ypad;

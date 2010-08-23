@@ -30,6 +30,8 @@ using System;
 using Gtk;
 using Mono.Unix;
 
+using Hyena.Gui;
+
 namespace Hyena.Widgets
 {
     public class RatingMenuItem : ComplexMenuItem
@@ -38,7 +40,7 @@ namespace Hyena.Widgets
         private bool can_activate = true;
         private Box box;
 
-        public RatingMenuItem () : base ()
+        protected RatingMenuItem (RatingEntry entry) : base ()
         {
             box = new HBox ();
             box.Spacing = 5;
@@ -49,7 +51,7 @@ namespace Hyena.Widgets
             box.PackStart (label, false, false, 0);
             label.Show ();
 
-            entry = new RatingEntry ();
+            this.entry = entry;
             entry.HasFrame = false;
             entry.PreviewOnHover = true;
             entry.AlwaysShowEmptyStars = true;
@@ -58,6 +60,10 @@ namespace Hyena.Widgets
 
             box.ShowAll ();
             Add (box);
+        }
+
+        public RatingMenuItem () : this (new RatingEntry ())
+        {
         }
 
         protected RatingMenuItem (IntPtr raw) : base (raw)
