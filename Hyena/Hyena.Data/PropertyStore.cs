@@ -163,6 +163,17 @@ namespace Hyena.Data
             }
         }
 
+        public T Get<T>(string name, T fallback)
+        {
+            lock(this) {
+                if(object_store != null && object_store.ContainsKey(name)) {
+                    return (T)object_store[name];
+                }
+
+                return fallback;
+            }
+        }
+
         public int GetInteger(string name)
         {
             return Get<int>(name);
