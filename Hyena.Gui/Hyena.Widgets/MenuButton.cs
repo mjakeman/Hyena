@@ -75,6 +75,8 @@ namespace Hyena.Widgets
                 box.PackStart (alignment, false, false, 5);
                 size_widget = box;
                 FocusChain = new Widget[] {toggle_button, box};
+                alignment.ShowAll ();
+                alignment.NoShowAll = true;
             } else {
                 toggle_button.Add (button_widget);
                 size_widget = toggle_button;
@@ -112,6 +114,11 @@ namespace Hyena.Widgets
 
         public Arrow Arrow {
             get { return arrow; }
+        }
+
+        public bool ArrowVisible {
+            get { return alignment.Visible; }
+            set { alignment.Visible = value; }
         }
 
         protected override void OnSizeRequested (ref Requisition requisition)
