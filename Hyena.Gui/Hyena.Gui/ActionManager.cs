@@ -140,7 +140,25 @@ namespace Hyena.Gui
                 ToolItem container_item = new Hyena.Widgets.GenericToolItem<Widget> (item);
                 container_item.Expand = expand;
                 container_item.Show ();
+                container_item.ToolbarReconfigured += (o, a) => {
+                    SetItemSize (container_item, container_item.IconSize);
+                };
                 toolbar.Insert (container_item, position);
+            }
+        }
+
+        private void SetItemSize (Gtk.Widget widget, Gtk.IconSize size)
+        {
+            var container = widget as Container;
+            if (container != null) {
+                foreach (var child in container.Children) {
+                    SetItemSize (child, size);
+                }
+            }
+
+            var img = widget as Image;
+            if (img != null) {
+                img.IconSize = (int)size;
             }
         }
 
