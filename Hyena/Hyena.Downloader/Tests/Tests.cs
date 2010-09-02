@@ -58,6 +58,7 @@ namespace Hyena.Downloader.Tests
                 var size = new System.IO.FileInfo (d.LocalPath).Length;
                 Assert.IsTrue (size <= server.MaxResourceSize);
                 Assert.IsTrue (size >= server.MinResourceSize);
+                System.IO.File.Delete (d.LocalPath);
             };
             f.StartSync ();
         }

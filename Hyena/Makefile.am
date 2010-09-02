@@ -39,6 +39,7 @@ SOURCES =  \
 	Hyena.Data/SortType.cs \
 	Hyena.Downloader/Buffer.cs \
 	Hyena.Downloader/DownloadManager.cs \
+	Hyena.Downloader/DownloadManagerJob.cs \
 	Hyena.Downloader/HttpDownloader.cs \
 	Hyena.Downloader/HttpDownloaderState.cs \
 	Hyena.Downloader/HttpFileDownloader.cs \

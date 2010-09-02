@@ -32,7 +32,7 @@ namespace Hyena.Downloader
     public class DownloadManager
     {
         private object sync_root = new object ();
-        protected object SyncRoot {
+        internal object SyncRoot {
             get { return sync_root; }
         }
 
@@ -43,7 +43,7 @@ namespace Hyena.Downloader
             get { return pending_downloaders; }
         }
 
-        protected List<HttpDownloader> ActiveDownloaders {
+        internal List<HttpDownloader> ActiveDownloaders {
             get { return active_downloaders; }
         }
 
