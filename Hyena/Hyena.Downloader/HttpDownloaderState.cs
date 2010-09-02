@@ -42,5 +42,14 @@ namespace Hyena.Downloader
         public string ContentType { get; internal set; }
         public string CharacterSet { get; internal set; }
         public Exception FailureException { get; internal set; }
+
+        public override string ToString ()
+        {
+            if (Working) {
+                return String.Format ("HttpDownloaderState: working ({0}% complete)", PercentComplete * 100.0);
+            } else {
+                return String.Format ("HttpDownloaderState: finished, {0}", Success ? "successful" : "error: " + FailureException.Message);
+            }
+        }
     }
 }

@@ -35,7 +35,7 @@ using System.Security.Cryptography;
 
 namespace Hyena.Downloader.Tests
 {
-    internal class HttpTestServer
+    internal class HttpTestServer : IDisposable
     {
         private class Resource
         {
@@ -45,11 +45,19 @@ namespace Hyena.Downloader.Tests
         }
 
         private List<Resource> resources = new List<Resource> ();
+        private bool stop_requested;
         private bool running;
+        private bool serving;
 
+        private HttpListener listener;
         public int ResourceCount { get; set; }
         public int MinResourceSize { get; set; }
         public int MaxResourceSize { get; set; }
+        public bool IsServing { get { return serving; } }
+
+        public bool Debug = true;
+
+        public string BaseUrl { get { return "http://localhost:8080/"; } }
 
         public HttpTestServer ()
         {
@@ -60,22 +68,47 @@ namespace Hyena.Downloader.Tests
 
         public void Run ()
         {
+            stop_requested = false;
+            running = true;
             GenerateStaticContent ();
             ServeStaticContent ();
+            running = false;
+            serving = false;
+        }
+
+        public void Dispose ()
+        {
+            Stop ();
+        }
+
+        public void Stop ()
+        {
+            lock (this) {
+                if (!running)
+                    return;
+
+                stop_requested = true;
+                listener.Abort ();
+
+                // busy wait, oh well
+                if (Debug) Console.WriteLine ("waiting for server to stop");
+                while (running) {}
+                if (Debug) Console.WriteLine ("  > done waiting for server to stop");
+            }
         }
 
         private void ServeStaticContent ()
         {
-            Console.WriteLine ();
-            Console.WriteLine ("Serving static content...");
+            if (Debug) Console.WriteLine ();
+            if (Debug) Console.WriteLine ("Serving static content...");
 
-            var listener = new HttpListener ();
-            listener.Prefixes.Add ("http://localhost:8080/");
+            listener = new HttpListener ();
+            listener.Prefixes.Add (BaseUrl);
             listener.Start ();
-            
-            running = true;
 
-            while (running) {
+            serving = true;
+            
+            while (!stop_requested) {
                 var async_result = listener.BeginGetContext (result => {
                     var context = listener.EndGetContext (result);
                     var response = context.Response;
@@ -86,14 +119,14 @@ namespace Hyena.Downloader.Tests
                     response.ProtocolVersion = new Version ("1.1");
 
                     try {
-                        Console.WriteLine ("Serving: {0}", path);
+                        if (Debug) Console.WriteLine ("Serving: {0}", path);
                         if (path == "/") {
                             ServeString (response, resources.Count.ToString () + "\n");
                             return;
                         } else if (path == "/shutdown") {
                             ServeString (response, "Goodbye\n");
                             lock (this) {
-                                running = false;
+                                stop_requested = true;
                             }
                         }
 
@@ -142,6 +175,7 @@ namespace Hyena.Downloader.Tests
 
         private void GenerateStaticContent ()
         {
+            resources.Clear ();
             var random = new Random ();
             var root = "/tmp/hyena-download-test-server";
 
@@ -159,7 +193,7 @@ namespace Hyena.Downloader.Tests
                     Length = random.Next (MinResourceSize, MaxResourceSize + 1)
                 };
 
-                Console.WriteLine ();
+                if (Debug) Console.WriteLine ();
 
                 using (var stream = File.OpenWrite (resource.Path)) {
                     var buffer = new byte[32 << 10];
@@ -176,7 +210,7 @@ namespace Hyena.Downloader.Tests
                         written += buffer_length;
                         md5.TransformBlock (buffer, 0, buffer_length, null, 0);
 
-                        Console.Write ("\rCreating resource: {0} ({1:0.00} MB): [{2}/{3}]  {4:0.0}% ",
+                        if (Debug) Console.Write ("\rCreating resource: {0} ({1:0.00} MB): [{2}/{3}]  {4:0.0}% ",
                             resource.Path, resource.Length / 1024.0 / 1024.0,
                             i + 1, ResourceCount,
                             written / (double)resource.Length * 100.0);
