@@ -19,10 +19,10 @@
   <!-- Current Releases -->
   <release>
     <Version>
-      <name>0.3</name>
-      <branch>stable</branch>
-      <created>2010-05-06</created>
-      <revision>0.3</revision>
+      <name>0.4</name>
+      <branch>master</branch>
+      <created>2010-10-05</created>
+      <revision>0.4</revision>
       <file-release rdf:resource="http://ftp.gnome.org/pub/GNOME/sources/hyena/" />
     </Version>
   </release>
