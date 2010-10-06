@@ -2,7 +2,7 @@ prefix=@prefix@
 libdir=@libdir@
 
 Assemblies=${libdir}/@PACKAGE@/Hyena.dll
-Files=${libdir}/@PACKAGE@/Hyena.dll.mdb
+Files=${libdir}/@PACKAGE@/Hyena.dll.config ${libdir}/@PACKAGE@/Hyena.dll.mdb
 
 Name: Hyena
 Description: Hyena
