@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
+
 using Pango;
 
 namespace Hyena.Gui
@@ -42,6 +44,11 @@ namespace Hyena.Gui
             using (var metrics = context.GetMetrics (description, language)) {
                 return ((int)(metrics.Ascent + metrics.Descent) + 512) >> 10; // PANGO_PIXELS (d)
             }
+        }
+
+        public static string FormatEscaped (this string format, params object [] args)
+        {
+            return String.Format (format, args.Select (a => GLib.Markup.EscapeText (a.ToString ())).ToArray ());
         }
     }
 }
