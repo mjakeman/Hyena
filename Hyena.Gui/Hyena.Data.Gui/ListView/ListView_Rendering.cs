@@ -508,6 +508,8 @@ namespace Hyena.Data.Gui
 
                 cairo_context.Save ();
                 cairo_context.Translate (child_allocation.X, child_allocation.Y);
+                cairo_context.Rectangle (0, 0, child_allocation.Width, child_allocation.Height);
+                cairo_context.Clip ();
                 layout_child.Render (cell_context);
                 cairo_context.Restore ();
             }
