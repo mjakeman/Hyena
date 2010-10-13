@@ -103,6 +103,7 @@ SOURCES =  \
 	Hyena.Widgets/ComplexMenuItem.cs \
 	Hyena.Widgets/EntryPopup.cs \
 	Hyena.Widgets/GenericToolItem.cs \
+	Hyena.Widgets/GrabHandle.cs \
 	Hyena.Widgets/HigMessageDialog.cs \
 	Hyena.Widgets/ImageButton.cs \
 	Hyena.Widgets/MenuButton.cs \

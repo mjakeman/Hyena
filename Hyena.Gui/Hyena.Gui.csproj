@@ -178,6 +178,7 @@
     <Compile Include="Hyena.Gui\ActionManager.cs" />
     <Compile Include="Hyena.Gui\HyenaActionGroup.cs" />
     <Compile Include="Hyena.Widgets\GenericToolItem.cs" />
+    <Compile Include="Hyena.Widgets\GrabHandle.cs" />
     <Compile Include="Hyena.Widgets\HigMessageDialog.cs" />
     <Compile Include="Hyena.Widgets\EntryPopup.cs" />
     <Compile Include="Hyena.Widgets\SimpleTable.cs" />
