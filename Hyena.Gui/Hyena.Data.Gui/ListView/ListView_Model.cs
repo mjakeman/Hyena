@@ -66,7 +66,7 @@ namespace Hyena.Data.Gui
             }
 
             ISortable sortable = model as ISortable;
-            if (sortable != null) {
+            if (sortable != null && ColumnController != null) {
                 ISortableColumn sort_column = ColumnController.SortColumn ?? ColumnController.DefaultSortColumn;
                 if (sort_column != null) {
                     sortable.Sort (sort_column);
