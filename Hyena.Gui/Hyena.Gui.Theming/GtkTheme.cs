@@ -98,33 +98,50 @@ namespace Hyena.Gui.Theming
             Context.Cairo.Stroke ();
         }
 
-        public override void DrawArrow (Context cr, Gdk.Rectangle alloc, Hyena.Data.SortType type)
+        public override void DrawArrow (Context cr, Gdk.Rectangle alloc, double rotation)
         {
-            cr.LineWidth = 1;
-            cr.Translate (0.5, 0.5);
+            rotation -= Math.PI / 2.0;
+
             double x1 = alloc.X;
+            double x2 = alloc.Right;
             double x3 = alloc.X + alloc.Width / 2.0;
-            double x2 = x3 + (x3 - x1);
             double y1 = alloc.Y;
             double y2 = alloc.Bottom;
 
-            if (type == Hyena.Data.SortType.Ascending) {
-                cr.MoveTo (x1, y1);
-                cr.LineTo (x2, y1);
-                cr.LineTo (x3, y2);
-                cr.LineTo (x1, y1);
-            } else {
-                cr.MoveTo (x3, y1);
-                cr.LineTo (x2, y2);
-                cr.LineTo (x1, y2);
-                cr.LineTo (x3, y1);
+            double cx = x3;
+            double cy = alloc.Y + alloc.Height / 2.0;
+
+            if (rotation != 0) {
+                // Rotate about the center of the arrow
+                cr.Translate (cx, cy);
+                cr.Rotate (rotation);
+                cr.Translate (-cx, -cy);
             }
+
+            cr.LineWidth = 1.0;
+
+            bool hz = (rotation % (Math.PI / 2.0)) == 0;
+            double dx = hz ? 0 : 0.5;
+            double dy = hz ? 0.5 : 0.5;
+            cr.Translate (dx, dy);
+
+            cr.MoveTo (x1, y1);
+            cr.LineTo (x2, y1);
+            cr.LineTo (x3, y2);
+            cr.LineTo (x1, y1);
 
             cr.Color = Colors.GetWidgetColor (GtkColorClass.Base, StateType.Normal);
             cr.FillPreserve ();
             cr.Color = Colors.GetWidgetColor (GtkColorClass.Text, StateType.Normal);
             cr.Stroke ();
-            cr.Translate (-0.5, -0.5);
+
+            cr.Translate (-dx, -dy);
+
+            if (rotation != 0) {
+                cr.Translate (cx, cy);
+                cr.Rotate (-rotation);
+                cr.Translate (-cx, -cy);
+            }
         }
 
         public override void DrawFrameBackground (Cairo.Context cr, Gdk.Rectangle alloc, Cairo.Color color, Cairo.Pattern pattern)

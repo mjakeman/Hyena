@@ -89,7 +89,12 @@ namespace Hyena.Gui.Theming
 
         public abstract void DrawPie (double fraction);
 
-        public abstract void DrawArrow (Cairo.Context cr, Gdk.Rectangle alloc, Hyena.Data.SortType type);
+        public void DrawArrow (Cairo.Context cr, Gdk.Rectangle alloc, Hyena.Data.SortType type)
+        {
+            DrawArrow (cr, alloc, Math.PI / 2.0 * (type == Hyena.Data.SortType.Ascending ? 1 : -1));
+        }
+
+        public abstract void DrawArrow (Cairo.Context cr, Gdk.Rectangle alloc, double rotation);
 
         public void DrawFrame (Cairo.Context cr, Gdk.Rectangle alloc, bool baseColor)
         {
