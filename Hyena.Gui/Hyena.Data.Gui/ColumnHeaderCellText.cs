@@ -36,7 +36,7 @@ namespace Hyena.Data.Gui
 {
     public class ColumnHeaderCellText : ColumnCellText, IHeaderCell
     {
-        public delegate Column DataHandler ();
+        public new delegate Column DataHandler ();
 
         private DataHandler data_handler;
         private bool has_sort;
