@@ -337,6 +337,7 @@ namespace Hyena.Data.Gui
                 return false;
             }
 
+            point.Offset (-list_interaction_alloc.X, -list_interaction_alloc.Y);
             point.Offset (-child.VirtualAllocation.X, -child.VirtualAllocation.Y);
 
             if (evnt_motion != null) {
@@ -370,7 +371,7 @@ namespace Hyena.Data.Gui
 
         private void InvalidateLastIcell ()
         {
-            if (last_icell != null && last_icell.PointerLeaveEvent ()) {
+            if (last_icell != null && last_icell.CursorLeaveEvent ()) {
                 QueueDirtyRegion (last_icell_area);
                 last_icell = null;
                 last_icell_area = Gdk.Rectangle.Zero;
@@ -387,7 +388,7 @@ namespace Hyena.Data.Gui
             int yoffset = VadjustmentValue;
 
             if (last_icell_area != icell_area) {
-                if (last_icell != null && last_icell.PointerLeaveEvent ()) {
+                if (last_icell != null && last_icell.CursorLeaveEvent ()) {
                     QueueDirtyRegion (new Gdk.Rectangle () {
                         X = last_icell_area.X - xoffset,
                         Y = last_icell_area.Y - yoffset,
@@ -456,9 +457,9 @@ namespace Hyena.Data.Gui
 
             // Send the cell a synthesized input event
             if (evnt_motion != null) {
-                return icell.MotionEvent (x, y, evnt_motion);
+                return icell.CursorMotionEvent (new Hyena.Gui.Canvas.Point (x, y));
             } else {
-                return icell.ButtonEvent (x, y, press, evnt_button);
+                return icell.ButtonEvent (new Hyena.Gui.Canvas.Point (x, y), press, evnt_button.Button);
             }
         }
 

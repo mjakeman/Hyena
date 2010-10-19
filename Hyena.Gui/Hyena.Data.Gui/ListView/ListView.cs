@@ -44,6 +44,7 @@ namespace Hyena.Data.Gui
 
             HasTooltip = true;
             QueryTooltip += OnQueryTooltip;
+            DirectionChanged += (o, a) => SetDirection ();
         }
 
         private void OnQueryTooltip (object o, Gtk.QueryTooltipArgs args)

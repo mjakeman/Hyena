@@ -29,6 +29,8 @@
 using System;
 using Gtk;
 
+using Hyena.Gui.Canvas;
+
 namespace Hyena.Data.Gui
 {
     public class ColumnCellCheckBox : ColumnCell, IInteractiveCell, ISizeRequestCell
@@ -39,10 +41,15 @@ namespace Hyena.Data.Gui
         {
         }
 
+        public override Size Measure (Size available)
+        {
+            return new Size (Size + 2 * Xpad, Size + 2 * Ypad);
+        }
+
         public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
         {
-            int cell_width = context.Area.Width - 2 * Xpad;
-            int cell_height = context.Area.Height - 2 * Ypad;
+            int cell_width = (int)cellWidth - 2 * Xpad;
+            int cell_height = (int)cellHeight - 2 * Ypad;
             int x = context.Area.X + xpad + ((cell_width - Size) / 2);
             int y = context.Area.Y + ypad + ((cell_height - Size) / 2);
 
@@ -58,7 +65,7 @@ namespace Hyena.Data.Gui
         private object last_pressed_bound;
         private object last_hover_bound;
 
-        public bool ButtonEvent (int x, int y, bool pressed, Gdk.EventButton evnt)
+        public override bool ButtonEvent (Point press, bool pressed, uint button)
         {
             if (pressed) {
                 last_pressed_bound = BoundObjectParent;
@@ -73,24 +80,29 @@ namespace Hyena.Data.Gui
                 if (handler != null) {
                     handler (BoundObjectParent, EventArgs.Empty);
                 }
+
+                Invalidate ();
             }
 
             return true;
         }
 
-        public bool MotionEvent (int x, int y, Gdk.EventMotion evnt)
+        public override bool CursorMotionEvent (Point motion)
         {
             if (last_hover_bound == BoundObjectParent) {
                 return false;
             }
 
             last_hover_bound = BoundObjectParent;
+            Invalidate ();
             return true;
         }
 
-        public bool PointerLeaveEvent ()
+        public override bool CursorLeaveEvent ()
         {
+            base.CursorLeaveEvent ();
             last_hover_bound = null;
+            Invalidate ();
             return true;
         }
 

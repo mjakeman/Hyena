@@ -31,6 +31,7 @@ using Gtk;
 using Cairo;
 
 using Hyena.Gui;
+using Hyena.Gui.Canvas;
 using Hyena.Gui.Theming;
 using Hyena.Data.Gui.Accessibility;
 
@@ -38,8 +39,6 @@ namespace Hyena.Data.Gui
 {
     public class ColumnCellText : ColumnCell, ISizeRequestCell, ITextCell, ITooltipCell
     {
-        internal const int Spacing = 4;
-
         public delegate string DataHandler ();
 
         private Pango.Weight font_weight = Pango.Weight.Normal;
@@ -54,6 +53,7 @@ namespace Hyena.Data.Gui
 
         public ColumnCellText (string property, bool expand) : base (property, expand)
         {
+            Padding = new Thickness (4, 0);
         }
 
         public override Atk.Object GetAccessible (ICellAccessibleParent parent)
@@ -79,6 +79,25 @@ namespace Hyena.Data.Gui
             RestrictSize = true;
         }
 
+        int? height;
+        public override Size Measure (Size available)
+        {
+            //int min, max;
+            //GetWidthRange (ParentLayout.View.PangoLayout, out min, out max);
+            //
+            if (height == null) {
+                using (var layout = new Pango.Layout (ParentLayout.View.PangoContext)) {
+                    if (layout.FontDescription == null) {
+                        layout.FontDescription = new Pango.FontDescription ();
+                    }
+                    UpdateText (layout, 100, "Woo Mar");
+                    height = TextHeight;
+                }
+            }
+
+            return FixedSize ?? new Size (0, (double)height + Padding.Y);
+        }
+
         public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
         {
             UpdateText (context, cellWidth);
@@ -86,34 +105,37 @@ namespace Hyena.Data.Gui
                 return;
             }
 
-            context.Context.Rectangle (0, 0, cellWidth, cellHeight);
-            context.Context.Clip ();
-            context.Context.MoveTo (Spacing, ((int)cellHeight - text_height) / 2);
+            //context.Context.Rectangle (0, 0, cellWidth, cellHeight);
+            //context.Context.Clip ();
+            context.Context.MoveTo (Padding.Left, ((int)cellHeight - text_height) / 2);
             Cairo.Color color = context.Theme.Colors.GetWidgetColor (
                 context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, state);
-            color.A = context.Opaque ? 1.0 : 0.5;
+            color.A = Alpha ?? (context.Opaque ? 1.0 : 0.5);
             context.Context.Color = color;
 
             PangoCairoHelper.ShowLayout (context.Context, context.Layout);
-            context.Context.ResetClip ();
+            //context.Context.ResetClip ();
         }
 
         public void UpdateText (CellContext context, double cellWidth)
         {
             string text = last_text = GetText (BoundObject);
+            UpdateText (context.Layout, cellWidth, text);
+        }
+
+        public void UpdateText (Pango.Layout layout, double cellWidth, string text)
+        {
             if (String.IsNullOrEmpty (text)) {
                 return;
             }
 
-            // TODO why doesn't Spacing (eg 4 atm) work here instead of 8?  Rendering
-            // seems to be off when changed to Spacing/4
-            context.Layout.Width = (int)((cellWidth - 8) * Pango.Scale.PangoScale);
-            context.Layout.FontDescription.Weight = font_weight;
-            context.Layout.Ellipsize = EllipsizeMode;
-            context.Layout.Alignment = alignment;
-            UpdateLayout (context.Layout, text);
-            context.Layout.GetPixelSize (out text_width, out text_height);
-            is_ellipsized = context.Layout.IsEllipsized;
+            layout.Width = (int)((cellWidth - Padding.X) * Pango.Scale.PangoScale);
+            layout.FontDescription.Weight = font_weight;
+            layout.Ellipsize = EllipsizeMode;
+            layout.Alignment = alignment;
+            UpdateLayout (layout, text);
+            layout.GetPixelSize (out text_width, out text_height);
+            is_ellipsized = layout.IsEllipsized;
         }
 
         private static char[] lfcr = new char[] {'\n', '\r'};
@@ -146,7 +168,7 @@ namespace Hyena.Data.Gui
             if (text_format == null) {
                 return text;
             }
-            return String.Format (text_format, text);
+            return String.Format (text_format, UseMarkup ? GLib.Markup.EscapeText (text) : text);
         }
 
         private bool is_ellipsized = false;
@@ -206,14 +228,14 @@ namespace Hyena.Data.Gui
             if (!String.IsNullOrEmpty (MinString)) {
                 UpdateLayout (layout, MinString);
                 layout.GetPixelSize (out min, out height);
-                min += 2*Spacing;
+                min += (int)Padding.X;
                 //Console.WriteLine ("for {0} got min {1} for {2}", this, min, MinString);
             }
 
             if (!String.IsNullOrEmpty (MaxString)) {
                 UpdateLayout (layout, MaxString);
                 layout.GetPixelSize (out max, out height);
-                max += 2*Spacing;
+                max += (int)Padding.X;
                 //Console.WriteLine ("for {0} got max {1} for {2}", this, max, MaxString);
             }
         }
@@ -228,6 +250,8 @@ namespace Hyena.Data.Gui
             get { return use_markup; }
             set { use_markup = value; }
         }
+
+        public double? Alpha { get; set; }
 
         #endregion
     }

@@ -31,18 +31,13 @@ using System.Reflection;
 using Gtk;
 using Cairo;
 
+using Hyena.Gui.Canvas;
 using Hyena.Data.Gui.Accessibility;
 
 namespace Hyena.Data.Gui
 {
-    public abstract class ColumnCell
+    public abstract class ColumnCell : DataViewChild
     {
-        private bool expand;
-        private string property, sub_property;
-        private PropertyInfo property_info, sub_property_info;
-        private object bound_object;
-        private object bound_object_parent;
-
         public virtual Atk.Object GetAccessible (ICellAccessibleParent parent)
         {
             return new ColumnCellAccessible (BoundObject, this, parent);
@@ -61,98 +56,44 @@ namespace Hyena.Data.Gui
 
         public void BindListItem (object item)
         {
-            if (item == null) {
-                bound_object_parent = null;
-                bound_object = null;
-                return;
-            }
-
-            bound_object_parent = item;
-
-            if (property != null) {
-                EnsurePropertyInfo ();
-                bound_object = property_info.GetValue (bound_object_parent, null);
-
-                if (sub_property != null) {
-                    EnsurePropertyInfo (sub_property, ref sub_property_info, bound_object);
-                    bound_object = sub_property_info.GetValue (bound_object, null);
-                }
-            } else {
-                bound_object = bound_object_parent;
-            }
-        }
-
-        private void EnsurePropertyInfo ()
-        {
-            EnsurePropertyInfo (property, ref property_info, bound_object_parent);
-        }
-
-        private void EnsurePropertyInfo (string name, ref PropertyInfo prop, object obj)
-        {
-            if (prop == null || prop.ReflectedType != obj.GetType ()) {
-                prop = obj.GetType ().GetProperty (name);
-                if (prop == null) {
-                    throw new Exception (String.Format (
-                        "In {0}, type {1} does not have property {2}",
-                        this, obj.GetType (), name
-                    ));
-                }
-            }
+            BindDataItem (item);
         }
 
         public virtual void NotifyThemeChange ()
         {
         }
 
-        protected Type BoundType {
-            get { return bound_object.GetType (); }
-        }
-
-        protected object BoundObject {
-            get { return bound_object; }
-            set {
-                if (property != null) {
-                    EnsurePropertyInfo ();
-                    property_info.SetValue (bound_object_parent, value, null);
-                }
-            }
-        }
-
-        protected object BoundObjectParent {
-            get { return bound_object_parent; }
-        }
-
-        public abstract void Render (CellContext context, StateType state, double cellWidth, double cellHeight);
-
-        public virtual Gdk.Size Measure (Gtk.Widget widget)
+        public virtual Gdk.Size Measure (Widget widget)
         {
             return Gdk.Size.Empty;
         }
 
-        public bool Expand {
-            get { return expand; }
-            set { expand = value; }
+        protected override void RenderCore (CellContext context)
+        {
+            Render (context, context.State, Allocation.Width, Allocation.Height);
         }
 
-        public DataViewLayout ViewLayout { get; set; }
+        public abstract void Render (CellContext context, StateType state, double cellWidth, double cellHeight);
 
-        public string Property {
-            get { return property; }
-            set {
-                property = value;
-                if (value != null) {
-                    int i = value.IndexOf (".");
-                    if (i != -1) {
-                        property = value.Substring (0, i);
-                        SubProperty = value.Substring (i + 1, value.Length - i - 1);
-                    }
-                }
+        public bool Expand { get; set; }
+
+        public Size? FixedSize { get; set; }
+
+        public override Size Measure (Size available)
+        {
+            // FIXME
+            return FixedSize ?? new Size (0, 0);
+        }
+
+        public override void Invalidate ()
+        {
+            if (ParentLayout != null) {
+                base.Invalidate ();
             }
         }
 
-        public string SubProperty {
-            get { return sub_property; }
-            set { sub_property = value; }
+        public override void Arrange ()
+        {
         }
     }
 }

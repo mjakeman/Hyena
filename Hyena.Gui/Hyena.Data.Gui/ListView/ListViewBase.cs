@@ -31,7 +31,7 @@ using Gtk;
 
 namespace Hyena.Data.Gui
 {
-    public class ListViewBase : Widget
+    public abstract class ListViewBase : Widget
     {
         protected ListViewBase (IntPtr ptr) : base (ptr)
         {
@@ -61,5 +61,7 @@ namespace Hyena.Data.Gui
                 Height = (int)Math.Ceiling (region.Height)
             });
         }
+
+        public abstract Pango.Layout PangoLayout { get; }
     }
 }

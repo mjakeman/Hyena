@@ -36,6 +36,8 @@ namespace Hyena.Gui.Canvas
         private double top;
         private double right;
         private double bottom;
+
+        public static readonly Thickness Zero = new Thickness (0);
         
         public Thickness (double thickness) 
             : this (thickness, thickness, thickness, thickness)

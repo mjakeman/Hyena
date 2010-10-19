@@ -52,5 +52,6 @@ namespace Hyena.Data.Gui
         public int ViewRowIndex { get; set; }
         public int ViewColumnIndex { get; set; }
         public int ModelRowIndex { get; set; }
+        public bool IsRtl { get; set; }
     }
 }

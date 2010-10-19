@@ -29,13 +29,28 @@
 using System;
 using System.Reflection;
 
+using Hyena.Gui;
 using Hyena.Gui.Canvas;
+using Hyena.Gui.Theatrics;
 
 namespace Hyena.Data.Gui
 {
     public abstract class DataViewChild : CanvasItem
     {
-        public DataViewLayout ParentLayout { get; set; }
+        private DataViewLayout layout;
+        public DataViewLayout ParentLayout {
+            get {
+                if (layout == null) {
+                    var parent = Parent as DataViewChild;
+                    if (parent != null) {
+                        layout = parent.ParentLayout;
+                    }
+                }
+                return layout;
+            }
+            set { layout = value; }
+        }
+
         public int ModelRowIndex { get; set; }
 
         protected override void OnInvalidate (Rect area)
@@ -43,12 +58,25 @@ namespace Hyena.Data.Gui
             ParentLayout.View.QueueDirtyRegion (area);
         }
 
+        protected Rect TopLevelAllocation {
+            get {
+                var alloc = Allocation;
+                var top = (CanvasItem)this;
+                while (top.Parent != null) {
+                    alloc.Offset (top.Parent.Allocation);
+                    top = top.Parent;
+                }
+
+                return alloc;
+            }
+        }
+
 #region Data Binding
 
         private PropertyInfo property_info;
         private PropertyInfo sub_property_info;
 
-        public void BindDataItem (object item)
+        public virtual void BindDataItem (object item)
         {
             if (item == null) {
                 BoundObjectParent = null;
@@ -130,7 +158,15 @@ namespace Hyena.Data.Gui
         public Thickness Margin { get; set; }
         public Thickness Padding { get; set; }
 
-        public abstract void Render (CellContext context);
+        public void Render (CellContext context)
+        {
+            RenderCore (context);
+            if (HasPrelight && prelight_opacity > 0) {
+                RenderPrelight (context);
+            }
+        }
+
+        protected abstract void RenderCore (CellContext context);
         public abstract void Arrange ();
         public abstract Size Measure (Size available);
 
@@ -140,11 +176,15 @@ namespace Hyena.Data.Gui
 
         public void Invalidate (Rect area)
         {
-            area.Offset (Allocation.X, Allocation.Y);
-            OnInvalidate (area);
+            if (Parent == null) {
+                OnInvalidate (area);
+            } else {
+                area.Offset (Parent.Allocation.X, Parent.Allocation.Y);
+                Parent.Invalidate (area);
+            }
         }
 
-        public void Invalidate ()
+        public virtual void Invalidate ()
         {
             Invalidate (Allocation);
         }
@@ -161,10 +201,54 @@ namespace Hyena.Data.Gui
 
         public virtual void CursorEnterEvent ()
         {
+            if (HasPrelight) {
+                prelight_in = true;
+                prelight_stage.AddOrReset (this);
+            }
         }
 
-        public virtual void CursorLeaveEvent ()
+        public virtual bool CursorLeaveEvent ()
         {
+            if (HasPrelight) {
+                prelight_in = false;
+                prelight_stage.AddOrReset (this);
+            }
+            return false;
+        }
+
+        private static Stage<CanvasItem> prelight_stage = new Stage<CanvasItem> (250);
+        private bool prelight_in;
+        private double prelight_opacity;
+
+        static CanvasItem ()
+        {
+            prelight_stage.ActorStep += actor => {
+                var alpha = actor.Target.prelight_opacity;
+                alpha += actor.Target.prelight_in
+                    ? actor.StepDeltaPercent
+                    : -actor.StepDeltaPercent;
+                actor.Target.prelight_opacity = alpha = Math.Max (0.0, Math.Min (1.0, alpha));
+                actor.Target.Invalidate ();
+                return alpha > 0 && alpha < 1;
+            };
+        }
+
+        public bool HasPrelight { get; set; }
+
+        protected virtual void RenderPrelight (CellContext context)
+        {
+            var cr = context.Context;
+
+            var x = Allocation.Width / 2.0;
+            var y = Allocation.Height / 2.0;
+            var grad = new Cairo.RadialGradient (x, y, 0, x, y, Allocation.Width / 2.0);
+            grad.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.1 * prelight_opacity));
+            grad.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.35 * prelight_opacity));
+            cr.Pattern = grad;
+            CairoExtensions.RoundedRectangle (cr, 0, 0,
+                Allocation.Width, Allocation.Height, context.Theme.Context.Radius);
+            cr.Fill ();
+            grad.Destroy ();
         }
     }
 }

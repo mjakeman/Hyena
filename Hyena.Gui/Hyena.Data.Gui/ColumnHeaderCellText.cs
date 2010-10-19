@@ -66,10 +66,10 @@ namespace Hyena.Data.Gui
             Gdk.Rectangle arrow_alloc = new Gdk.Rectangle ();
             arrow_alloc.Width = (int)(cellHeight / 3.0);
             arrow_alloc.Height = (int)((double)arrow_alloc.Width / 1.6);
-            arrow_alloc.X = (int)cellWidth - arrow_alloc.Width - Spacing;
+            arrow_alloc.X = (int)cellWidth - arrow_alloc.Width - (int)Padding.Left;
             arrow_alloc.Y = ((int)cellHeight - arrow_alloc.Height) / 2;
 
-            double textWidth = arrow_alloc.X - Spacing;
+            double textWidth = arrow_alloc.X - Padding.Left;
             if (textWidth > 0) {
                 base.Render (context, state, textWidth, cellHeight);
             }
@@ -92,7 +92,7 @@ namespace Hyena.Data.Gui
 
         public static int GetArrowWidth (int headerHeight)
         {
-            return (int)(headerHeight / 3.0) + Spacing;
+            return (int)(headerHeight / 3.0) + 4;
         }
     }
 }

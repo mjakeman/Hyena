@@ -30,6 +30,7 @@ using System;
 using Gtk;
 
 using Hyena.Gui;
+using Hyena.Gui.Canvas;
 using Hyena.Gui.Theming;
 
 namespace Hyena.Data.Gui
@@ -47,9 +48,14 @@ namespace Hyena.Data.Gui
             Xpad = 0;
         }
 
+        public override Size Measure (Size available)
+        {
+            return new Size (renderer.Width, renderer.Height);
+        }
+
         public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
         {
-            Gdk.Rectangle area = new Gdk.Rectangle (0, 0, context.Area.Width, context.Area.Height);
+            Gdk.Rectangle area = new Gdk.Rectangle (0, 0, (int)cellWidth, (int)cellHeight);
 
             // FIXME: Compute font height and set to renderer.Size
 
@@ -65,7 +71,7 @@ namespace Hyena.Data.Gui
             actual_area_hack = area;
         }
 
-        public bool ButtonEvent (int x, int y, bool pressed, Gdk.EventButton evnt)
+        public override bool ButtonEvent (Point press, bool pressed, uint button)
         {
             if (ReadOnly) {
                 return false;
@@ -76,21 +82,22 @@ namespace Hyena.Data.Gui
                 return false;
             }
 
-            if (last_pressed_bound == BoundObjectParent) {
-                Value = RatingFromPosition (x);
+            if (last_pressed_bound == BoundObjectParent && last_pressed_bound != null) {
+                Value = RatingFromPosition (press.X);
+                Invalidate ();
                 last_pressed_bound = null;
             }
 
             return true;
         }
 
-        public bool MotionEvent (int x, int y, Gdk.EventMotion evnt)
+        public override bool CursorMotionEvent (Point motion)
         {
             if (ReadOnly) {
                 return false;
             }
 
-            int value = RatingFromPosition (x);
+            int value = RatingFromPosition (motion.X);
 
             if (hover_bound == BoundObjectParent && value == hover_value) {
                 return false;
@@ -98,13 +105,16 @@ namespace Hyena.Data.Gui
 
             hover_bound = BoundObjectParent;
             hover_value = value;
+            Invalidate ();
             return true;
         }
 
-        public bool PointerLeaveEvent ()
+        public override bool CursorLeaveEvent ()
         {
+            base.CursorLeaveEvent ();
             hover_bound = null;
             hover_value = MinRating - 1;
+            Invalidate ();
             return true;
         }
 

@@ -156,7 +156,7 @@ namespace Hyena.Data.Gui
 
                 // Pretty sure the 3* is needed here only b/c of the " - 8" in ColumnCellText;
                 // See TODO there
-                w += 3 * ColumnHeaderCellText.Spacing;
+                w += 3 * (int)header_cell.Padding.Left;
                 if (this is ISortableColumn) {
                     w += ColumnHeaderCellText.GetArrowWidth (headerHeight);
                 }

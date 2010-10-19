@@ -47,6 +47,10 @@ namespace Hyena.Data.Gui
         private CellContext cell_context;
         private Pango.Layout pango_layout;
 
+        public override Pango.Layout PangoLayout {
+            get { return cell_context.Layout; }
+        }
+
         private List<int> selected_rows = new List<int> ();
 
         private Theme theme;
@@ -95,6 +99,19 @@ namespace Hyena.Data.Gui
             cell_context.Theme = theme;
             cell_context.Widget = this;
             cell_context.Drawable = drawable;
+            SetDirection ();
+        }
+
+        private void SetDirection ()
+        {
+            var dir = Direction;
+            if (dir == Gtk.TextDirection.None) {
+                dir = Gtk.Widget.DefaultDirection;
+            }
+
+            if (cell_context != null) {
+                cell_context.IsRtl = dir == Gtk.TextDirection.Rtl;
+            }
         }
 
         protected override bool OnExposeEvent (EventExpose evnt)

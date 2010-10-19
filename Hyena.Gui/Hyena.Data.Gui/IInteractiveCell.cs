@@ -27,14 +27,13 @@
 //
 
 using System;
-using Gdk;
 
 namespace Hyena.Data.Gui
 {
     public interface IInteractiveCell
     {
-        bool ButtonEvent (int x, int y, bool pressed, Gdk.EventButton evnt);
-        bool MotionEvent (int x, int y, Gdk.EventMotion evnt);
-        bool PointerLeaveEvent ();
+        bool ButtonEvent (Hyena.Gui.Canvas.Point cursor,  bool pressed, uint button);
+        bool CursorMotionEvent (Hyena.Gui.Canvas.Point cursor);
+        bool CursorLeaveEvent ();
     }
 }
