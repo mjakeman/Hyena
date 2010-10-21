@@ -50,10 +50,12 @@ namespace Hyena.Data.Gui
 
         public override Size Measure (Size available)
         {
-            return new Size (renderer.Width, renderer.Height);
+            Width = renderer.Width;
+            Height = renderer.Height;
+            return DesiredSize = new Size (Width + Margin.X, Height + Margin.Y);
         }
 
-        public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
+        public override void Render (CellContext context, double cellWidth, double cellHeight)
         {
             Gdk.Rectangle area = new Gdk.Rectangle (0, 0, (int)cellWidth, (int)cellHeight);
 
@@ -61,7 +63,7 @@ namespace Hyena.Data.Gui
 
             renderer.Value = Value;
             bool is_hovering = hover_bound == BoundObjectParent && hover_bound != null;
-            renderer.Render (context.Context, area, context.Theme.Colors.GetWidgetColor (GtkColorClass.Text, state),
+            renderer.Render (context.Context, area, context.Theme.Colors.GetWidgetColor (GtkColorClass.Text, context.State),
                 is_hovering, is_hovering, hover_value, 0.8, 0.45, 0.35);
 
             // FIXME: Something is hosed in the view when computing cell dimensions
@@ -84,7 +86,7 @@ namespace Hyena.Data.Gui
 
             if (last_pressed_bound == BoundObjectParent && last_pressed_bound != null) {
                 Value = RatingFromPosition (press.X);
-                Invalidate ();
+                InvalidateRender ();
                 last_pressed_bound = null;
             }
 
@@ -98,14 +100,13 @@ namespace Hyena.Data.Gui
             }
 
             int value = RatingFromPosition (motion.X);
-
             if (hover_bound == BoundObjectParent && value == hover_value) {
                 return false;
             }
 
             hover_bound = BoundObjectParent;
             hover_value = value;
-            Invalidate ();
+            InvalidateRender ();
             return true;
         }
 
@@ -114,7 +115,7 @@ namespace Hyena.Data.Gui
             base.CursorLeaveEvent ();
             hover_bound = null;
             hover_value = MinRating - 1;
-            Invalidate ();
+            InvalidateRender ();
             return true;
         }
 

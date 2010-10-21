@@ -36,6 +36,7 @@ SOURCES =  \
 	Hyena.Data/MemoryListModel.cs \
 	Hyena.Data/ModelCache.cs \
 	Hyena.Data/ModelSelection.cs \
+	Hyena.Data/ObjectBinder.cs \
 	Hyena.Data/PropertyStore.cs \
 	Hyena.Data/SortType.cs \
 	Hyena.Downloader/Buffer.cs \

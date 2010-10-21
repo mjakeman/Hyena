@@ -20,8 +20,6 @@ SOURCES =  \
 	Hyena.Data.Gui/ColumnCellText.cs \
 	Hyena.Data.Gui/ColumnController.cs \
 	Hyena.Data.Gui/ColumnHeaderCellText.cs \
-	Hyena.Data.Gui/DataViewChild.cs \
-	Hyena.Data.Gui/DataViewChildBox.cs \
 	Hyena.Data.Gui/DataViewLayout.cs \
 	Hyena.Data.Gui/DataViewLayoutGrid.cs \
 	Hyena.Data.Gui/IHeaderCell.cs \

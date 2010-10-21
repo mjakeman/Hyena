@@ -75,7 +75,7 @@ namespace Hyena.Data.Gui
         }
 
         public Column (ColumnCell headerCell, string title, ColumnCell cell, double width, bool visible, int minWidth, int maxWidth)
-            : base (cell.Property, title, width, visible)
+            : base (cell.ObjectBinder.Property, title, width, visible)
         {
             min_width = minWidth;
             max_width = maxWidth;
@@ -195,7 +195,7 @@ namespace Hyena.Data.Gui
         public string Id {
             get {
                 if (id == null) {
-                    id = GetCell (0).SubProperty ?? GetCell (0).Property;
+                    id = GetCell (0).ObjectBinder.SubProperty ?? GetCell (0).ObjectBinder.Property;
                     id = StringUtil.CamelCaseToUnderCase (id);
                 }
                 return id;

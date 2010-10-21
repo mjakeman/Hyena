@@ -238,7 +238,8 @@ namespace Hyena.Data.Gui
                 cairo_context.Save ();
                 cairo_context.Translate (area.X, area.Y);
                 cell_context.Area = area;
-                cell.Render (cell_context, StateType.Normal, area.Width, area.Height);
+                cell_context.State = StateType.Normal;
+                cell.Render (cell_context, area.Width, area.Height);
                 cairo_context.Restore ();
             }
 
@@ -444,7 +445,8 @@ namespace Hyena.Data.Gui
             cairo_context.Translate (area.X, area.Y);
             cell_context.Area = area;
             cell_context.Opaque = opaque;
-            cell.Render (cell_context, dragging ? StateType.Normal : state, area.Width, area.Height);
+            cell_context.State = dragging ? StateType.Normal : state;
+            cell.Render (cell_context, area.Width, area.Height);
             cairo_context.Restore ();
 
             AccessibleCellRedrawn (column_index, row_index);
@@ -501,12 +503,12 @@ namespace Hyena.Data.Gui
                 var layout_child = ViewLayout[layout_index];
                 var child_allocation = layout_child.Allocation;
 
-                if (!child_allocation.IntersectsWith (clip) || layout_child.ModelRowIndex >= Model.Count) {
+                if (!child_allocation.IntersectsWith (clip) || ViewLayout.GetModelIndex (layout_child) >= Model.Count) {
                     continue;
                 }
 
-                if (Selection != null && Selection.Contains (layout_child.ModelRowIndex)) {
-                    selected_rows.Add (layout_child.ModelRowIndex);
+                if (Selection != null && Selection.Contains (ViewLayout.GetModelIndex (layout_child))) {
+                    selected_rows.Add (ViewLayout.GetModelIndex (layout_child));
 
                     var selection_color = Theme.Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected);
                     if (!HasFocus || HeaderFocused) {
@@ -523,12 +525,12 @@ namespace Hyena.Data.Gui
                     cell_context.State = StateType.Normal;
                 }
 
-                cairo_context.Save ();
-                cairo_context.Translate (child_allocation.X, child_allocation.Y);
-                cairo_context.Rectangle (0, 0, child_allocation.Width, child_allocation.Height);
-                cairo_context.Clip ();
+                //cairo_context.Save ();
+                //cairo_context.Translate (child_allocation.X, child_allocation.Y);
+                //cairo_context.Rectangle (0, 0, child_allocation.Width, child_allocation.Height);
+                //cairo_context.Clip ();
                 layout_child.Render (cell_context);
-                cairo_context.Restore ();
+                //cairo_context.Restore ();
             }
 
             cairo_context.ResetClip ();

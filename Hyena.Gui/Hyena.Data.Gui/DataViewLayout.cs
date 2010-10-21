@@ -36,13 +36,25 @@ namespace Hyena.Data.Gui
 {
     public abstract class DataViewLayout
     {
-        private List<DataViewChild> children = new List<DataViewChild> ();
-        protected List<DataViewChild> Children {
+        private List<CanvasItem> children = new List<CanvasItem> ();
+        protected List<CanvasItem> Children {
             get { return children; }
         }
 
+        private Dictionary<CanvasItem, int> model_indices = new Dictionary<CanvasItem, int> ();
+
         public IListModel Model { get; set; }
-        public ListViewBase View { get; set; }
+
+        protected CanvasManager CanvasManager;
+
+        private ListViewBase view;
+        public ListViewBase View {
+            get { return view; }
+            set {
+                view = value;
+                CanvasManager = new CanvasManager (view);
+            }
+        }
 
         public Rect ActualAllocation { get; protected set; }
         public Size VirtualSize { get; protected set; }
@@ -54,7 +66,11 @@ namespace Hyena.Data.Gui
             get { return Children.Count; }
         }
 
-        public DataViewChild this[int index] {
+        public DataViewLayout ()
+        {
+        }
+
+        public CanvasItem this[int index] {
             get { return Children[index]; }
         }
 
@@ -81,21 +97,35 @@ namespace Hyena.Data.Gui
             InvalidateChildLayout ();
         }
 
-        public virtual DataViewChild FindChildAtPoint (Point point)
+        public virtual CanvasItem FindChildAtPoint (Point point)
         {
             return Children.Find (child => child.Allocation.Contains (
                 ActualAllocation.X + point.X, ActualAllocation.Y + point.Y));
         }
 
-        public virtual DataViewChild FindChildAtModelRowIndex (int modelRowIndex)
+        public virtual CanvasItem FindChildAtModelRowIndex (int modelRowIndex)
         {
-            return Children.Find (child => child.ModelRowIndex == modelRowIndex);
+            return Children.Find (child => GetModelIndex (child) == modelRowIndex);
         }
 
         protected abstract void InvalidateChildSize ();
         protected abstract void InvalidateVirtualSize ();
         protected abstract void InvalidateChildCollection ();
-        protected abstract void InvalidateChildLayout ();
+        protected virtual void InvalidateChildLayout ()
+        {
+            model_indices.Clear ();
+        }
+
+        protected void SetModelIndex (CanvasItem item, int index)
+        {
+            model_indices[item] = index;
+        }
+
+        public int GetModelIndex (CanvasItem item)
+        {
+            int i;
+            return model_indices.TryGetValue (item, out i) ? i : -1;
+        }
 
         protected Rect GetChildVirtualAllocation (Rect childAllocation)
         {

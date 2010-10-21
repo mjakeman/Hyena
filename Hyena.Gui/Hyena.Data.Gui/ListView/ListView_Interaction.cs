@@ -308,7 +308,7 @@ namespace Hyena.Data.Gui
 
 #region DataViewLayout Interaction Events
 
-        private DataViewChild last_layout_child;
+        private CanvasItem last_layout_child;
 
         private bool LayoutChildHandlesEvent (Gdk.Event evnt, bool press)
         {
@@ -356,7 +356,7 @@ namespace Hyena.Data.Gui
             return handled;
         }
 
-        private DataViewChild GetLayoutChildAt (Point point)
+        private CanvasItem GetLayoutChildAt (Point point)
         {
             point.Offset (-list_interaction_alloc.X, -list_interaction_alloc.Y);
             return ViewLayout.FindChildAtPoint (point);
@@ -864,7 +864,7 @@ namespace Hyena.Data.Gui
         {
             if (ViewLayout != null) {
                 var child = ViewLayout.FindChildAtPoint (new Point (x, y));
-                return child == null ? -1 : child.ModelRowIndex;
+                return child == null ? -1 : ViewLayout.GetModelIndex (child);
             } else {
                 if (y < 0 || ChildSize.Height <= 0) {
                     return -1;

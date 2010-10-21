@@ -36,7 +36,7 @@ using Hyena.Data.Gui.Accessibility;
 
 namespace Hyena.Data.Gui
 {
-    public abstract class ColumnCell : DataViewChild
+    public abstract class ColumnCell : CanvasItem
     {
         public virtual Atk.Object GetAccessible (ICellAccessibleParent parent)
         {
@@ -50,13 +50,21 @@ namespace Hyena.Data.Gui
 
         public ColumnCell (string property, bool expand)
         {
-            Property = property;
+            Binder = ObjectBinder = new ObjectBinder () { Property = property };
             Expand = expand;
         }
 
+        public ObjectBinder ObjectBinder { get; private set; }
+
+        public object BoundObjectParent {
+            get { return ObjectBinder.BoundObjectParent; }
+        }
+
+        //public string Property { get; private set; }
+
         public void BindListItem (object item)
         {
-            BindDataItem (item);
+            Bind (item);
         }
 
         public virtual void NotifyThemeChange ()
@@ -68,29 +76,16 @@ namespace Hyena.Data.Gui
             return Gdk.Size.Empty;
         }
 
-        protected override void RenderCore (CellContext context)
+        protected override void ClippedRender (CellContext context)
         {
-            Render (context, context.State, Allocation.Width, Allocation.Height);
+            Render (context, ContentAllocation.Width, ContentAllocation.Height);
         }
 
-        public abstract void Render (CellContext context, StateType state, double cellWidth, double cellHeight);
+        public abstract void Render (CellContext context, double cellWidth, double cellHeight);
 
         public bool Expand { get; set; }
 
         public Size? FixedSize { get; set; }
-
-        public override Size Measure (Size available)
-        {
-            // FIXME
-            return FixedSize ?? new Size (0, 0);
-        }
-
-        public override void Invalidate ()
-        {
-            if (ParentLayout != null) {
-                base.Invalidate ();
-            }
-        }
 
         public override void Arrange ()
         {

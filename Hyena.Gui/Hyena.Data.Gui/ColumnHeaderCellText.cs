@@ -52,14 +52,14 @@ namespace Hyena.Data.Gui
             return new  ColumnHeaderCellTextAccessible (BoundObject, this, parent);
         }
 
-        public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
+        public override void Render (CellContext context, double cellWidth, double cellHeight)
         {
             if (data_handler == null) {
                 return;
             }
 
             if (!has_sort) {
-                base.Render (context, state, cellWidth, cellHeight);
+                base.Render (context, cellWidth, cellHeight);
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace Hyena.Data.Gui
 
             double textWidth = arrow_alloc.X - Padding.Left;
             if (textWidth > 0) {
-                base.Render (context, state, textWidth, cellHeight);
+                base.Render (context, textWidth, cellHeight);
             }
 
             SortType sort_type = ((ISortableColumn)data_handler ()).SortType;

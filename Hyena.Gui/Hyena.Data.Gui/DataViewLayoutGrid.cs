@@ -38,7 +38,7 @@ namespace Hyena.Data.Gui
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
-        public Func<DataViewChild> ChildAllocator { get; set; }
+        public Func<CanvasItem> ChildAllocator { get; set; }
         public event EventHandler<EventArgs<int>> ChildCountChanged;
 
         protected override void InvalidateChildSize ()
@@ -78,6 +78,8 @@ namespace Hyena.Data.Gui
 
         protected override void InvalidateChildLayout ()
         {
+            base.InvalidateChildLayout ();
+
             if (ChildSize.Width <= 0 || ChildSize.Height <= 0) {
                 // FIXME: empty/reset all child slots here?
                 return;
@@ -109,9 +111,9 @@ namespace Hyena.Data.Gui
                 var child = Children[layout_child_index];
                 child.Allocation = child_allocation;
                 child.VirtualAllocation = GetChildVirtualAllocation (child_allocation);
-                child.ModelRowIndex = model_row_index;
+                SetModelIndex (child, model_row_index);
                 if (Model != null) {
-                    child.BindDataItem (Model.GetItem (model_row_index));
+                    child.Bind (Model.GetItem (model_row_index));
                 }
                 child.Measure (ChildSize); // FIXME: Should not do this here...
                 child.Arrange ();
@@ -131,14 +133,15 @@ namespace Hyena.Data.Gui
             }
         }
 
-        protected virtual DataViewChild CreateChild ()
+        protected virtual CanvasItem CreateChild ()
         {
             if (ChildAllocator == null) {
                 throw new InvalidOperationException ("ChildAllocator is unset");
             }
 
             var child = ChildAllocator ();
-            child.ParentLayout = this;
+            child.Manager = CanvasManager;
+            //child.ParentLayout = this;
             return child;
         }
 

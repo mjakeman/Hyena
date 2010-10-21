@@ -54,6 +54,7 @@ namespace Hyena.Data.Gui
         public ColumnCellText (string property, bool expand) : base (property, expand)
         {
             Padding = new Thickness (4, 0);
+            SingleParagraphMode = true;
         }
 
         public override Atk.Object GetAccessible (ICellAccessibleParent parent)
@@ -79,13 +80,13 @@ namespace Hyena.Data.Gui
             RestrictSize = true;
         }
 
-        int? height;
-        public override Size Measure (Size available)
-        {
+        //int? height;
+        //public override Size Measure (Size available)
+        //{
             //int min, max;
             //GetWidthRange (ParentLayout.View.PangoLayout, out min, out max);
             //
-            if (height == null) {
+            /*if (height == null) {
                 using (var layout = new Pango.Layout (ParentLayout.View.PangoContext)) {
                     if (layout.FontDescription == null) {
                         layout.FontDescription = new Pango.FontDescription ();
@@ -93,12 +94,12 @@ namespace Hyena.Data.Gui
                     UpdateText (layout, 100, "Woo Mar");
                     height = TextHeight;
                 }
-            }
+            }*/
 
-            return FixedSize ?? new Size (0, (double)height + Padding.Y);
-        }
+            //return FixedSize ?? new Size (0, (double)height + Padding.Y);
+        //}
 
-        public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
+        public override void Render (CellContext context, double cellWidth, double cellHeight)
         {
             UpdateText (context, cellWidth);
             if (String.IsNullOrEmpty (last_text)) {
@@ -109,7 +110,7 @@ namespace Hyena.Data.Gui
             //context.Context.Clip ();
             context.Context.MoveTo (Padding.Left, ((int)cellHeight - text_height) / 2);
             Cairo.Color color = context.Theme.Colors.GetWidgetColor (
-                context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, state);
+                context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, context.State);
             color.A = Alpha ?? (context.Opaque ? 1.0 : 0.5);
             context.Context.Color = color;
 
@@ -133,6 +134,7 @@ namespace Hyena.Data.Gui
             layout.FontDescription.Weight = font_weight;
             layout.Ellipsize = EllipsizeMode;
             layout.Alignment = alignment;
+            layout.SingleParagraphMode = SingleParagraphMode;
             UpdateLayout (layout, text);
             layout.GetPixelSize (out text_width, out text_height);
             is_ellipsized = layout.IsEllipsized;
@@ -142,7 +144,7 @@ namespace Hyena.Data.Gui
         private void UpdateLayout (Pango.Layout layout, string text)
         {
             string final_text = GetFormattedText (text);
-            if (final_text.IndexOfAny (lfcr) >= 0) {
+            if (SingleParagraphMode && final_text.IndexOfAny (lfcr) >= 0) {
                 final_text = final_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
             }
             if (use_markup) {
@@ -158,9 +160,15 @@ namespace Hyena.Data.Gui
             return IsEllipsized ? GLib.Markup.EscapeText (Text) : null;
         }
 
+        public Func<object, string> TextGenerator { get; set; }
+
         protected virtual string GetText (object obj)
         {
-            return obj == null ? String.Empty : obj.ToString ();
+            if (TextGenerator != null) {
+                return TextGenerator (obj);
+            } else {
+                return obj == null ? String.Empty : obj.ToString ();
+            }
         }
 
         private string GetFormattedText (string text)
@@ -202,6 +210,8 @@ namespace Hyena.Data.Gui
             get { return font_weight; }
             set { font_weight = value; }
         }
+
+        public bool SingleParagraphMode { get; set; }
 
         public virtual Pango.EllipsizeMode EllipsizeMode {
             get { return ellipsize_mode; }

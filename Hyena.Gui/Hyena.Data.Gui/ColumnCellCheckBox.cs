@@ -43,21 +43,23 @@ namespace Hyena.Data.Gui
 
         public override Size Measure (Size available)
         {
-            return new Size (Size + 2 * Xpad, Size + 2 * Ypad);
+            Width = Size + 2 * Xpad;
+            Height = Size + 2 * Ypad;
+            return DesiredSize = new Size (Width + Margin.X, Height + Margin.Y);
         }
 
-        public override void Render (CellContext context, StateType state, double cellWidth, double cellHeight)
+        public override void Render (CellContext context, double cellWidth, double cellHeight)
         {
             int cell_width = (int)cellWidth - 2 * Xpad;
             int cell_height = (int)cellHeight - 2 * Ypad;
             int x = context.Area.X + xpad + ((cell_width - Size) / 2);
             int y = context.Area.Y + ypad + ((cell_height - Size) / 2);
 
-            if (state == StateType.Normal && last_hover_bound == BoundObjectParent) {
-                state = StateType.Prelight;
+            if (context.State == StateType.Normal && last_hover_bound == BoundObjectParent) {
+                context.State = StateType.Prelight;
             }
 
-            Style.PaintCheck (context.Widget.Style, context.Drawable, state,
+            Style.PaintCheck (context.Widget.Style, context.Drawable, context.State,
                 Value ? ShadowType.In : ShadowType.Out,
                 context.Clip, context.Widget, "cellcheck", x, y, Size, Size);
         }
@@ -81,7 +83,7 @@ namespace Hyena.Data.Gui
                     handler (BoundObjectParent, EventArgs.Empty);
                 }
 
-                Invalidate ();
+                InvalidateRender ();
             }
 
             return true;
@@ -94,7 +96,7 @@ namespace Hyena.Data.Gui
             }
 
             last_hover_bound = BoundObjectParent;
-            Invalidate ();
+            InvalidateRender ();
             return true;
         }
 
@@ -102,7 +104,7 @@ namespace Hyena.Data.Gui
         {
             base.CursorLeaveEvent ();
             last_hover_bound = null;
-            Invalidate ();
+            InvalidateRender ();
             return true;
         }
 
