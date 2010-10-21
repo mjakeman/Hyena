@@ -78,7 +78,8 @@ namespace Hyena.Gui.Canvas
             layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * available.Width);
             layout.Wrap = GetPangoWrapMode (wrap);
             layout.FontDescription.Weight = GetPangoFontWeight (FontWeight);
-            layout.SetText (Text);
+            layout.SingleParagraphMode = wrap == TextWrap.None;
+            UpdateLayout (layout, Text);
             layout.GetPixelSize (out text_w, out text_h);
 
             double width = text_w;
@@ -99,6 +100,29 @@ namespace Hyena.Gui.Canvas
             }
 
             return DesiredSize;
+        }
+
+        private static char[] lfcr = new char[] {'\n', '\r'};
+        private void UpdateLayout (Pango.Layout layout, string text)
+        {
+            string final_text = GetFormattedText (text);
+            if (TextWrap == TextWrap.None && final_text.IndexOfAny (lfcr) >= 0) {
+                final_text = final_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+            }
+
+            if (UseMarkup) {
+                layout.SetMarkup (final_text);
+            } else {
+                layout.SetText (final_text);
+            }
+        }
+
+        private string GetFormattedText (string text)
+        {
+            if (TextFormat == null) {
+                return text;
+            }
+            return String.Format (TextFormat, UseMarkup ? GLib.Markup.EscapeText (text) : text);
         }
 
         public override void Arrange ()
@@ -227,9 +251,21 @@ namespace Hyena.Gui.Canvas
             get { return invalidation_rect; }
         }
 
+        public override void Bind (object o)
+        {
+            base.Bind (o);
+            var so = BoundObject;
+            Text = so == null ? "" : so.ToString ();
+        }
+
         public string Text {
             get { return GetValue<string> ("Text"); }
             set { SetValue<string> ("Text", value); }
+        }
+
+        public string TextFormat {
+            get { return GetValue<string> ("TextFormat"); }
+            set { SetValue<string> ("TextFormat", value); }
         }
 
         public FontWeight FontWeight {
@@ -245,6 +281,15 @@ namespace Hyena.Gui.Canvas
         public bool ForceSize {
             get { return GetValue<bool> ("ForceSize"); }
             set { SetValue<bool> ("ForceSize", value); }
+        }
+
+        public virtual Pango.EllipsizeMode EllipsizeMode { get; set; }
+
+        public Func<object, string> TextGenerator { get; set; }
+
+        public bool UseMarkup {
+            get { return GetValue<bool> ("UseMarkup"); }
+            set { SetValue<bool> ("UseMarkup", value); }
         }
 
         public double HorizontalAlignment {

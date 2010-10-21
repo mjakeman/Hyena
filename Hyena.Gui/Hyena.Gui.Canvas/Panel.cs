@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 
 namespace Hyena.Gui.Canvas
 {
@@ -80,17 +81,35 @@ namespace Hyena.Gui.Canvas
             }
         }
 
-        protected override void ClippedRender (Cairo.Context cr)
+        protected override void ClippedRender (Hyena.Data.Gui.CellContext context)
         {
             foreach (var child in Children) {
                 if (child.Visible) {
-                    child.Render (cr);
+                    child.Render (context);
                 }
             }
         }
 
+        public override void Bind (object o)
+        {
+            foreach (var child in Children) {
+                child.Bind (o);
+            }
+        }
+
+        protected CanvasItem FindChildAt (Point pt, bool grabHasPriority)
+        {
+            return FindChildAt (pt.X, pt.Y, grabHasPriority);
+        }
+
         protected CanvasItem FindChildAt (double x, double y, bool grabHasPriority)
         {
+            if (grabHasPriority) {
+                var child = Children.FirstOrDefault (c => c.IsPointerGrabbed);
+                if (child != null)
+                    return child;
+            }
+
             foreach (var child in Children) {
                 if (child.IsPointerGrabbed || (child.Visible && child.Allocation.Contains (x, y))) {
                     return child;
@@ -100,41 +119,21 @@ namespace Hyena.Gui.Canvas
             return null;
         }
 
-        protected delegate void CanvasItemHandler (CanvasItem item);
-
-        protected void WithPointerGrabChild (CanvasItemHandler handler)
+        public override bool ButtonEvent (Point cursor, bool pressed, uint button)
         {
-            WithChildAt (-1, -1, true, handler);
+            var child = FindChildAt (cursor, true);
+            return child == null ? false : child.ButtonEvent (ChildCoord (child, cursor), pressed, button);
         }
 
-        protected void WithChildAt (double x, double y, CanvasItemHandler handler)
+        public override bool CursorMotionEvent (Point cursor)
         {
-            WithChildAt (x, y, true, handler);
+            var child = FindChildAt (cursor, true);
+            return child == null ? false : child.CursorMotionEvent (ChildCoord (child, cursor));
         }
 
-        protected void WithChildAt (double x, double y, bool grabHasPriority, CanvasItemHandler handler)
+        private Point ChildCoord (CanvasItem item, Point pt)
         {
-            CanvasItem child = FindChildAt (x, y, grabHasPriority);
-            if (child != null) {
-                handler (child);
-            }
-        }
-
-        public override void ButtonPress (double x, double y, uint button)
-        {
-            WithChildAt (x, y, (item) => item.ButtonPress (
-                x - item.Allocation.X, y - item.Allocation.Y, button));
-        }
-
-        public override void ButtonRelease ()
-        {
-            WithPointerGrabChild ((item) => item.ButtonRelease ());
-        }
-
-        public override void PointerMotion (double x, double y)
-        {
-            WithChildAt (x, y, (item) => item.PointerMotion (
-                x - item.Allocation.X, y - item.Allocation.Y));
+            return new Point (pt.X - item.Allocation.X, pt.Y - item.Allocation.Y);
         }
 
         public override bool IsPointerGrabbed {

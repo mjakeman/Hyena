@@ -32,40 +32,7 @@ using Hyena.Gui.Theming;
 
 namespace Hyena.Gui.Canvas
 {
-    public class FpsCalculator
-    {
-        private DateTime last_update;
-        private TimeSpan update_interval;
-        private int frame_count;
-        private double fps;
-
-        public FpsCalculator ()
-        {
-            update_interval = TimeSpan.FromSeconds (0.5);
-        }
-
-        public bool Update ()
-        {
-            bool updated = false;
-            DateTime current_time = DateTime.Now;
-            frame_count++;
-
-            if (current_time - last_update >= update_interval) {
-                fps = (double)frame_count / (current_time - last_update).TotalSeconds;
-                frame_count = 0;
-                updated = true;
-                last_update = current_time;
-            }
-
-            return updated;
-        }
-
-        public double FramesPerSecond {
-            get { return fps; }
-        }
-    }
-
-    public class CanvasHost : Widget
+    public class CanvasHost : Widget, ICanvasHost
     {
         private Gdk.Window event_window;
         private CanvasItem canvas_child;
@@ -73,6 +40,7 @@ namespace Hyena.Gui.Canvas
         private CanvasManager manager;
         private bool debug = false;
         private FpsCalculator fps = new FpsCalculator ();
+        private Hyena.Data.Gui.CellContext context = new Hyena.Data.Gui.CellContext ();
 
         public CanvasHost ()
         {
@@ -170,13 +138,14 @@ namespace Hyena.Gui.Canvas
             }
 
             Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
+            context.Context = cr;
 
             foreach (Gdk.Rectangle damage in evnt.Region.GetRectangles ()) {
                 cr.Rectangle (damage.X, damage.Y, damage.Width, damage.Height);
                 cr.Clip ();
 
                 cr.Translate (Allocation.X, Allocation.Y);
-                canvas_child.Render (cr);
+                canvas_child.Render (context);
                 cr.Translate (-Allocation.X, -Allocation.Y);
 
                 if (Debug) {
@@ -258,18 +227,18 @@ namespace Hyena.Gui.Canvas
             base.OnStyleSet (old_style);
         }
 
-        protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+        protected override bool OnButtonPressEvent (Gdk.EventButton press)
         {
             if (canvas_child != null) {
-                canvas_child.ButtonPress (evnt.X, evnt.Y, evnt.Button);
+                canvas_child.ButtonEvent (new Point (press.X, press.Y), true, press.Button);
             }
             return true;
         }
 
-        protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+        protected override bool OnButtonReleaseEvent (Gdk.EventButton press)
         {
             if (canvas_child != null) {
-                canvas_child.ButtonRelease ();
+                canvas_child.ButtonEvent (new Point (press.X, press.Y), false, press.Button);
             }
             return true;
         }
@@ -277,7 +246,7 @@ namespace Hyena.Gui.Canvas
         protected override bool OnMotionNotifyEvent (EventMotion evnt)
         {
             if (canvas_child != null) {
-                canvas_child.PointerMotion (evnt.X, evnt.Y);
+                canvas_child.CursorMotionEvent (new Point (evnt.X, evnt.Y));
             }
             return true;
         }

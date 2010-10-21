@@ -44,12 +44,23 @@ namespace Hyena.Gui.Canvas
         public event EventHandler<EventArgs> SizeChanged;
         public event EventHandler<EventArgs> LayoutUpdated;
 
+        private class MemoryDataBinder : Hyena.Data.IDataBinder
+        {
+            public void Bind (object o)
+            {
+                BoundObject = o;
+            }
+
+            public object BoundObject { get; set; }
+        }
+
         public CanvasItem ()
         {
             InstallProperty<double> ("Opacity", 1.0);
             InstallProperty<double> ("Width", Double.NaN);
             InstallProperty<double> ("Height", Double.NaN);
             InstallProperty<Thickness> ("Margin", new Thickness (0));
+            InstallProperty<Thickness> ("Padding", new Thickness (0));
             InstallProperty<Brush> ("Foreground", Brush.Black);
             InstallProperty<Brush> ("Background", Brush.White);
             InstallProperty<MarginStyle> ("MarginStyle", MarginStyle.None);
@@ -76,12 +87,48 @@ namespace Hyena.Gui.Canvas
             InvalidateRender (InvalidationRect);
         }
 
+        public void Invalidate (Rect area)
+        {
+            InvalidateRender (area);
+        }
+
         protected void InvalidateRender (Rect area)
+        {
+            if (Parent == null) {
+                OnInvalidate (area);
+            } else {
+                var alloc = Parent.ContentAllocation;
+                area.Offset (alloc.X, alloc.Y);
+                Parent.Invalidate (area);
+            }
+        }
+
+        private void OnInvalidate (Rect area)
         {
             CanvasItem root = RootAncestor;
             if (root != null && root.Manager != null) {
                 root.Manager.QueueRender (this, area);
+            } else {
+                Hyena.Log.WarningFormat ("Asked to invalidate {0} for {1} but no CanvasManager!", area, this);
             }
+        }
+
+        private Hyena.Data.IDataBinder binder;
+        public Hyena.Data.IDataBinder Binder {
+            get {
+                return binder ?? (binder = new MemoryDataBinder ());
+            }
+            set { binder = value; }
+        }
+
+        public virtual void Bind (object o)
+        {
+            Binder.Bind (o);
+        }
+
+        protected object BoundObject {
+            get { return Binder.BoundObject; }
+            set { Binder.BoundObject = value; }
         }
 
         public virtual void Arrange ()
@@ -102,8 +149,9 @@ namespace Hyena.Gui.Canvas
             );
         }
 
-        public virtual void Render (Cairo.Context cr)
+        public void Render (Hyena.Data.Gui.CellContext context)
         {
+            var cr = context.Context;
             double opacity = Opacity;
 
             if (ContentAllocation.Width <= 0 || ContentAllocation.Height <= 0 || opacity <= 0) {
@@ -128,7 +176,8 @@ namespace Hyena.Gui.Canvas
             }
 
             cr.Antialias = Cairo.Antialias.Default;
-            ClippedRender (cr);
+
+            ClippedRender (context);
 
             if (opacity < 1.0) {
                 cr.PopGroupToSource ();
@@ -140,6 +189,11 @@ namespace Hyena.Gui.Canvas
 
         protected virtual void ClippedRender (Cairo.Context cr)
         {
+        }
+
+        protected virtual void ClippedRender (Hyena.Data.Gui.CellContext context)
+        {
+            ClippedRender (context.Context);
         }
 
         protected virtual void OnSizeChanged ()
@@ -165,8 +219,8 @@ namespace Hyena.Gui.Canvas
 
         public CanvasItem RootAncestor {
             get {
-                CanvasItem root = Parent ?? this;
-                while (root != null && root.Parent != null) {
+                CanvasItem root = this;
+                while (root.Parent != null) {
                     root = root.Parent;
                 }
                 return root;
@@ -186,6 +240,11 @@ namespace Hyena.Gui.Canvas
         public Size DesiredSize {
             get { return desired_size; }
             protected set { desired_size = value; }
+        }
+
+        public Thickness Padding {
+            get { return GetValue<Thickness> ("Padding"); }
+            set { SetValue<Thickness> ("Padding", value); }
         }
 
         public Thickness Margin {
@@ -239,8 +298,12 @@ namespace Hyena.Gui.Canvas
             }
         }
 
+        // FIXME need this?
+        public Rect VirtualAllocation { get; set; }
+
         protected virtual Rect InvalidationRect {
-            get { return Rect.Empty; }
+            //get { return Rect.Empty; }
+            get { return Allocation; }
         }
 
         public Size ContentSize {
@@ -359,7 +422,7 @@ namespace Hyena.Gui.Canvas
 
 #region Input Events
 
-        public event EventHandler<EventArgs> Clicked;
+        //public event EventHandler<EventArgs> Clicked;
 
         private bool pointer_grabbed;
         public virtual bool IsPointerGrabbed {
@@ -376,28 +439,40 @@ namespace Hyena.Gui.Canvas
             pointer_grabbed = false;
         }
 
-        public virtual void ButtonPress (double x, double y, uint button)
+        public virtual bool ButtonEvent (Point press, bool pressed, uint button)
         {
-            GrabPointer ();
+            //GrabPointer ();
+            return false;
         }
 
-        public virtual void ButtonRelease ()
+        /*public virtual void ButtonRelease ()
         {
             ReleasePointer ();
             OnClicked ();
-        }
+        }*/
 
-        public virtual void PointerMotion (double x, double y)
+        public virtual bool CursorMotionEvent (Point cursor)
         {
+            return false;
         }
 
-        protected virtual void OnClicked ()
+        public virtual bool CursorEnterEvent ()
+        {
+            return false;
+        }
+
+        public virtual bool CursorLeaveEvent ()
+        {
+            return false;
+        }
+
+        /*protected virtual void OnClicked ()
         {
             var handler = Clicked;
             if (handler != null) {
                 handler (this, EventArgs.Empty);
             }
-        }
+        }*/
 
 #endregion
 

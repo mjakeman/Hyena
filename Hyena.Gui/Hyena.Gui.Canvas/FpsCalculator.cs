@@ -1,5 +1,5 @@
 //
-// ImageBrush.cs
+// FpsCalculator.cs
 //
 // Author:
 //       Aaron Bockover <abockover@novell.com>
@@ -25,58 +25,43 @@
 // THE SOFTWARE.
 
 using System;
+using Gtk;
+using Gdk;
 
-using Cairo;
-using Hyena.Gui;
+using Hyena.Gui.Theming;
 
 namespace Hyena.Gui.Canvas
 {
-    public class ImageBrush : Brush
+    public class FpsCalculator
     {
-        private ImageSurface surface;
-        //private bool surface_owner;
+        private DateTime last_update;
+        private TimeSpan update_interval;
+        private int frame_count;
+        private double fps;
 
-        public ImageBrush ()
+        public FpsCalculator ()
         {
+            update_interval = TimeSpan.FromSeconds (0.5);
         }
 
-        public ImageBrush (string path) : this (new Gdk.Pixbuf (path), true)
+        public bool Update ()
         {
-        }
+            bool updated = false;
+            DateTime current_time = DateTime.Now;
+            frame_count++;
 
-        public ImageBrush (Gdk.Pixbuf pixbuf, bool disposePixbuf)
-            : this (new PixbufImageSurface (pixbuf, disposePixbuf), true)
-        {
-        }
-
-        public ImageBrush (ImageSurface surface, bool disposeSurface)
-        {
-            this.surface = surface;
-            //this.surface_owner = disposeSurface;
-        }
-
-        protected ImageSurface Surface {
-            get { return surface; }
-            set { surface = value; }
-        }
-
-        public override bool IsValid {
-            get { return surface != null; }
-        }
-
-        public override void Apply (Cairo.Context cr)
-        {
-            if (surface != null) {
-                cr.SetSource (surface);
+            if (current_time - last_update >= update_interval) {
+                fps = (double)frame_count / (current_time - last_update).TotalSeconds;
+                frame_count = 0;
+                updated = true;
+                last_update = current_time;
             }
+
+            return updated;
         }
 
-        public override double Width {
-            get { return surface == null ? 0 : surface.Width; }
-        }
-
-        public override double Height {
-            get { return surface == null ? 0 : surface.Height; }
+        public double FramesPerSecond {
+            get { return fps; }
         }
     }
 }

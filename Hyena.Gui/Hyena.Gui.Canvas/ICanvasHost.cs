@@ -1,10 +1,10 @@
 //
-// CanvasHost.cs
+// ICanvasHost.cs
 //
 // Author:
-//       Aaron Bockover <abockover@novell.com>
+//   Gabriel Burt <gburt@novell.com>
 //
-// Copyright 2009 Aaron Bockover
+// Copyright 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,40 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using Gtk;
+using Gdk;
+
+using Hyena.Gui.Theming;
 
 namespace Hyena.Gui.Canvas
 {
-    public class CanvasManager
+    public interface ICanvasHost
     {
-        private object host;
-
-        public CanvasManager (object host)
-        {
-            this.host = host;
-        }
-
-        public void QueueArrange (CanvasItem item)
-        {
-            item.Arrange ();
-        }
-
-        public void QueueMeasure (CanvasItem item)
-        {
-            item.Measure (item.ContentSize);
-        }
-
-        public void QueueRender (CanvasItem item, Rect rect)
-        {
-            ICanvasHost host = Host as ICanvasHost;
-            if (host == null) {
-                return;
-            }
-
-            host.QueueRender (item, rect);
-        }
-
-        public object Host {
-            get { return host; }
-        }
+        void QueueRender (CanvasItem item, Rect rect);
     }
 }

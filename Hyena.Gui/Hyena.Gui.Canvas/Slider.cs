@@ -84,28 +84,28 @@ namespace Hyena.Gui.Canvas
             PendingValue = Math.Max (0, Math.Min ((x - ThrobberSize / 2) / RenderSize.Width, 1));
         }
 
-        public override void ButtonPress (double x, double y, uint button)
+        public override bool ButtonEvent (Point cursor, bool pressed, uint button)
         {
-            if (button == 1) {
+            if (pressed && button == 1) {
                 GrabPointer ();
-                SetPendingValueFromX (x);
-            }
-        }
-
-        public override void ButtonRelease ()
-        {
-            if (IsPointerGrabbed) {
+                SetPendingValueFromX (cursor.X);
+                return true;
+            } else if (!pressed && IsPointerGrabbed) {
                 ReleasePointer ();
                 Value = PendingValue;
                 IsValueUpdatePending = false;
+                return true;
             }
+            return false;
         }
 
-        public override void PointerMotion (double x, double y)
+        public override bool CursorMotionEvent (Point cursor)
         {
             if (IsPointerGrabbed) {
-                SetPendingValueFromX (x);
+                SetPendingValueFromX (cursor.X);
+                return true;
             }
+            return false;
         }
 
         private double last_invalidate_value = -1;
@@ -137,14 +137,14 @@ namespace Hyena.Gui.Canvas
             InvalidateRender (region);
         }
 
-        protected override Rect InvalidationRect {
+        /*protected override Rect InvalidationRect {
             get { return new Rect (
                 -Margin.Left - ThrobberSize / 2,
                 -Margin.Top,
                 Allocation.Width + ThrobberSize,
                 Allocation.Height);
             }
-        }
+        }*/
 
         protected override void ClippedRender (Cairo.Context cr)
         {
