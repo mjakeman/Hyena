@@ -30,7 +30,7 @@ using System;
 
 namespace Hyena.Gui.Canvas
 {
-    public struct Size 
+    public struct Size
     {
         private double width;
         private double height;
@@ -40,44 +40,44 @@ namespace Hyena.Gui.Canvas
             Width = width;
             Height = height;
         }
-        
+
         public override bool Equals (object o)
         {
             if (!(o is Size)) {
                 return false;
             }
-            
+
             return Equals ((Size)o);
         }
-        
+
         public bool Equals (Size value)
         {
             return value.width == width && value.height == height;
         }
-        
+
         public override int GetHashCode ()
         {
             return ((int)width) ^ ((int)height);
         }
-        
+
         public static bool operator == (Size size1, Size size2)
         {
             return size1.width == size2.width && size1.height == size2.height;
         }
-            
+
         public static bool operator != (Size size1, Size size2)
         {
             return size1.width != size2.width || size1.height != size2.height;
         }
-        
+
         public double Height {
-            get { return height; } 
+            get { return height; }
             set {
                 if (value < 0) {
                     throw new ArgumentException ();
                 }
-                
-                height = value; 
+
+                height = value;
             }
         }
 
@@ -87,7 +87,7 @@ namespace Hyena.Gui.Canvas
                 if (value < 0) {
                     throw new ArgumentException ();
                 }
-                
+
                 width = value;
             }
         }
@@ -95,7 +95,7 @@ namespace Hyena.Gui.Canvas
         public bool IsEmpty {
             get { return width == Double.NegativeInfinity && height == Double.NegativeInfinity; }
         }
-        
+
         public static Size Empty {
             get {
                 Size size = new Size ();
@@ -110,7 +110,7 @@ namespace Hyena.Gui.Canvas
             if (IsEmpty) {
                 return "Empty";
             }
-            
+
             return String.Format ("{0}x{1}", width, height);
         }
     }

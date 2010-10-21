@@ -43,10 +43,31 @@ SOURCES =  \
 	Hyena.Data.Gui/ObjectListView.cs \
 	Hyena.Data.Gui/RowActivatedHandler.cs \
 	Hyena.Data.Gui/SortableColumn.cs \
-	Hyena.Gui.Canvas/Point.cs \
-	Hyena.Gui.Canvas/Rect.cs \
-	Hyena.Gui.Canvas/Size.cs \
-	Hyena.Gui.Canvas/Thickness.cs \
+    Hyena.Gui.Canvas/AnimationManager.cs \
+    Hyena.Gui.Canvas/Brush.cs \
+    Hyena.Gui.Canvas/CanvasHost.cs \
+    Hyena.Gui.Canvas/CanvasItem.cs \
+    Hyena.Gui.Canvas/CanvasItemCollection.cs \
+    Hyena.Gui.Canvas/CanvasManager.cs \
+    Hyena.Gui.Canvas/FixedPanel.cs \
+    Hyena.Gui.Canvas/FontWeight.cs \
+    Hyena.Gui.Canvas/FpsCalculator.cs \
+    Hyena.Gui.Canvas/ICanvasHost.cs \
+    Hyena.Gui.Canvas/Image.cs \
+    Hyena.Gui.Canvas/ImageBrush.cs \
+    Hyena.Gui.Canvas/MarginStyle.cs \
+    Hyena.Gui.Canvas/Orientation.cs \
+    Hyena.Gui.Canvas/Panel.cs \
+    Hyena.Gui.Canvas/Point.cs \
+    Hyena.Gui.Canvas/Rect.cs \
+    Hyena.Gui.Canvas/ShadowMarginStyle.cs \
+    Hyena.Gui.Canvas/Size.cs \
+    Hyena.Gui.Canvas/Slider.cs \
+    Hyena.Gui.Canvas/StackPanel.cs \
+    Hyena.Gui.Canvas/TestTile.cs \
+    Hyena.Gui.Canvas/TextBlock.cs \
+    Hyena.Gui.Canvas/TextWrap.cs \
+    Hyena.Gui.Canvas/Thickness.cs \
 	Hyena.Gui.Dialogs/ExceptionDialog.cs \
 	Hyena.Gui.Dialogs/VersionInformationDialog.cs \
 	Hyena.Gui.Theatrics/Actor.cs \

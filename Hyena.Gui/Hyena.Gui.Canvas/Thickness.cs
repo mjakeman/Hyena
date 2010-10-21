@@ -38,17 +38,17 @@ namespace Hyena.Gui.Canvas
         private double bottom;
 
         public static readonly Thickness Zero = new Thickness (0);
-        
-        public Thickness (double thickness) 
+
+        public Thickness (double thickness)
             : this (thickness, thickness, thickness, thickness)
         {
         }
-        
-        public Thickness (double xthickness, double ythickness) 
+
+        public Thickness (double xthickness, double ythickness)
             : this (xthickness, ythickness, xthickness, ythickness)
         {
         }
-        
+
         public Thickness (double left, double top, double right, double bottom)
         {
             this.left = left;
@@ -56,13 +56,13 @@ namespace Hyena.Gui.Canvas
             this.right = right;
             this.bottom = bottom;
         }
-        
+
         public override string ToString ()
         {
             return string.Format ("{0},{1},{2},{3}", Double.IsNaN (left) ? "Auto" : left.ToString (),
-                Double.IsNaN (top) ? "Auto" : top.ToString (), 
-                Double.IsNaN (right) ? "Auto" : right.ToString (), 
-                Double.IsNaN (bottom) ? "Auto" : bottom.ToString ()); 
+                Double.IsNaN (top) ? "Auto" : top.ToString (),
+                Double.IsNaN (right) ? "Auto" : right.ToString (),
+                Double.IsNaN (bottom) ? "Auto" : bottom.ToString ());
         }
 
         public override bool Equals (object o)
@@ -70,20 +70,20 @@ namespace Hyena.Gui.Canvas
             if (!(o is Thickness)) {
                 return false;
             }
-            
+
             return this == (Thickness)o;
         }
-        
+
         public bool Equals (Thickness thickness)
         {
             return this == thickness;
         }
-        
+
         public override int GetHashCode ()
         {
             return left.GetHashCode () ^ top.GetHashCode () ^ right.GetHashCode () ^ bottom.GetHashCode ();
         }
-        
+
         public static bool operator == (Thickness t1, Thickness t2)
         {
             return t1.left == t2.left &&
@@ -91,28 +91,28 @@ namespace Hyena.Gui.Canvas
                 t1.top == t2.top &&
                 t1.bottom == t2.bottom;
         }
-        
+
         public static bool operator != (Thickness t1, Thickness t2)
         {
             return !(t1 == t2);
         }
-        
+
         public double Left {
             get { return left; }
             set { left = value; }
         }
-        
+
         public double Top {
             get { return top; }
-            set { top = value; }    
+            set { top = value; }
         }
-        
-        public double Right { 
+
+        public double Right {
             get { return right; }
             set { right = value; }
         }
-        
-        public double Bottom { 
+
+        public double Bottom {
             get { return bottom; }
             set { bottom = value; }
         }

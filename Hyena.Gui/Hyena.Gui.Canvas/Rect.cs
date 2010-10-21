@@ -30,7 +30,7 @@ using System;
 
 namespace Hyena.Gui.Canvas
 {
-    public struct Rect 
+    public struct Rect
     {
         private double x, y, w, h;
 
@@ -63,10 +63,10 @@ namespace Hyena.Gui.Canvas
             if (IsEmpty) {
                 return "Empty";
             }
-            
+
             return String.Format ("{0}+{1},{2}x{3}", x, y, w, h);
         }
-        
+
         public double X {
             get { return x; }
             set { x = value; }
@@ -74,28 +74,28 @@ namespace Hyena.Gui.Canvas
 
         public double Y {
             get { return y; }
-            set { y = value; } 
+            set { y = value; }
         }
 
         public double Width {
             get { return w; }
-            set { 
+            set {
                 if (value < 0) {
                     throw new ArgumentException ();
                 }
-                
-                w = value; 
-            } 
+
+                w = value;
+            }
         }
 
         public double Height {
             get { return h; }
-            set { 
+            set {
                 if (value < 0) {
                     throw new ArgumentException ();
                 }
-                
-                h = value; 
+
+                h = value;
             }
         }
 
@@ -116,35 +116,35 @@ namespace Hyena.Gui.Canvas
                 Top > rect.Bottom ||
                 Bottom < rect.Top);
         }
-        
-        public static Rect Empty { 
-            get { 
+
+        public static Rect Empty {
+            get {
                 var empty = new Rect (Double.PositiveInfinity, Double.PositiveInfinity, 0, 0);
                 empty.w = empty.h = Double.NegativeInfinity;
                 return empty;
-            } 
+            }
         }
-        
-        public bool IsEmpty { 
+
+        public bool IsEmpty {
             get { return w < 0 && h < 0; }
         }
-        
-        public double Left { 
+
+        public double Left {
             get { return x; }
         }
-        
-        public double Top { 
+
+        public double Top {
             get { return y; }
         }
 
         public double Right {
             get { return IsEmpty ? Double.NegativeInfinity : x + w; }
         }
-        
-        public double Bottom { 
+
+        public double Bottom {
             get { return IsEmpty ? Double.NegativeInfinity : y + h; }
         }
-        
+
         public void Intersect (Rect rect)
         {
             if (IsEmpty || rect.IsEmpty) {
@@ -155,7 +155,7 @@ namespace Hyena.Gui.Canvas
             double new_x = Math.Max (x, rect.x);
             double new_y = Math.Max (y, rect.y);
             double new_w = Math.Min (Right, rect.Right) - new_x;
-            double new_h = Math.Min (Bottom, rect.Bottom) - new_y; 
+            double new_h = Math.Min (Bottom, rect.Bottom) - new_y;
 
             x = new_x;
             y = new_y;
@@ -179,14 +179,14 @@ namespace Hyena.Gui.Canvas
                 double new_y = Math.Min (Top, rect.Top);
                 double new_w = Math.Max (Right, rect.Right) - new_x;
                 double new_h = Math.Max (Bottom, rect.Bottom) - new_y;
-    
+
                 x = new_x;
                 y = new_y;
                 w = new_w;
                 h = new_h;
             }
         }
-        
+
         public void Union (Point point)
         {
             Union (new Rect (point, point));
@@ -209,17 +209,17 @@ namespace Hyena.Gui.Canvas
             x += dx;
             y += dy;
         }
-        
+
         public static bool operator == (Rect rect1, Rect rect2)
         {
             return rect1.x == rect2.x && rect1.y == rect2.y && rect1.w == rect2.w && rect1.h == rect2.h;
         }
-        
+
         public static bool operator != (Rect rect1, Rect rect2)
         {
             return !(rect1 == rect2);
         }
-        
+
         public override bool Equals (object o)
         {
             if (o is Rect) {
@@ -227,12 +227,12 @@ namespace Hyena.Gui.Canvas
             }
             return false;
         }
-        
+
         public bool Equals (Rect value)
         {
             return this == value;
         }
-        
+
         public override int GetHashCode ()
         {
             return x.GetHashCode () ^ y.GetHashCode () ^ w.GetHashCode () ^ h.GetHashCode ();
