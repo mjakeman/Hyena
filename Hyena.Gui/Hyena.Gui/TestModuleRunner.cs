@@ -37,6 +37,7 @@ namespace Hyena.Gui
         public static void Run ()
         {
             Application.Init ();
+            Hyena.ThreadAssist.InitializeMainThread ();
             TestModuleRunner runner = new TestModuleRunner ();
             runner.DeleteEvent += delegate { Application.Quit (); };
             runner.ShowAll ();
