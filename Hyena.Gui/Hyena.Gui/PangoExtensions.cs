@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Linq;
 
 using Pango;
@@ -44,6 +45,22 @@ namespace Hyena.Gui
             using (var metrics = context.GetMetrics (description, language)) {
                 return ((int)(metrics.Ascent + metrics.Descent) + 512) >> 10; // PANGO_PIXELS (d)
             }
+        }
+
+        [DllImport("libpango-1.0-0.dll")]
+        static extern int pango_layout_get_height(IntPtr raw);
+        public static int GetHeight (this Pango.Layout layout)
+        {
+            int raw_ret = pango_layout_get_height(layout.Handle);
+            int ret = raw_ret;
+            return ret;
+        }
+
+        [DllImport("libpango-1.0-0.dll")]
+        static extern void pango_layout_set_height(IntPtr raw, int height);
+        public static void SetHeight (this Pango.Layout layout, int height)
+        {
+            pango_layout_set_height (layout.Handle, height);
         }
 
         public static string FormatEscaped (this string format, params object [] args)
