@@ -29,253 +29,69 @@ using Hyena.Gui.Theatrics;
 
 namespace Hyena.Gui.Canvas
 {
-    public abstract class Animation
+    public class Animation
     {
-        private Stage<Animation> stage;
-        internal protected Stage<Animation> Stage {
-            get { return stage; }
-            set { stage = value; }
+        //private int iterations;
+
+        internal protected Stage<Animation> Stage { get; set; }
+        internal protected Actor<Animation> Actor { get; set; }
+
+        public Easing Easing { get; set; }
+        public CanvasItem Item { get; set; }
+        public int Repeat { get; set; }
+        public uint Duration { get; set; }
+        public Action<Animation> Update { get; set; }
+        public Action<Animation> Finished { get; set; }
+
+        public double Percent { get; private set; }
+
+        public Animation ()
+        {
+            Duration = 1000;
+            Easing = Easing.Linear;
+            AnimationManager.Instance.Animate (this);
         }
 
-        private Actor<Animation> actor;
-        internal protected Actor<Animation> Actor {
-            get { return actor; }
-            set { actor = value; }
+        public Animation (double from, double to, Action<double> set) : this ()
+        {
+            Update = animation => set (from + animation.Percent * (to - from));
         }
 
-        private uint duration = 1000;
-        public uint Duration {
-            get { return duration; }
-            set {
-                duration = value;
-                if (Actor != null) {
-                    Actor.Reset (duration);
-                }
-            }
-        }
-
-        private CanvasItem item;
-        public CanvasItem Item {
-            get { return item; }
-            set { item = value; }
-        }
-
-        private string property;
-        public string Property {
-            get { return property; }
-            set { property = value; }
-        }
-
-        private bool is_expired;
-        public bool IsExpired {
-            get { return is_expired; }
-            set {
-                is_expired = value;
-                iterations = 0;
-            }
-        }
-
-        private int iterations;
-
-        private int repeat_times;
-        public int RepeatTimes {
-            get { return repeat_times; }
-            set { repeat_times = value; }
-        }
-
-        public virtual void Start ()
+        public void Start ()
         {
             if (Stage.Contains (this)) {
-                Actor.Reset (Duration);
+                Actor.Reset ();
                 return;
             }
 
             Actor = Stage.Add (this, Duration);
-            IsExpired = false;
+            Percent = 0;
+            //iterations = 0;
             Actor.CanExpire = false;
         }
 
-        public virtual bool Step (Actor<Animation> actor)
+        internal bool Step (Actor<Animation> actor)
         {
-            if (RepeatTimes > 0 && actor.Percent == 1) {
-                if (++iterations >= RepeatTimes) {
-                    IsExpired = true;
+            bool is_expired = actor.Percent == 1;
+            //bool is_expired = false;
+            /*if (Repeat > 0 && actor.Percent == 1) {
+                if (++iterations >= Repeat) {
+                    is_expired = true;
                 }
+            }*/
+
+            Percent = Choreographer.Compose (actor.Percent, Easing);
+            Update (this);
+
+            if (is_expired && Finished != null) {
+                Finished (this);
             }
 
-            return !IsExpired;
-        }
-    }
-
-    public delegate T AnimationComposeHandler<T> (Animation<T> animation, double percent);
-
-    public abstract class Animation<T> : Animation
-    {
-        private AnimationComposeHandler<T> compose_handler;
-        protected AnimationComposeHandler<T> ComposeHandler {
-            get { return compose_handler; }
-        }
-
-        private Easing easing = Easing.Linear;
-        protected Easing Easing {
-            get { return easing; }
-        }
-
-        private bool from_set;
-        protected bool FromSet {
-            get { return from_set; }
-        }
-
-        private T from_value;
-        public T FromValue {
-            get { return from_value; }
-            set {
-                from_set = true;
-                from_value = value;
+            if (Item != null) {
+                Item.InvalidateRender ();
             }
-        }
 
-        private T to_value;
-        public T ToValue {
-            get { return to_value; }
-            set { to_value = value; }
-        }
-
-        private T start_state;
-        public T StartState {
-            get { return start_state; }
-            protected set { start_state = value; }
-        }
-
-        public override void Start ()
-        {
-            T check_state = FromSet ? FromValue : (T)Item[Property];
-
-            if (!check_state.Equals (ToValue)) {
-                base.Start ();
-            }
-        }
-
-        public Animation<T> ClearFromValue ()
-        {
-            from_set = false;
-            from_value = default (T);
-            return this;
-        }
-
-        public Animation<T> Animate ()
-        {
-            StartState = FromSet ? FromValue : (T)Item[Property];
-            return this;
-        }
-
-        public Animation<T> Animate (T toValue)
-        {
-            ClearFromValue ();
-            ToValue = toValue;
-            return Animate ();
-        }
-
-        public Animation<T> Animate (T fromValue, T toValue)
-        {
-            FromValue = fromValue;
-            ToValue = toValue;
-            return Animate ();
-        }
-
-        public Animation<T> Animate (string property, T toValue)
-        {
-            Property = property;
-            return Animate (toValue);
-        }
-
-        public Animation<T> Animate (string property, T fromValue, T toValue)
-        {
-            Property = property;
-            return Animate (fromValue, toValue);
-        }
-
-        public Animation<T> Compose (AnimationComposeHandler<T> handler)
-        {
-            compose_handler = handler;
-            return this;
-        }
-
-        public Animation<T> ClearCompose ()
-        {
-            compose_handler = null;
-            return this;
-        }
-
-        public Animation<T> To (T toValue)
-        {
-            ToValue = toValue;
-            return Animate ();
-        }
-
-        public Animation<T> From (T fromValue)
-        {
-            FromValue = fromValue;
-            return Animate ();
-        }
-
-        public Animation<T> Reverse ()
-        {
-            T from = FromValue;
-            FromValue = ToValue;
-            ToValue = from;
-            return Animate ();
-        }
-
-        public Animation<T> Ease (Easing easing)
-        {
-            this.easing = easing;
-            return this;
-        }
-
-        public Animation<T> Throttle (uint duration)
-        {
-            Duration = duration;
-            return this;
-        }
-
-        public Animation<T> Repeat (int count)
-        {
-            RepeatTimes = count;
-            return this;
-        }
-
-        public Animation<T> Expire ()
-        {
-            IsExpired = true;
-            return this;
-        }
-    }
-
-    public class DoubleAnimation : Animation<double>
-    {
-        public DoubleAnimation ()
-        {
-        }
-
-        public DoubleAnimation (string property)
-        {
-            Property = property;
-        }
-
-        public override bool Step (Actor<Animation> actor)
-        {
-            double result = ComposeHandler == null
-                ? StartState + (ToValue * actor.Percent)
-                : ComposeHandler (this, actor.Percent);
-
-            result = Easing == Easing.Linear
-                ? result
-                : Choreographer.Compose (result, Easing);
-
-            Item.SetValue<double> (Property, result);
-
-            return base.Step (actor);
+            return !is_expired;
         }
     }
 
@@ -294,7 +110,7 @@ namespace Hyena.Gui.Canvas
             stage.ActorStep += (actor) => actor.Target.Step (actor);
         }
 
-        public void Animate (Animation animation)
+        internal void Animate (Animation animation)
         {
             animation.Stage = stage;
         }

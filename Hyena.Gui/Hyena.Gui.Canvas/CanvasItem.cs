@@ -34,36 +34,28 @@ namespace Hyena.Gui.Canvas
     public class CanvasItem
     {
         private CanvasManager manager;
-        private CanvasItem parent;
+        private Hyena.Data.IDataBinder binder;
         private Theme theme;
-        private Size desired_size;
-        private Dictionary<string, object> properties;
-        private Rect allocation;
-        private bool visible = true;
+
+        private bool prelight_in;
+        private double prelight_opacity;
+
+        #region Public API
 
         public event EventHandler<EventArgs> SizeChanged;
         public event EventHandler<EventArgs> LayoutUpdated;
 
-        private class MemoryDataBinder : Hyena.Data.IDataBinder
-        {
-            public void Bind (object o)
-            {
-                BoundObject = o;
-            }
-
-            public object BoundObject { get; set; }
-        }
-
         public CanvasItem ()
         {
-            InstallProperty<double> ("Opacity", 1.0);
-            InstallProperty<double> ("Width", Double.NaN);
-            InstallProperty<double> ("Height", Double.NaN);
-            InstallProperty<Thickness> ("Margin", new Thickness (0));
-            InstallProperty<Thickness> ("Padding", new Thickness (0));
-            InstallProperty<Brush> ("Foreground", Brush.Black);
-            InstallProperty<Brush> ("Background", Brush.White);
-            InstallProperty<MarginStyle> ("MarginStyle", MarginStyle.None);
+            Visible = true;
+            Opacity = 1.0;
+            Width = Double.NaN;
+            Height = Double.NaN;
+            Margin = new Thickness (0);
+            Padding = new Thickness (0);
+            Foreground = Brush.Black;
+            Background = Brush.White;
+            MarginStyle = MarginStyle.None;
         }
 
         public void InvalidateArrange ()
@@ -82,7 +74,7 @@ namespace Hyena.Gui.Canvas
             }
         }
 
-        protected void InvalidateRender ()
+        public void InvalidateRender ()
         {
             InvalidateRender (InvalidationRect);
         }
@@ -92,32 +84,8 @@ namespace Hyena.Gui.Canvas
             InvalidateRender (area);
         }
 
-        protected void InvalidateRender (Rect area)
-        {
-            if (Parent == null) {
-                OnInvalidate (area);
-            } else {
-                var alloc = Parent.ContentAllocation;
-                area.Offset (alloc.X, alloc.Y);
-                Parent.Invalidate (area);
-            }
-        }
-
-        private void OnInvalidate (Rect area)
-        {
-            CanvasItem root = RootAncestor;
-            if (root != null && root.Manager != null) {
-                root.Manager.QueueRender (this, area);
-            } else {
-                Hyena.Log.WarningFormat ("Asked to invalidate {0} for {1} but no CanvasManager!", area, this);
-            }
-        }
-
-        private Hyena.Data.IDataBinder binder;
         public Hyena.Data.IDataBinder Binder {
-            get {
-                return binder ?? (binder = new MemoryDataBinder ());
-            }
+            get { return binder ?? (binder = new MemoryDataBinder ()); }
             set { binder = value; }
         }
 
@@ -126,14 +94,11 @@ namespace Hyena.Gui.Canvas
             Binder.Bind (o);
         }
 
-        protected object BoundObject {
-            get { return Binder.BoundObject; }
-            set { Binder.BoundObject = value; }
-        }
-
         public virtual void Arrange ()
         {
         }
+
+        public Action<Cairo.Context, Theme, Rect, double> PrelightRenderer { get; set; }
 
         public virtual Size Measure (Size available)
         {
@@ -183,6 +148,10 @@ namespace Hyena.Gui.Canvas
 
             ClippedRender (context);
 
+            if (PrelightRenderer != null && prelight_opacity > 0) {
+                PrelightRenderer (context.Context, context.Theme, new Rect (0, 0, ContentAllocation.Width, ContentAllocation.Height), prelight_opacity);
+            }
+
             cr.ResetClip ();
 
             if (opacity < 1.0) {
@@ -191,6 +160,113 @@ namespace Hyena.Gui.Canvas
             }
 
             cr.Restore ();
+        }
+
+        public CanvasItem RootAncestor {
+            get {
+                CanvasItem root = this;
+                while (root.Parent != null) {
+                    root = root.Parent;
+                }
+                return root;
+            }
+        }
+
+        public CanvasItem Parent { get; set; }
+
+        public Theme Theme {
+            get { return theme ?? (Parent != null ? Parent.Theme : null); }
+            set { theme = value; }
+        }
+
+        public bool Visible { get; set; }
+        public double Opacity { get; set; }
+        public Brush Foreground { get; set; }
+        public Brush Background { get; set; }
+
+        public Thickness Padding { get; set; }
+        public Thickness Margin { get; set; }
+        public MarginStyle MarginStyle { get; set; }
+
+        public Size DesiredSize { get; protected set; }
+        public Rect Allocation { get; set; }
+        // FIXME need this?
+        public Rect VirtualAllocation { get; set; }
+
+        private double min_width, max_width;
+        public double MinWidth {
+            get { return min_width; }
+            set {
+                min_width = value;
+                if (value > max_width) {
+                    max_width = value;
+                }
+            }
+        }
+
+        public double MaxWidth {
+            get { return max_width; }
+            set {
+                max_width = value;
+                if (value < min_width) {
+                    min_width = value;
+                }
+            }
+        }
+
+        public double Width { get; set; }
+        public double Height { get; set; }
+
+        public Rect ContentAllocation {
+            get {
+                return new Rect (
+                    Allocation.X + Margin.Left,
+                    Allocation.Y + Margin.Top,
+                    Math.Max (0, Allocation.Width - Margin.Left - Margin.Right),
+                    Math.Max (0, Allocation.Height - Margin.Top - Margin.Bottom)
+                );
+            }
+        }
+
+        protected virtual Rect InvalidationRect {
+            //get { return Rect.Empty; }
+            get { return Allocation; }
+        }
+
+        public Size ContentSize {
+            get { return new Size (ContentAllocation.Width, ContentAllocation.Height); }
+        }
+
+        protected Size RenderSize {
+            get { return new Size (Math.Round (ContentAllocation.Width), Math.Round (ContentAllocation.Height)); }
+        }
+
+        #endregion
+
+        protected void InvalidateRender (Rect area)
+        {
+            if (Parent == null) {
+                OnInvalidate (area);
+            } else {
+                var alloc = Parent.ContentAllocation;
+                area.Offset (alloc.X, alloc.Y);
+                Parent.Invalidate (area);
+            }
+        }
+
+        private void OnInvalidate (Rect area)
+        {
+            CanvasItem root = RootAncestor;
+            if (root != null && root.Manager != null) {
+                root.Manager.QueueRender (this, area);
+            } else {
+                Hyena.Log.WarningFormat ("Asked to invalidate {0} for {1} but no CanvasManager!", area, this);
+            }
+        }
+
+        protected object BoundObject {
+            get { return Binder.BoundObject; }
+            set { Binder.BoundObject = value; }
         }
 
         /*protected Rect TopLevelAllocation {
@@ -236,209 +312,6 @@ namespace Hyena.Gui.Canvas
             set { manager = value; }
         }
 
-        public CanvasItem RootAncestor {
-            get {
-                CanvasItem root = this;
-                while (root.Parent != null) {
-                    root = root.Parent;
-                }
-                return root;
-            }
-        }
-
-        public CanvasItem Parent {
-            get { return parent; }
-            set { parent = value; }
-        }
-
-        public Theme Theme {
-            get { return theme ?? (Parent != null ? Parent.Theme : null); }
-            set { theme = value; }
-        }
-
-        public Size DesiredSize {
-            get { return desired_size; }
-            protected set { desired_size = value; }
-        }
-
-        public Thickness Padding {
-            get { return GetValue<Thickness> ("Padding"); }
-            set { SetValue<Thickness> ("Padding", value); }
-        }
-
-        public Thickness Margin {
-            get { return GetValue<Thickness> ("Margin"); }
-            set { SetValue<Thickness> ("Margin", value); }
-        }
-
-        public MarginStyle MarginStyle {
-            get { return GetValue<MarginStyle> ("MarginStyle"); }
-            set { SetValue<MarginStyle> ("MarginStyle", value); }
-        }
-
-        public double Width {
-            get { return GetValue<double> ("Width"); }
-            set { SetValue<double> ("Width", value); }
-        }
-
-        public double Height {
-            get { return GetValue<double> ("Height"); }
-            set { SetValue<double> ("Height", value); }
-        }
-
-        public double Opacity {
-            get { return GetValue<double> ("Opacity"); }
-            set { SetValue<double> ("Opacity", value); }
-        }
-
-        public Brush Foreground {
-            get { return GetValue<Brush> ("Foreground"); }
-            set { SetValue<Brush> ("Foreground", value); }
-        }
-
-        public Brush Background {
-            get { return GetValue<Brush> ("Background"); }
-            set { SetValue<Brush> ("Background", value); }
-        }
-
-        public Rect Allocation {
-            get { return allocation; }
-            set { allocation = value; }
-        }
-
-        public Rect ContentAllocation {
-            get {
-                return new Rect (
-                    Allocation.X + Margin.Left,
-                    Allocation.Y + Margin.Top,
-                    Math.Max (0, Allocation.Width - Margin.Left - Margin.Right),
-                    Math.Max (0, Allocation.Height - Margin.Top - Margin.Bottom)
-                );
-            }
-        }
-
-        // FIXME need this?
-        public Rect VirtualAllocation { get; set; }
-
-        protected virtual Rect InvalidationRect {
-            //get { return Rect.Empty; }
-            get { return Allocation; }
-        }
-
-        public Size ContentSize {
-            get { return new Size (ContentAllocation.Width, ContentAllocation.Height); }
-        }
-
-        protected Size RenderSize {
-            get { return new Size (Math.Round (ContentAllocation.Width), Math.Round (ContentAllocation.Height)); }
-        }
-
-        public bool Visible {
-            get { return visible; }
-            set { visible = value; }
-        }
-
-        protected void InstallProperty<T> (string property)
-        {
-            InstallProperty (property, default (T));
-        }
-
-        protected void InstallProperty<T> (string property, T defaultValue)
-        {
-            if (properties == null) {
-                properties = new Dictionary<string, object> ();
-            }
-
-            if (properties.ContainsKey (property)) {
-                throw new InvalidOperationException ("Property is already installed: " + property);
-            }
-
-            properties.Add (property, defaultValue);
-        }
-
-        protected virtual bool OnPropertyChange (string property, object value)
-        {
-            switch (property) {
-                case "Foreground":
-                case "Background":
-                case "MarginStyle":
-                case "Opacity":
-                    InvalidateRender ();
-                    return true;
-                /* case "Width":
-                case "Height":
-                case "Margin":
-                    InvalidateArrange ();
-                    InvalidateMeasure ();
-                    return true; */
-            }
-
-            return false;
-        }
-
-        public object this[string property] {
-            get {
-                object result;
-                if (properties != null && properties.TryGetValue (property, out result)) {
-                    return result;
-                }
-
-                return result;
-            }
-
-            set {
-                if (properties == null || !properties.ContainsKey (property)) {
-                    throw new InvalidOperationException ("Property does not exist: " + property);
-                }
-
-                object existing = properties[property];
-
-                Type existing_type = existing.GetType ();
-                Type new_type = value.GetType ();
-
-                if (existing_type != new_type && !new_type.IsSubclassOf (existing_type)) {
-                    throw new InvalidOperationException ("Invalid value type " +
-                        value.GetType () + " for property: " + property);
-                }
-
-                if (existing != value) {
-                    properties[property] = value;
-                    OnPropertyChange (property, value);
-                }
-            }
-        }
-
-        public T GetValue<T> (string property)
-        {
-            return GetValue (property, default (T));
-        }
-
-        public T GetValue<T> (string property, T fallback)
-        {
-            object result = this[property];
-            if (result == null) {
-                return fallback;
-            }
-            return (T)result;
-        }
-
-        public void SetValue<T> (string property, T value)
-        {
-            this[property] = value;
-        }
-
-        public T Animate<T> (T animation) where T : Animation
-        {
-            animation.Item = this;
-            AnimationManager.Instance.Animate (animation);
-            return animation;
-        }
-
-        public DoubleAnimation AnimateDouble (string property)
-        {
-            return Animate (new DoubleAnimation (property));
-        }
-
 #region Input Events
 
         //public event EventHandler<EventArgs> Clicked;
@@ -477,12 +350,34 @@ namespace Hyena.Gui.Canvas
 
         public virtual bool CursorEnterEvent ()
         {
+            if (PrelightRenderer != null) {
+                prelight_in = true;
+                prelight_stage.AddOrReset (this);
+            }
             return false;
         }
 
         public virtual bool CursorLeaveEvent ()
         {
+            if (PrelightRenderer != null) {
+                prelight_in = false;
+                prelight_stage.AddOrReset (this);
+            }
             return false;
+        }
+
+        private static Hyena.Gui.Theatrics.Stage<CanvasItem> prelight_stage = new Hyena.Gui.Theatrics.Stage<CanvasItem> (250);
+        static CanvasItem ()
+        {
+            prelight_stage.ActorStep += actor => {
+                var alpha = actor.Target.prelight_opacity;
+                alpha += actor.Target.prelight_in
+                    ? actor.StepDeltaPercent
+                    : -actor.StepDeltaPercent;
+                actor.Target.prelight_opacity = alpha = Math.Max (0.0, Math.Min (1.0, alpha));
+                actor.Target.InvalidateRender ();
+                return alpha > 0 && alpha < 1;
+            };
         }
 
         /*protected virtual void OnClicked ()
@@ -495,5 +390,14 @@ namespace Hyena.Gui.Canvas
 
 #endregion
 
+        private class MemoryDataBinder : Hyena.Data.IDataBinder
+        {
+            public void Bind (object o)
+            {
+                BoundObject = o;
+            }
+
+            public object BoundObject { get; set; }
+        }
     }
 }

@@ -43,6 +43,7 @@ SOURCES =  \
 	Hyena.Data.Gui/SortableColumn.cs \
     Hyena.Gui.Canvas/AnimationManager.cs \
     Hyena.Gui.Canvas/Brush.cs \
+    Hyena.Gui.Canvas/Prelight.cs \
     Hyena.Gui.Canvas/CanvasHost.cs \
     Hyena.Gui.Canvas/CanvasItem.cs \
     Hyena.Gui.Canvas/CanvasItemCollection.cs \

@@ -145,6 +145,10 @@ namespace Hyena.Gui.Canvas
             get { return IsEmpty ? Double.NegativeInfinity : y + h; }
         }
 
+        public Size Size {
+            get { return new Size (Width, Height); }
+        }
+
         public void Intersect (Rect rect)
         {
             if (IsEmpty || rect.IsEmpty) {

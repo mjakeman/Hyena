@@ -40,14 +40,8 @@ namespace Hyena.Gui.Canvas
 
         public TextBlock ()
         {
-            InstallProperty<string> ("Text", String.Empty);
-            InstallProperty<string> ("TextFormat", "");
-            InstallProperty<bool> ("UseMarkup", false);
-            InstallProperty<double> ("HorizontalAlignment", 0.0);
-            InstallProperty<double> ("VerticalAlignment", 0.0);
-            InstallProperty<FontWeight> ("FontWeight", FontWeight.Normal);
-            InstallProperty<TextWrap> ("TextWrap", TextWrap.None);
-            InstallProperty<bool> ("ForceSize", false);
+            FontWeight = FontWeight.Normal;
+            TextWrap = TextWrap.None;
             EllipsizeMode = Pango.EllipsizeMode.End;
         }
 
@@ -120,7 +114,7 @@ namespace Hyena.Gui.Canvas
         private static char[] lfcr = new char[] {'\n', '\r'};
         private void UpdateLayout (Pango.Layout layout, string text)
         {
-            string final_text = GetFormattedText (text);
+            string final_text = GetFormattedText (text) ?? "";
             if (TextWrap == TextWrap.None && final_text.IndexOfAny (lfcr) >= 0) {
                 final_text = final_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
             }
@@ -240,79 +234,21 @@ namespace Hyena.Gui.Canvas
             }
         }
 
-        protected override bool OnPropertyChange (string property, object value)
-        {
-            switch (property) {
-                case "FontWeight":
-                case "TextWrap":
-                case "Text":
-                case "TextFormat":
-                case "UseMarkup":
-                case "ForceSize":
-                    if (layout != null) {
-                        InvalidateMeasure ();
-                        InvalidateArrange ();
-                    }
-                    return true;
-                case "HorizontalAlignment":
-                case "VerticalAlignment":
-                    if (layout != null) {
-                        InvalidateArrange ();
-                    }
-                    return true;
-            }
-
-            return base.OnPropertyChange (property, value);
-        }
-
         protected override Rect InvalidationRect {
             get { return invalidation_rect; }
         }
 
-        public string Text {
-            get { return GetValue<string> ("Text"); }
-            set { SetValue<string> ("Text", value); }
-        }
-
-        public string TextFormat {
-            get { return GetValue<string> ("TextFormat"); }
-            set { SetValue<string> ("TextFormat", value); }
-        }
-
-        public FontWeight FontWeight {
-            get { return GetValue<FontWeight> ("FontWeight"); }
-            set { SetValue<FontWeight> ("FontWeight", value); }
-        }
-
-        public TextWrap TextWrap {
-            get { return GetValue<TextWrap> ("TextWrap"); }
-            set { SetValue<TextWrap> ("TextWrap", value); }
-        }
-
+        public string Text { get; set; }
+        public string TextFormat { get; set; }
+        public FontWeight FontWeight { get; set; }
+        public TextWrap TextWrap { get; set; }
         public bool Fade { get; set; }
-
-        public bool ForceSize {
-            get { return GetValue<bool> ("ForceSize"); }
-            set { SetValue<bool> ("ForceSize", value); }
-        }
-
-        public virtual Pango.EllipsizeMode EllipsizeMode { get; set; }
-
+        public bool ForceSize { get; set; }
+        public Pango.EllipsizeMode EllipsizeMode { get; set; }
         public Func<object, string> TextGenerator { get; set; }
+        public bool UseMarkup { get; set; }
 
-        public bool UseMarkup {
-            get { return GetValue<bool> ("UseMarkup"); }
-            set { SetValue<bool> ("UseMarkup", value); }
-        }
-
-        public double HorizontalAlignment {
-            get { return GetValue<double> ("HorizontalAlignment", 0.0); }
-            set { SetValue<double> ("HorizontalAlignment", value); }
-        }
-
-        public double VerticalAlignment {
-            get { return GetValue<double> ("VerticalAlignment", 0.0); }
-            set { SetValue<double> ("VerticalAlignment", value); }
-        }
+        public double HorizontalAlignment { get; set; }
+        public double VerticalAlignment { get; set; }
     }
 }
