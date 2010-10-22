@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 
 using Cairo;
+using Hyena.Gui;
 
 namespace Hyena.Gui.Canvas
 {
@@ -39,11 +41,14 @@ namespace Hyena.Gui.Canvas
         public TextBlock ()
         {
             InstallProperty<string> ("Text", String.Empty);
+            InstallProperty<string> ("TextFormat", "");
+            InstallProperty<bool> ("UseMarkup", false);
             InstallProperty<double> ("HorizontalAlignment", 0.0);
             InstallProperty<double> ("VerticalAlignment", 0.0);
             InstallProperty<FontWeight> ("FontWeight", FontWeight.Normal);
             InstallProperty<TextWrap> ("TextWrap", TextWrap.None);
             InstallProperty<bool> ("ForceSize", false);
+            EllipsizeMode = Pango.EllipsizeMode.End;
         }
 
         private bool EnsureLayout ()
@@ -79,7 +84,8 @@ namespace Hyena.Gui.Canvas
             layout.Wrap = GetPangoWrapMode (wrap);
             layout.FontDescription.Weight = GetPangoFontWeight (FontWeight);
             layout.SingleParagraphMode = wrap == TextWrap.None;
-            UpdateLayout (layout, Text);
+            layout.Ellipsize = EllipsizeMode;
+            UpdateLayout (layout, GetText ());
             layout.GetPixelSize (out text_w, out text_h);
 
             double width = text_w;
@@ -87,19 +93,28 @@ namespace Hyena.Gui.Canvas
                 width = available.Width;
             }
 
-            DesiredSize = new Size (
-                width + Margin.Left + Margin.Right,
-                text_h + Margin.Top + Margin.Bottom);
+            //DesiredSize = new Size (width, text_h);
+            var size = new Size (width, text_h);
 
             // Hack, as this prevents the TextBlock from
             // being flexible in a Vertical StackPanel
-            Height = DesiredSize.Height;
+            Height = size.Height;
 
             if (ForceSize) {
                 Width = DesiredSize.Width;
             }
 
-            return DesiredSize;
+            return size;
+        }
+
+        private string GetText ()
+        {
+            if (TextGenerator != null) {
+                return TextGenerator (BoundObject);
+            } else {
+                var so = BoundObject;
+                return so == null ? Text : so.ToString ();
+            }
         }
 
         private static char[] lfcr = new char[] {'\n', '\r'};
@@ -119,7 +134,7 @@ namespace Hyena.Gui.Canvas
 
         private string GetFormattedText (string text)
         {
-            if (TextFormat == null) {
+            if (String.IsNullOrEmpty (TextFormat)) {
                 return text;
             }
             return String.Format (TextFormat, UseMarkup ? GLib.Markup.EscapeText (text) : text);
@@ -139,6 +154,7 @@ namespace Hyena.Gui.Canvas
             }
 
             int text_width, text_height;
+            layout.SetHeight ((int)(Pango.Scale.PangoScale * RenderSize.Height));
             layout.GetPixelSize (out text_width, out text_height);
 
             Rect new_alloc = new Rect (
@@ -180,7 +196,7 @@ namespace Hyena.Gui.Canvas
             cr.Rectangle (0, 0, RenderSize.Width, RenderSize.Height);
             cr.Clip ();
 
-            bool fade = text_alloc.Width > RenderSize.Width;
+            bool fade = Fade && text_alloc.Width > RenderSize.Width;
 
             if (fade) {
                 cr.PushGroup ();
@@ -230,6 +246,8 @@ namespace Hyena.Gui.Canvas
                 case "FontWeight":
                 case "TextWrap":
                 case "Text":
+                case "TextFormat":
+                case "UseMarkup":
                 case "ForceSize":
                     if (layout != null) {
                         InvalidateMeasure ();
@@ -249,13 +267,6 @@ namespace Hyena.Gui.Canvas
 
         protected override Rect InvalidationRect {
             get { return invalidation_rect; }
-        }
-
-        public override void Bind (object o)
-        {
-            base.Bind (o);
-            var so = BoundObject;
-            Text = so == null ? "" : so.ToString ();
         }
 
         public string Text {
@@ -278,6 +289,8 @@ namespace Hyena.Gui.Canvas
             set { SetValue<TextWrap> ("TextWrap", value); }
         }
 
+        public bool Fade { get; set; }
+
         public bool ForceSize {
             get { return GetValue<bool> ("ForceSize"); }
             set { SetValue<bool> ("ForceSize", value); }
@@ -293,7 +306,7 @@ namespace Hyena.Gui.Canvas
         }
 
         public double HorizontalAlignment {
-            get { return GetValue<double> ("HorizontalAlignment", 0.5); }
+            get { return GetValue<double> ("HorizontalAlignment", 0.0); }
             set { SetValue<double> ("HorizontalAlignment", value); }
         }
 

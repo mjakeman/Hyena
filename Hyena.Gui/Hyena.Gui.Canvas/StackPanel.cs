@@ -41,6 +41,7 @@ namespace Hyena.Gui.Canvas
         {
             Size result = new Size (0, 0);
 
+            int visible_children = 0;
             foreach (var child in Children) {
                 if (!child.Visible) {
                     continue;
@@ -55,6 +56,8 @@ namespace Hyena.Gui.Canvas
                     result.Width += size.Width;
                     result.Height = Math.Max (result.Height, size.Height);
                 }
+
+                visible_children++;
             }
 
             if (!Double.IsNaN (Width)) {
@@ -65,15 +68,18 @@ namespace Hyena.Gui.Canvas
                 result.Height = Height;
             }
 
+            result.Width += Margin.X;
+            result.Height += Margin.Y;
+
             if (!available.IsEmpty) {
                 result.Width = Math.Min (result.Width, available.Width);
                 result.Height = Math.Min (result.Height, available.Height);
             }
 
             if (Orientation == Orientation.Vertical) {
-                result.Height += Spacing * (Children.Count - 1);
+                result.Height += Spacing * (visible_children - 1);
             } else {
-                result.Width += Spacing * (Children.Count - 1);
+                result.Width += Spacing * (visible_children - 1);
             }
 
             return DesiredSize = result;

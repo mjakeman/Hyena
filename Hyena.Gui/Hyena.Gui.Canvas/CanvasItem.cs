@@ -137,8 +137,8 @@ namespace Hyena.Gui.Canvas
 
         public virtual Size Measure (Size available)
         {
-            double m_x = Margin.Left + Margin.Right;
-            double m_y = Margin.Top + Margin.Bottom;
+            double m_x = Margin.X;
+            double m_y = Margin.Y;
 
             double a_w = available.Width - m_x;
             double a_h = available.Height - m_y;
@@ -151,10 +151,11 @@ namespace Hyena.Gui.Canvas
 
         public void Render (Hyena.Data.Gui.CellContext context)
         {
+            var alloc = ContentAllocation;
             var cr = context.Context;
             double opacity = Opacity;
 
-            if (ContentAllocation.Width <= 0 || ContentAllocation.Height <= 0 || opacity <= 0) {
+            if (alloc.Width <= 0 || alloc.Height <= 0 || opacity <= 0) {
                 return;
             }
 
@@ -172,12 +173,17 @@ namespace Hyena.Gui.Canvas
                 cr.Restore ();
                 cr.Translate (Math.Round (Margin.Left), Math.Round (Margin.Top));
             } else {
-                cr.Translate (Math.Round (ContentAllocation.X), Math.Round (ContentAllocation.Y));
+                cr.Translate (Math.Round (alloc.X), Math.Round (alloc.Y));
             }
 
             cr.Antialias = Cairo.Antialias.Default;
 
+            cr.Rectangle (0, 0, alloc.Width, alloc.Height);
+            cr.Clip ();
+
             ClippedRender (context);
+
+            cr.ResetClip ();
 
             if (opacity < 1.0) {
                 cr.PopGroupToSource ();
@@ -186,6 +192,19 @@ namespace Hyena.Gui.Canvas
 
             cr.Restore ();
         }
+
+        /*protected Rect TopLevelAllocation {
+            get {
+                var alloc = ContentAllocation;
+                var top = this;
+                while (top.Parent != null) {
+                    alloc.Offset (top.Parent.Allocation);
+                    top = top.Parent;
+                }
+
+                return alloc;
+            }
+        }*/
 
         protected virtual void ClippedRender (Cairo.Context cr)
         {

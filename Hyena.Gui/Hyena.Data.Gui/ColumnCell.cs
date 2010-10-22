@@ -60,7 +60,10 @@ namespace Hyena.Data.Gui
             get { return ObjectBinder.BoundObjectParent; }
         }
 
-        //public string Property { get; private set; }
+        public string Property {
+            get { return ObjectBinder.Property; }
+            set { ObjectBinder.Property = value; }
+        }
 
         public void BindListItem (object item)
         {
@@ -81,7 +84,14 @@ namespace Hyena.Data.Gui
             Render (context, ContentAllocation.Width, ContentAllocation.Height);
         }
 
-        public abstract void Render (CellContext context, double cellWidth, double cellHeight);
+        public virtual void Render (CellContext context, double cellWidth, double cellHeight)
+        {
+            Render (context, context.State, cellWidth, cellHeight);
+        }
+
+        public virtual void Render (CellContext context, Gtk.StateType state, double cellWidth, double cellHeight)
+        {
+        }
 
         public bool Expand { get; set; }
 
