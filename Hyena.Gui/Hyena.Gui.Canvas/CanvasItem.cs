@@ -193,11 +193,9 @@ namespace Hyena.Gui.Canvas
         public Brush Background { get; set; }
 
         public Thickness Padding { get; set; }
-        public Thickness Margin { get; set; }
         public MarginStyle MarginStyle { get; set; }
 
         public Size DesiredSize { get; protected set; }
-        public Rect Allocation { get; set; }
         // FIXME need this?
         public Rect VirtualAllocation { get; set; }
 
@@ -225,29 +223,41 @@ namespace Hyena.Gui.Canvas
         public double Width { get; set; }
         public double Height { get; set; }
 
-        public Rect ContentAllocation {
-            get {
-                return new Rect (
-                    Allocation.X + Margin.Left,
-                    Allocation.Y + Margin.Top,
-                    Math.Max (0, Allocation.Width - Margin.Left - Margin.Right),
-                    Math.Max (0, Allocation.Height - Margin.Top - Margin.Bottom)
-                );
+        private Thickness margin;
+        public Thickness Margin {
+            get { return margin; }
+            set {
+                margin = value;
+                // Refresh the ContentAllocation etc values
+                Allocation = allocation;
             }
         }
+
+        private Rect allocation;
+        public Rect Allocation {
+            get { return allocation; }
+            set {
+                allocation = value;
+                ContentAllocation = new Rect (
+                    Allocation.X + Margin.Left,
+                    Allocation.Y + Margin.Top,
+                    Math.Max (0, Allocation.Width - Margin.X),
+                    Math.Max (0, Allocation.Height - Margin.Y)
+                );
+                ContentSize = new Size (ContentAllocation.Width, ContentAllocation.Height);
+                RenderSize = new Size (Math.Round (ContentAllocation.Width), Math.Round (ContentAllocation.Height));
+            }
+        }
+
+        public Rect ContentAllocation { get; private set; }
+        public Size ContentSize { get; private set; }
+        protected Size RenderSize { get; private set; }
 
         protected virtual Rect InvalidationRect {
             //get { return Rect.Empty; }
             get { return Allocation; }
         }
 
-        public Size ContentSize {
-            get { return new Size (ContentAllocation.Width, ContentAllocation.Height); }
-        }
-
-        protected Size RenderSize {
-            get { return new Size (Math.Round (ContentAllocation.Width), Math.Round (ContentAllocation.Height)); }
-        }
 
         #endregion
 
