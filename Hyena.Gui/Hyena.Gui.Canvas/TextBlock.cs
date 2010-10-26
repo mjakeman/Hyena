@@ -74,7 +74,7 @@ namespace Hyena.Gui.Canvas
             int text_w, text_h;
 
             TextWrap wrap = TextWrap;
-            layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * available.Width);
+            layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * (available.Width - Margin.X));
             layout.Wrap = GetPangoWrapMode (wrap);
             layout.FontDescription.Weight = GetPangoFontWeight (FontWeight);
             layout.SingleParagraphMode = wrap == TextWrap.None;
@@ -136,15 +136,16 @@ namespace Hyena.Gui.Canvas
                 return;
             }
 
-            int layout_width = TextWrap == TextWrap.None
-                ? -1
-                : (int)(Pango.Scale.PangoScale * ContentAllocation.Width);
+            //int layout_width = TextWrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * RenderSize.Width);
+            int layout_width = (int)(Pango.Scale.PangoScale * RenderSize.Width);
             if (layout.Width != layout_width) {
                 layout.Width = layout_width;
             }
 
             int text_width, text_height;
-            layout.SetHeight ((int)(Pango.Scale.PangoScale * RenderSize.Height));
+            if (TextWrap != TextWrap.None) {
+                layout.SetHeight ((int)(Pango.Scale.PangoScale * RenderSize.Height));
+            }
             layout.GetPixelSize (out text_width, out text_height);
 
             if (layout.IsEllipsized || text_width > RenderSize.Width || text_height > RenderSize.Height) {
