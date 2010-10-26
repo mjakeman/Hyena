@@ -439,17 +439,31 @@ namespace Hyena.Data.Sqlite
 
         public void UpdateAggregates ()
         {
-            using (IDataReader reader = connection.Query (count_command, uid)) {
-                if (reader.Read ()) {
-                    rows = Convert.ToInt64 (reader[0]);
+            rows = UpdateAggregates (AggregatesUpdated, uid);
+        }
 
-                    Action<IDataReader> handler = AggregatesUpdated;
+        public void UpdateSelectionAggregates (Action<IDataReader> handler)
+        {
+            SaveSelection ();
+            UpdateAggregates (handler, selection_uid);
+        }
+
+        private long UpdateAggregates (Action<IDataReader> handler, long model_id)
+        {
+            long aggregate_rows = 0;
+            using (IDataReader reader = connection.Query (count_command, model_id)) {
+                if (reader.Read ()) {
+                    aggregate_rows = Convert.ToInt64 (reader[0]);
+
                     if (handler != null) {
                         handler (reader);
                     }
                 }
             }
+
+            return aggregate_rows;
         }
+
 
         private long FindOrCreateCacheModelId (string id)
         {
