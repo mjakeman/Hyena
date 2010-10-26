@@ -425,7 +425,7 @@ namespace Hyena.Data.Gui
             StateType state, bool dragging)
         {
             ColumnCell cell = column_cache[column_index].Column.GetCell (0);
-            cell.BindListItem (item);
+            cell.Bind (item);
             ColumnCellDataProvider (cell, item);
 
             ITextCell text_cell = cell as ITextCell;

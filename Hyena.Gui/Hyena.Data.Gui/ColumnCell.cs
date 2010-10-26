@@ -65,11 +65,6 @@ namespace Hyena.Data.Gui
             set { ObjectBinder.Property = value; }
         }
 
-        public void BindListItem (object item)
-        {
-            Bind (item);
-        }
-
         public virtual void NotifyThemeChange ()
         {
         }

@@ -89,6 +89,7 @@ namespace Hyena.Gui.Canvas
 
             if (Item != null) {
                 Item.InvalidateRender ();
+                //Item.Invalidate ();
             }
 
             return !is_expired;

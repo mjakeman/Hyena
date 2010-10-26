@@ -143,8 +143,8 @@ namespace Hyena.Gui.Canvas
 
             cr.Antialias = Cairo.Antialias.Default;
 
-            cr.Rectangle (0, 0, alloc.Width, alloc.Height);
-            cr.Clip ();
+            //cr.Rectangle (0, 0, alloc.Width, alloc.Height);
+            //cr.Clip ();
 
             ClippedRender (context);
 
@@ -152,7 +152,7 @@ namespace Hyena.Gui.Canvas
                 PrelightRenderer (context.Context, context.Theme, new Rect (0, 0, ContentAllocation.Width, ContentAllocation.Height), prelight_opacity);
             }
 
-            cr.ResetClip ();
+            //cr.ResetClip ();
 
             if (opacity < 1.0) {
                 cr.PopGroupToSource ();
@@ -179,6 +179,14 @@ namespace Hyena.Gui.Canvas
             set { theme = value; }
         }
 
+        public virtual bool GetTooltipMarkupAt (Point pt, out string markup, out Rect area)
+        {
+            markup = TooltipMarkup;
+            area = TopLevelAllocation;
+            return markup != null;
+        }
+
+        protected string TooltipMarkup { get; set; }
         public bool Visible { get; set; }
         public double Opacity { get; set; }
         public Brush Foreground { get; set; }
@@ -243,6 +251,13 @@ namespace Hyena.Gui.Canvas
 
         #endregion
 
+        public void Invalidate ()
+        {
+            InvalidateMeasure ();
+            InvalidateArrange ();
+            InvalidateRender ();
+        }
+
         protected void InvalidateRender (Rect area)
         {
             if (Parent == null) {
@@ -269,7 +284,7 @@ namespace Hyena.Gui.Canvas
             set { Binder.BoundObject = value; }
         }
 
-        /*protected Rect TopLevelAllocation {
+        private Rect TopLevelAllocation {
             get {
                 var alloc = ContentAllocation;
                 var top = this;
@@ -280,7 +295,7 @@ namespace Hyena.Gui.Canvas
 
                 return alloc;
             }
-        }*/
+        }
 
         protected virtual void ClippedRender (Cairo.Context cr)
         {

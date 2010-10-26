@@ -110,7 +110,7 @@ namespace Hyena.Data.Gui.Accessibility
                 int column = (index - n_columns) % n_columns;
                 int row = (index - n_columns) / n_columns;
                 var cell = columns.ElementAtOrDefault (column).GetCell (0);
-                cell.BindListItem (list_view.Model[row]);
+                cell.Bind (list_view.Model[row]);
                 child = (ColumnCellAccessible) cell.GetAccessible (this);
             }
 

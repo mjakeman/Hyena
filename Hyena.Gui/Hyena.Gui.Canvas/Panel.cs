@@ -119,6 +119,17 @@ namespace Hyena.Gui.Canvas
             return null;
         }
 
+        public override bool GetTooltipMarkupAt (Point pt, out string markup, out Rect area)
+        {
+            if (base.GetTooltipMarkupAt (pt, out markup, out area)) {
+                return true;
+            }
+
+            pt = ChildCoord (this, pt);
+            CanvasItem child = FindChildAt (pt, false);
+            return child == null ? false : child.GetTooltipMarkupAt (ChildCoord (child, pt), out markup, out area);
+        }
+
         public override bool ButtonEvent (Point cursor, bool pressed, uint button)
         {
             var child = FindChildAt (cursor, true);

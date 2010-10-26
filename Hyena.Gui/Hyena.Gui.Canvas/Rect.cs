@@ -149,6 +149,10 @@ namespace Hyena.Gui.Canvas
             get { return new Size (Width, Height); }
         }
 
+        public Point Point {
+            get { return new Point (X, Y); }
+        }
+
         public void Intersect (Rect rect)
         {
             if (IsEmpty || rect.IsEmpty) {

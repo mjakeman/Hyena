@@ -495,7 +495,7 @@ namespace Hyena.Data.Gui
             }
 
             // Bind the row to the cell
-            cell.BindListItem (model[row_index]);
+            cell.Bind (model[row_index]);
             return true;
         }
 

@@ -79,7 +79,18 @@ namespace Hyena.Gui.Canvas
             layout.FontDescription.Weight = GetPangoFontWeight (FontWeight);
             layout.SingleParagraphMode = wrap == TextWrap.None;
             layout.Ellipsize = EllipsizeMode;
-            UpdateLayout (layout, GetText ());
+            
+            last_text = GetFormattedText (GetText ()) ?? "";
+            if (TextWrap == TextWrap.None && last_text.IndexOfAny (lfcr) >= 0) {
+                last_text = last_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+            }
+
+            if (UseMarkup) {
+                layout.SetMarkup (last_text);
+            } else {
+                layout.SetText (last_text);
+            }
+
             layout.GetPixelSize (out text_w, out text_h);
 
             double width = text_w;
@@ -111,21 +122,6 @@ namespace Hyena.Gui.Canvas
             }
         }
 
-        private static char[] lfcr = new char[] {'\n', '\r'};
-        private void UpdateLayout (Pango.Layout layout, string text)
-        {
-            string final_text = GetFormattedText (text) ?? "";
-            if (TextWrap == TextWrap.None && final_text.IndexOfAny (lfcr) >= 0) {
-                final_text = final_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
-            }
-
-            if (UseMarkup) {
-                layout.SetMarkup (final_text);
-            } else {
-                layout.SetText (final_text);
-            }
-        }
-
         private string GetFormattedText (string text)
         {
             if (String.IsNullOrEmpty (TextFormat)) {
@@ -150,6 +146,12 @@ namespace Hyena.Gui.Canvas
             int text_width, text_height;
             layout.SetHeight ((int)(Pango.Scale.PangoScale * RenderSize.Height));
             layout.GetPixelSize (out text_width, out text_height);
+
+            if (layout.IsEllipsized || text_width > RenderSize.Width || text_height > RenderSize.Height) {
+                TooltipMarkup = last_text;
+            } else {
+                TooltipMarkup = null;
+            }
 
             Rect new_alloc = new Rect (
                 Math.Round ((RenderSize.Width - text_width) * HorizontalAlignment),
@@ -238,6 +240,11 @@ namespace Hyena.Gui.Canvas
             get { return invalidation_rect; }
         }
 
+        public override string ToString ()
+        {
+            return String.Format ("<TextBlock Text='{0}' Allocation={1}>", last_text, Allocation);
+        }
+
         public string Text { get; set; }
         public string TextFormat { get; set; }
         public FontWeight FontWeight { get; set; }
@@ -250,5 +257,8 @@ namespace Hyena.Gui.Canvas
 
         public double HorizontalAlignment { get; set; }
         public double VerticalAlignment { get; set; }
+
+        private static char[] lfcr = new char[] {'\n', '\r'};
+        private string last_text;
     }
 }

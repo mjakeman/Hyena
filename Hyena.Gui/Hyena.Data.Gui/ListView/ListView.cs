@@ -28,6 +28,8 @@
 
 using System;
 
+using Hyena.Gui.Canvas;
+
 namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase, IListView<T>
@@ -49,38 +51,62 @@ namespace Hyena.Data.Gui
 
         private void OnQueryTooltip (object o, Gtk.QueryTooltipArgs args)
         {
-            if (cell_context != null && cell_context.Layout != null && !args.KeyboardTooltip) {
-                ITooltipCell cell;
-                Column column;
-                int row_index;
+            if (!args.KeyboardTooltip) {
+                if (ViewLayout != null) {
+                    var pt = new Point (args.X - list_interaction_alloc.X, args.Y - list_interaction_alloc.Y);
+                    var child = ViewLayout.FindChildAtPoint (pt);
+                    if (child != null) {
+                        string markup;
+                        Rect area;
+                        pt.Offset (ViewLayout.ActualAllocation.Point);
+                        if (child.GetTooltipMarkupAt (pt, out markup, out area)) {
+                            area.Offset (-ViewLayout.ActualAllocation.X, -ViewLayout.ActualAllocation.Y);
+                            area.Offset (list_interaction_alloc.X, list_interaction_alloc.Y);
+                            args.Tooltip.Markup = markup;
+                            args.Tooltip.TipArea = (Gdk.Rectangle)area;
+                            /*if (!area.Contains (args.X, args.Y)) {
+                                Log.WarningFormat ("Tooltip rect {0} does not contain tooltip point {1},{2} -- this will cause excessive requerying", area, args.X, args.Y);
+                            }*/
+                            args.RetVal = true;
+                        }
+                    }
+                } else if (cell_context != null && cell_context.Layout != null) {
+                    ITooltipCell cell;
+                    Column column;
+                    int row_index;
 
-                if (GetEventCell<ITooltipCell> (args.X, args.Y, out cell, out column, out row_index)) {
-                    CachedColumn cached_column = GetCachedColumnForColumn (column);
+                    if (GetEventCell<ITooltipCell> (args.X, args.Y, out cell, out column, out row_index)) {
+                        CachedColumn cached_column = GetCachedColumnForColumn (column);
 
-                    string markup = cell.GetTooltipMarkup (cell_context, cached_column.Width);
-                    if (!String.IsNullOrEmpty (markup)) {
-                        Gdk.Rectangle rect = new Gdk.Rectangle ();
-                        rect.X = list_interaction_alloc.X + cached_column.X1;
+                        string markup = cell.GetTooltipMarkup (cell_context, cached_column.Width);
+                        if (!String.IsNullOrEmpty (markup)) {
+                            Gdk.Rectangle rect = new Gdk.Rectangle ();
+                            rect.X = list_interaction_alloc.X + cached_column.X1;
 
-                        // get the y of the event in list coords
-                        rect.Y = args.Y - list_interaction_alloc.Y;
+                            // get the y of the event in list coords
+                            rect.Y = args.Y - list_interaction_alloc.Y;
 
-                        // get the top of the cell pointed to by list_y
-                        rect.Y -= VadjustmentValue % ChildSize.Height;
-                        rect.Y -= rect.Y % ChildSize.Height;
+                            // get the top of the cell pointed to by list_y
+                            rect.Y -= VadjustmentValue % ChildSize.Height;
+                            rect.Y -= rect.Y % ChildSize.Height;
 
-                        // convert back to widget coords
-                        rect.Y += list_interaction_alloc.Y;
+                            // convert back to widget coords
+                            rect.Y += list_interaction_alloc.Y;
 
-                        // TODO is this right even if the list is wide enough to scroll horizontally?
-                        rect.Width = cached_column.Width;
+                            // TODO is this right even if the list is wide enough to scroll horizontally?
+                            rect.Width = cached_column.Width;
 
-                        // TODO not right - could be smaller if at the top/bottom and only partially showing
-                        rect.Height = ChildSize.Height;
+                            // TODO not right - could be smaller if at the top/bottom and only partially showing
+                            rect.Height = ChildSize.Height;
 
-                        args.Tooltip.Markup = markup;
-                        args.Tooltip.TipArea = rect;
-                        args.RetVal = true;
+                            /*if (!rect.Contains (args.X, args.Y)) {
+                                Log.WarningFormat ("ListView tooltip rect {0} does not contain tooltip point {1},{2} -- this will cause excessive requerying", rect, args.X, args.Y);
+                            }*/
+
+                            args.Tooltip.Markup = markup;
+                            args.Tooltip.TipArea = rect;
+                            args.RetVal = true;
+                        }
                     }
                 }
             }

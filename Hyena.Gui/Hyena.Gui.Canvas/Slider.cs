@@ -108,9 +108,9 @@ namespace Hyena.Gui.Canvas
             return false;
         }
 
-        private double last_invalidate_value = -1;
+        //private double last_invalidate_value = -1;
 
-        private void Invalidate ()
+        /*private void Invalidate ()
         {
             double current_value = (IsValueUpdatePending ? PendingValue : Value);
 
@@ -135,7 +135,7 @@ namespace Hyena.Gui.Canvas
 
             last_invalidate_value = current_value;
             InvalidateRender (region);
-        }
+        }*/
 
         /*protected override Rect InvalidationRect {
             get { return new Rect (
