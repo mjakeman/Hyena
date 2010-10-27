@@ -23,10 +23,10 @@ SOURCES =  \
 	Hyena.Data/BaseListModel.cs \
 	Hyena.Data/ColumnDescription.cs \
 	Hyena.Data/DictionaryModelCache.cs \
-	Hyena.Data/IDataBinder.cs \
 	Hyena.Data/ICacheableItem.cs \
 	Hyena.Data/ICacheableModel.cs \
 	Hyena.Data/ICareAboutView.cs \
+	Hyena.Data/IDataBinder.cs \
 	Hyena.Data/IFilterable.cs \
 	Hyena.Data/IListModel.cs \
 	Hyena.Data/IPropertyStoreExpose.cs \
