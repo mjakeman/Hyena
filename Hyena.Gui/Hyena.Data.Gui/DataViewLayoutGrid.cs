@@ -91,6 +91,7 @@ namespace Hyena.Data.Gui
             int last_model_row = first_model_row + Rows * Columns;
 
             // Setup for the layout iteration
+            int child_span_width = (int)Math.Floor (ActualAllocation.Width / Columns);
             int model_row_index = first_model_row;
             int layout_child_index = 0;
             int view_row_index = 0;
@@ -126,7 +127,7 @@ namespace Hyena.Data.Gui
                     child_allocation.Y += ChildSize.Height;
                     child_allocation.X = ActualAllocation.X;
                 } else {
-                    child_allocation.X += ChildSize.Width;
+                    child_allocation.X += child_span_width;
                 }
 
                 // FIXME: clear any layout children that go beyond the model
