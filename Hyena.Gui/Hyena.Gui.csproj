@@ -29,6 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Submodule|AnyCPU' ">
     <OutputPath>..\..\..\bin\</OutputPath>
@@ -38,6 +39,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
@@ -191,15 +193,38 @@
     <Compile Include="Hyena.Gui.Canvas\Thickness.cs" />
     <Compile Include="Hyena.Gui.Canvas\Point.cs" />
     <Compile Include="Hyena.Gui.Theming\ThemeTestModule.cs" />
+    <Compile Include="Hyena.Gui.Canvas\AnimationManager.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Brush.cs" />
+    <Compile Include="Hyena.Gui.Canvas\CanvasHost.cs" />
+    <Compile Include="Hyena.Gui.Canvas\CanvasItem.cs" />
+    <Compile Include="Hyena.Gui.Canvas\CanvasItemCollection.cs" />
+    <Compile Include="Hyena.Gui.Canvas\CanvasManager.cs" />
+    <Compile Include="Hyena.Gui.Canvas\FixedPanel.cs" />
+    <Compile Include="Hyena.Gui.Canvas\FontWeight.cs" />
+    <Compile Include="Hyena.Gui.Canvas\FpsCalculator.cs" />
+    <Compile Include="Hyena.Gui.Canvas\ICanvasHost.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Image.cs" />
+    <Compile Include="Hyena.Gui.Canvas\ImageBrush.cs" />
+    <Compile Include="Hyena.Gui.Canvas\MarginStyle.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Orientation.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Panel.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Prelight.cs" />
+    <Compile Include="Hyena.Gui.Canvas\ShadowMarginStyle.cs" />
+    <Compile Include="Hyena.Gui.Canvas\Slider.cs" />
+    <Compile Include="Hyena.Gui.Canvas\StackPanel.cs" />
+    <Compile Include="Hyena.Gui.Canvas\TestTile.cs" />
+    <Compile Include="Hyena.Gui.Canvas\TextBlock.cs" />
+    <Compile Include="Hyena.Gui.Canvas\TextWrap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="3.5">
+      <Properties>
         <Deployment.LinuxDeployData generateScript="false" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="">
           <BuildFilesVar Sync="true" Name="SOURCES" />
           <DeployFilesVar />
+          <ResourcesVar />
           <OthersVar />
           <GacRefVar />
           <AsmRefVar />
