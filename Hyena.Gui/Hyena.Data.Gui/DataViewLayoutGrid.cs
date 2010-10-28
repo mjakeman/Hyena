@@ -92,7 +92,6 @@ namespace Hyena.Data.Gui
 
             // Setup for the layout iteration
             int child_span_width = (int)Math.Floor (ActualAllocation.Width / Columns);
-            int model_row_index = first_model_row;
             int layout_child_index = 0;
             int view_row_index = 0;
             int view_column_index = 0;
@@ -108,15 +107,16 @@ namespace Hyena.Data.Gui
 
             // Iterate the layout children and configure them for the current
             // view state to be consumed by interaction and rendering phases
-            for (; model_row_index < last_model_row; model_row_index++, layout_child_index++) {
+            for (int i = first_model_row; i < last_model_row; i++, layout_child_index++) {
                 var child = Children[layout_child_index];
                 child.Allocation = child_allocation;
                 child.VirtualAllocation = GetChildVirtualAllocation (child_allocation);
-                SetModelIndex (child, model_row_index);
+
+                SetModelIndex (child, i);
                 if (Model != null) {
-                    child.Bind (Model.GetItem (model_row_index));
+                    child.Bind (Model.GetItem (i));
                 }
-                child.Measure (ChildSize); // FIXME: Should not do this here...
+
                 child.Arrange ();
 
                 // Update the allocation for the next child
