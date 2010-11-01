@@ -90,6 +90,8 @@ namespace Hyena.Data.Sqlite
         private SqliteConnection connection;
         private string dbpath;
 
+        protected string DbPath { get { return dbpath; } }
+
         // These are 'parallel' queues; that is, when a value is pushed or popped to
         // one, a value is pushed or popped to all three.
         // The 1st contains the command object itself, and the 2nd and 3rd contain the
@@ -333,7 +335,7 @@ namespace Hyena.Data.Sqlite
             foreach (string column_def in sql.Split (',')) {
                 string column_def_t = column_def.Trim ();
                 int ws_index = column_def_t.IndexOfAny (ws_chars);
-                code (column_def_t.Substring (0, ws_index));
+                code (ws_index == -1 ? column_def_t : column_def_t.Substring (0, ws_index));
             }
         }
 
