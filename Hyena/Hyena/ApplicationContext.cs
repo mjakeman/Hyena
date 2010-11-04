@@ -70,6 +70,10 @@ namespace Hyena
 
                 return debugging.Value;
             }
+            set {
+                debugging = value;
+                Log.Debugging = Debugging;
+            }
         }
 
         public static bool EnvironmentIsSet (string env)

@@ -45,7 +45,11 @@ namespace Hyena
         public static void InitializeMainThread ()
         {
             main_thread = Thread.CurrentThread;
-            main_thread.Name = "Main Thread";
+            try {
+                main_thread.Name = "Main Thread";
+            } catch {
+                Log.DebugFormat ("Main thread set to {0}", main_thread.Name);
+            }
         }
 
         public static bool InMainThread {
