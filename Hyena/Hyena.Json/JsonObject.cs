@@ -49,5 +49,10 @@ namespace Hyena.Json
         {
             return new Serializer (this).Serialize ();
         }
+
+        public static JsonObject FromString (string input)
+        {
+            return new Deserializer (input).Deserialize () as JsonObject;
+        }
     }
 }
