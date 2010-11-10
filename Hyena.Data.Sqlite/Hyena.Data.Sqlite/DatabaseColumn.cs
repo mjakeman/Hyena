@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Data;
 using System.Reflection;
 using System.Text;
 
@@ -86,10 +85,9 @@ namespace Hyena.Data.Sqlite
             return SqliteUtils.ToDbFormat (type, result);
         }
 
-        public void SetValue (object target, IDataReader reader, int column)
+        public void SetFromDbValue (object target, object value)
         {
             // FIXME should we insist on nullable types?
-            object value = reader.IsDBNull (column) ? null : reader.GetValue (column);
             SetValue (target, SqliteUtils.FromDbFormat(type, value));
         }
 

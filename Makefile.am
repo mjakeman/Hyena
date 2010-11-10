@@ -2,7 +2,6 @@
 SUBDIRS =  \
     build \
     Hyena \
-	Mono.Data.Sqlite \
 	Hyena.Data.Sqlite \
 	Hyena.Gui
 

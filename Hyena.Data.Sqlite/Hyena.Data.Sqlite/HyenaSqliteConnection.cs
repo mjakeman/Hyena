@@ -28,10 +28,8 @@
 //
 
 using System;
-using System.Data;
 using System.Threading;
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
 
 namespace Hyena.Data.Sqlite
 {
@@ -70,10 +68,10 @@ namespace Hyena.Data.Sqlite
         }
     }
 
-    public class ExecutingEventArgs : EventArgs
+    internal class ExecutingEventArgs : EventArgs
     {
-        public readonly SqliteCommand Command;
-        public ExecutingEventArgs (SqliteCommand command)
+        public readonly Statement Command;
+        public ExecutingEventArgs (Statement command)
         {
             Command = command;
         }
@@ -87,7 +85,7 @@ namespace Hyena.Data.Sqlite
 
     public class HyenaSqliteConnection : IDisposable
     {
-        private SqliteConnection connection;
+        private Hyena.Data.Sqlite.Connection connection;
         private string dbpath;
 
         protected string DbPath { get { return dbpath; } }
@@ -116,9 +114,9 @@ namespace Hyena.Data.Sqlite
             set { warn_if_called_from_thread = value; }
         }
 
-        public string ServerVersion { get { return connection.ServerVersion; } }
+        public string ServerVersion { get { return Query<string> ("SELECT sqlite_version ()"); } }
 
-        public event EventHandler<ExecutingEventArgs> Executing;
+        internal event EventHandler<ExecutingEventArgs> Executing;
 
         public HyenaSqliteConnection(string dbpath)
         {
@@ -138,24 +136,24 @@ namespace Hyena.Data.Sqlite
         {
             command.CommandType = HyenaCommandType.Reader;
             QueueCommand (command);
-            return command.WaitForResult (this) as IDataReader;
+            return (IDataReader) command.WaitForResult (this);
         }
 
         public IDataReader Query (HyenaSqliteCommand command, params object [] param_values)
         {
             command.CommandType = HyenaCommandType.Reader;
             QueueCommand (command, param_values);
-            return command.WaitForResult (this) as IDataReader;
+            return (IDataReader) command.WaitForResult (this);
         }
 
         public IDataReader Query (string command_str, params object [] param_values)
         {
-            return Query (new HyenaSqliteCommand (command_str, param_values));
+            return Query (new HyenaSqliteCommand (command_str, param_values) { ReaderDisposes = true });
         }
 
         public IDataReader Query (object command)
         {
-            return Query (new HyenaSqliteCommand (command.ToString ()));
+            return Query (new HyenaSqliteCommand (command.ToString ()) { ReaderDisposes = true });
         }
 
         // SELECT single column, multiple rows queries
@@ -181,12 +179,12 @@ namespace Hyena.Data.Sqlite
 
         public IEnumerable<T> QueryEnumerable<T> (string command_str, params object [] param_values)
         {
-            return QueryEnumerable<T> (new HyenaSqliteCommand (command_str, param_values));
+            return QueryEnumerable<T> (new HyenaSqliteCommand (command_str, param_values) { ReaderDisposes = true });
         }
 
         public IEnumerable<T> QueryEnumerable<T> (object command)
         {
-            return QueryEnumerable<T> (new HyenaSqliteCommand (command.ToString ()));
+            return QueryEnumerable<T> (new HyenaSqliteCommand (command.ToString ()) { ReaderDisposes = true });
         }
 
         // SELECT single column, single row queries
@@ -208,12 +206,12 @@ namespace Hyena.Data.Sqlite
 
         public T Query<T> (string command_str, params object [] param_values)
         {
-            return Query<T> (new HyenaSqliteCommand (command_str, param_values));
+            return Query<T> (new HyenaSqliteCommand (command_str, param_values) { ReaderDisposes = true });
         }
 
         public T Query<T> (object command)
         {
-            return Query<T> (new HyenaSqliteCommand (command.ToString ()));
+            return Query<T> (new HyenaSqliteCommand (command.ToString ()) { ReaderDisposes = true });
         }
 
         // INSERT, UPDATE, DELETE queries
@@ -233,12 +231,12 @@ namespace Hyena.Data.Sqlite
 
         public int Execute (string command_str, params object [] param_values)
         {
-            return Execute (new HyenaSqliteCommand (command_str, param_values));
+            return Execute (new HyenaSqliteCommand (command_str, param_values) { ReaderDisposes = true });
         }
 
         public int Execute (object command)
         {
-            return Execute (new HyenaSqliteCommand (command.ToString ()));
+            return Execute (new HyenaSqliteCommand (command.ToString ()) { ReaderDisposes = true });
         }
 
 #endregion
@@ -419,8 +417,7 @@ namespace Hyena.Data.Sqlite
         private void ProcessQueue()
         {
             if (connection == null) {
-                connection = new SqliteConnection (String.Format ("Version=3,URI=file:{0}", dbpath));
-                connection.Open ();
+                connection = new Hyena.Data.Sqlite.Connection (dbpath);
             }
 
             // Keep handling queries
@@ -458,10 +455,10 @@ namespace Hyena.Data.Sqlite
             }
 
             // Finish
-            connection.Close ();
+            connection.Dispose ();
         }
 
-        internal void OnExecuting (SqliteCommand command)
+        internal void OnExecuting (Statement command)
         {
             EventHandler<ExecutingEventArgs> handler = Executing;
             if (handler != null) {

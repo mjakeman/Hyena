@@ -30,12 +30,12 @@
 //
 
 using System;
-using System.Data;
+
 using System.Data.Common;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
+
 
 namespace Hyena.Data.Sqlite
 {

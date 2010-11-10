@@ -29,7 +29,6 @@
 using System;
 using System.Reflection;
 using System.Text;
-using Mono.Data.Sqlite;
 using System.Collections.Generic;
 
 namespace Hyena.Data.Sqlite
@@ -58,6 +57,14 @@ namespace Hyena.Data.Sqlite
             }
         }
 
+        public static object ToDbFormat (object value)
+        {
+            if (value == null)
+                return null;
+
+            return ToDbFormat (value.GetType (), value);
+        }
+
         public static object ToDbFormat (Type type, object value)
         {
             if (type == typeof (string)) {
@@ -80,6 +87,12 @@ namespace Hyena.Data.Sqlite
             }
 
             return value;
+        }
+
+        public static T FromDbFormat<T> (object value)
+        {
+            object o = FromDbFormat (typeof(T), value);
+            return o == null ? default(T) : (T)o;
         }
 
         public static object FromDbFormat (Type type, object value)

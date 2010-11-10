@@ -29,7 +29,6 @@
 #if ENABLE_TESTS
 
 using System;
-using System.Data;
 using System.IO;
 using NUnit.Framework;
 using Hyena.Data.Sqlite;
@@ -172,7 +171,7 @@ namespace Hyena.Data.Sqlite.Tests
 
             using (IDataReader reader = connection.Query (command)) {
                 reader.Read ();
-                Assert.IsTrue (reader.IsDBNull (0));
+                Assert.IsTrue (reader[0] == null);
             }
 
             DbBoundType loaded_item = provider.FetchSingle (newed_item.PrimaryKey);
@@ -196,7 +195,7 @@ namespace Hyena.Data.Sqlite.Tests
             string command = String.Format ("SELECT PrivateTimeSpanProperty FROM {0} WHERE PrimaryKey = {1}", provider.TableName, newed_item.PrimaryKey);
             using (IDataReader reader = connection.Query (command)) {
                 reader.Read ();
-                Assert.IsTrue (reader.IsDBNull (0));
+                Assert.IsTrue (reader[0] == null);
             }
 
             // NUnit boxes and uses reference equality, rather than Equals()

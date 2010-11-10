@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Data;
-
 using Hyena.Data;
 
 namespace Hyena.Data.Sqlite
