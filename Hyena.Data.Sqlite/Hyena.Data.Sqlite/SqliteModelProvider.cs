@@ -360,14 +360,14 @@ namespace Hyena.Data.Sqlite
 
             AbstractDatabaseColumn bad_column = null;
             try {
-                foreach (DatabaseColumn column in select_columns) {
+                foreach (var column in select_columns) {
                     bad_column = column;
-                    column.SetFromDbValue (target, reader[i++]);
+                    column.SetValue (target, reader.Get (i++, column.ValueType));
                 }
 
-                foreach (VirtualDatabaseColumn column in virtual_columns) {
+                foreach (var column in virtual_columns) {
                     bad_column = column;
-                    column.SetFromDbValue (target, reader[i++]);
+                    column.SetValue (target, reader.Get (i++, column.ValueType));
                 }
             } catch (Exception e) {
                 Log.Debug (

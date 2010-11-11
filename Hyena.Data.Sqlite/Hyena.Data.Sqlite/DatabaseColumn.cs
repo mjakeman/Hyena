@@ -79,16 +79,8 @@ namespace Hyena.Data.Sqlite
 
         public object GetValue (object target)
         {
-            object result = field_info != null
-                ? field_info.GetValue (target)
-                : property_info.GetValue (target, null);
+            object result = GetRawValue (target);
             return SqliteUtils.ToDbFormat (type, result);
-        }
-
-        public void SetFromDbValue (object target, object value)
-        {
-            // FIXME should we insist on nullable types?
-            SetValue (target, SqliteUtils.FromDbFormat(type, value));
         }
 
         public void SetValue (object target, object value)
@@ -100,13 +92,9 @@ namespace Hyena.Data.Sqlite
             }
         }
 
-        public string Name {
-            get { return name; }
-        }
-
-        public string Type {
-            get { return column_type; }
-        }
+        public string Name { get { return name; } }
+        public string Type { get { return column_type; } }
+        public Type ValueType { get { return type; } }
     }
 
     public sealed class DatabaseColumn : AbstractDatabaseColumn

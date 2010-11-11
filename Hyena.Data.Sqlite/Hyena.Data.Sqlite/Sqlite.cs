@@ -152,6 +152,7 @@ namespace Hyena.Data.Sqlite
         object this[string columnName] { get; }
         T Get<T> (int i);
         T Get<T> (string columnName);
+        object Get (int i, Type asType);
         int FieldCount { get; }
     }
 
@@ -409,13 +410,20 @@ namespace Hyena.Data.Sqlite
 
         public T Get<T> (int i)
         {
-            var type = typeof (T);
-            var o = GetAs (this[i], type);
+            return (T) Get (i, typeof(T));
+        }
 
-            if (o is T)
-                return (T) o;
+        public object Get (int i, Type asType)
+        {
+            var o = this[i];
+            if (o != null && o.GetType () == asType)
+                return o;
 
-            return (T) SqliteUtils.FromDbFormat (type, o);
+            o = GetAs (o, asType);
+            if (o != null && o.GetType () == asType)
+                return o;
+
+            return SqliteUtils.FromDbFormat (asType, o);
         }
 
         private object GetAs (object o, Type type)
