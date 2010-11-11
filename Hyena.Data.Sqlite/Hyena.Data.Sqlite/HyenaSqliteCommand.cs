@@ -91,44 +91,36 @@ namespace Hyena.Data.Sqlite
             result = null;
             int execution_ms = 0;
 
-            bool dispose_command = ReaderDisposes;
-            var sql_command = connection.CreateStatement (CurrentSqlText);
-            sql_command.ReaderDisposes = ReaderDisposes;
-
+            string command_text = CurrentSqlText;
             try {
                 ticks = System.Environment.TickCount;
 
                 switch (CommandType) {
                     case HyenaCommandType.Reader:
-                        result = sql_command.Query ();
-                        dispose_command = false;
+                        result = connection.Query (command_text);
                         /*using (SqliteDataReader reader = sql_command.ExecuteReader ()) {
                             result = new HyenaSqliteArrayDataReader (reader);
                         }*/
                         break;
 
                     case HyenaCommandType.Scalar:
-                        result = sql_command.QueryScalar ();
+                        result = connection.QueryScalar (command_text);
                         break;
 
                     case HyenaCommandType.Execute:
                     default:
-                        sql_command.Execute ();
+                        connection.Execute (command_text);
                         result = connection.LastInsertRowId;
                         break;
                 }
 
                 execution_ms = System.Environment.TickCount - ticks;
                 if (log_all) {
-                    Log.DebugFormat ("Executed in {0}ms {1}", execution_ms, sql_command.CommandText);
+                    Log.DebugFormat ("Executed in {0}ms {1}", execution_ms, command_text);
                 }
             } catch (Exception e) {
-                Log.DebugFormat ("Exception executing command: {0}", sql_command.CommandText);
+                Log.DebugFormat ("Exception executing command: {0}", command_text);
                 execution_exception = e;
-            } finally {
-                if (dispose_command) {
-                    sql_command.Dispose ();
-                }
             }
 
             // capture the text
