@@ -91,7 +91,7 @@ namespace Hyena.Data.Sqlite
             result = null;
             int execution_ms = 0;
 
-            bool dispose_command = true;
+            bool dispose_command = ReaderDisposes;
             var sql_command = connection.CreateStatement (CurrentSqlText);
             sql_command.ReaderDisposes = ReaderDisposes;
             hconnection.OnExecuting (sql_command);

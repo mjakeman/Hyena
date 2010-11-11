@@ -12,6 +12,8 @@ namespace Hyena.Data.Sqlite
         IntPtr ptr;
         internal IntPtr Ptr { get { return ptr; } }
 
+        internal List<Statement> Statements = new List<Statement> ();
+
         public string DbPath { get; private set; }
 
         public long LastInsertRowId {
@@ -24,11 +26,24 @@ namespace Hyena.Data.Sqlite
             CheckError (Native.sqlite3_open (Encoding.UTF8.GetBytes (dbPath), out ptr));
             if (ptr == IntPtr.Zero)
                 throw new Exception ("Unable to open connection");
+
+            Native.sqlite3_extended_result_codes (ptr, 1);
         }
 
         public void Dispose ()
         {
             if (ptr != IntPtr.Zero) {
+                lock (Statements) {
+                    var stmts = Statements.ToArray ();
+
+                    if (stmts.Length > 0)
+                        Hyena.Log.DebugFormat ("Connection disposing of {0} remaining statements", stmts.Length);
+
+                    foreach (var stmt in stmts) {
+                        stmt.Dispose ();
+                    }
+                }
+
                 CheckError (Native.sqlite3_close (ptr));
                 ptr = IntPtr.Zero;
             }
@@ -44,12 +59,17 @@ namespace Hyena.Data.Sqlite
             CheckError (errorCode, "");
         }
 
-        internal void CheckError (int errorCode, string msg)
+        internal void CheckError (int errorCode, string sql)
         {
             if (errorCode == 0 || errorCode == 100 || errorCode == 101)
                 return;
 
-            throw new Exception (msg + Native.sqlite3_errmsg16 (Ptr).PtrToString ());
+            string errmsg = Native.sqlite3_errmsg16 (Ptr).PtrToString ();
+            if (sql != null) {
+                errmsg = String.Format ("{0} (SQL: {1})", errmsg, sql);
+            }
+
+            throw new SqliteException (errorCode, errmsg);
         }
 
         public Statement CreateStatement (string sql)
@@ -117,6 +137,16 @@ namespace Hyena.Data.Sqlite
         }
     }
 
+    public class SqliteException : Exception
+    {
+        public int ErrorCode { get; private set; }
+
+        public SqliteException (int errorCode, string message) : base (String.Format ("Sqlite error {0}: {1}", errorCode, message))
+        {
+            ErrorCode = errorCode;
+        }
+    }
+
     public interface IDataReader : IDisposable
     {
         bool Read ();
@@ -131,14 +161,17 @@ namespace Hyena.Data.Sqlite
         Connection connection;
         bool bound;
         QueryReader reader;
+        bool disposed;
 
         internal IntPtr Ptr { get { return ptr; } }
         internal bool Bound { get { return bound; } }
         internal Connection Connection { get { return connection; } }
 
+        public bool IsDisposed { get { return disposed; } }
+
         public string CommandText { get; private set; }
         public int ParameterCount { get; private set; }
-        public bool ReaderDisposes { get; set; }
+        public bool ReaderDisposes { get; internal set; }
 
         internal event EventHandler Disposed;
 
@@ -148,7 +181,12 @@ namespace Hyena.Data.Sqlite
             this.connection = connection;
 
             IntPtr pzTail = IntPtr.Zero;
-            connection.CheckError (Native.sqlite3_prepare16_v2 (connection.Ptr, sql, sql.Length * 2, out ptr, out pzTail), sql);
+            CheckError (Native.sqlite3_prepare16_v2 (connection.Ptr, sql, -1, out ptr, out pzTail));
+            
+            lock (Connection.Statements) {
+                Connection.Statements.Add (this);
+            }
+
             if (pzTail != IntPtr.Zero && Marshal.ReadByte (pzTail) != 0) {
                 Dispose ();
                 throw new ArgumentException ("sql", String.Format ("This sqlite binding does not support multiple commands in one statement:\n  {0}", sql));
@@ -158,11 +196,30 @@ namespace Hyena.Data.Sqlite
             reader = new QueryReader () { Statement = this };
         }
 
+        internal void CheckDisposed ()
+        {
+            if (disposed)
+                throw new InvalidOperationException ("Statement is disposed");
+        }
+
+        private string ShortSql { get { return CommandText.Substring (0, Math.Min (CommandText.Length, 20)); } }
+
         public void Dispose ()
         {
+            if (disposed)
+                return;
+
+            disposed = true;
             if (ptr != IntPtr.Zero) {
-                connection.CheckError (Native.sqlite3_finalize (ptr));
+                // Don't check for error here, because if the most recent evaluation had an error finalize will return it too
+                // See http://sqlite.org/c3ref/finalize.html
+                Native.sqlite3_finalize (ptr);
+
                 ptr = IntPtr.Zero;
+
+                lock (Connection.Statements) {
+                    Connection.Statements.Remove (this);
+                }
 
                 var h = Disposed;
                 if (h != null) {
@@ -178,10 +235,11 @@ namespace Hyena.Data.Sqlite
 
         public Statement Bind (params object [] vals)
         {
+            CheckDisposed ();
             if (vals == null || vals.Length != ParameterCount || ParameterCount == 0)
                 throw new ArgumentException ("vals", String.Format ("Statement has {0} parameters", ParameterCount));
 
-            connection.CheckError (Native.sqlite3_reset (ptr));
+            Reset ();
 
             for (int i = 1; i <= vals.Length; i++) {
                 int code = 0;
@@ -205,16 +263,27 @@ namespace Hyena.Data.Sqlite
                     code = Native.sqlite3_bind_text16 (Ptr, i, str, str.Length * 2, (IntPtr)(-1));
                 }
 
-                connection.CheckError (code);
+                CheckError (code);
             }
 
             bound = true;
             return this;
         }
 
+        internal void CheckError (int code)
+        {
+            connection.CheckError (code, CommandText);
+        }
+
+        private void Reset ()
+        {
+            CheckError (Native.sqlite3_reset (ptr));
+        }
+
         public IEnumerator<IDataReader> GetEnumerator ()
         {
-            connection.CheckError (Native.sqlite3_reset (ptr));
+            CheckDisposed ();
+            Reset ();
             while (reader.Read ()) {
                 yield return reader;
             }
@@ -227,17 +296,22 @@ namespace Hyena.Data.Sqlite
 
         public Statement Execute ()
         {
+            CheckDisposed ();
+            Reset ();
             reader.Read ();
             return this;
         }
 
         public object QueryScalar ()
         {
+            CheckDisposed ();
+            Reset ();
             return reader.Read () ? reader[0] : null;
         }
 
         public QueryReader Query ()
         {
+            CheckDisposed ();
             return reader;
         }
     }
@@ -260,6 +334,7 @@ namespace Hyena.Data.Sqlite
         public int FieldCount {
             get {
                 if (column_count == -1) {
+                    Statement.CheckDisposed ();
                     column_count = Native.sqlite3_column_count (Ptr);
                 }
                 return column_count;
@@ -268,6 +343,7 @@ namespace Hyena.Data.Sqlite
 
         public bool Read ()
         {
+            Statement.CheckDisposed ();
             if (Statement.ParameterCount > 0 && !Statement.Bound)
                 throw new InvalidOperationException ("Statement not bound");
 
@@ -275,13 +351,14 @@ namespace Hyena.Data.Sqlite
             if (code == ROW) {
                 return true;
             } else {
-                Statement.Connection.CheckError (code);
+                Statement.CheckError (code);
                 return false;
             }
         }
 
         public object this[int i] {
             get {
+                Statement.CheckDisposed ();
                 int type = Native.sqlite3_column_type (Ptr, i);
                 switch (type) {
                     case SQLITE_INTEGER:
@@ -302,6 +379,7 @@ namespace Hyena.Data.Sqlite
 
         public object this[string columnName] {
             get {
+                Statement.CheckDisposed ();
                 if (columns == null) {
                     columns = new Dictionary<string, int> ();
                     for (int i = 0; i < FieldCount; i++) {
@@ -358,6 +436,9 @@ namespace Hyena.Data.Sqlite
 
         [DllImport(SQLITE_DLL, CharSet = CharSet.Unicode)]
         internal static extern int sqlite3_create_collation16(IntPtr db, string strName, int eTextRep, IntPtr ctx, SqliteCollation fcompare);
+
+        [DllImport(SQLITE_DLL)]
+        internal static extern int sqlite3_extended_result_codes (IntPtr db, int onoff);
 
         // Statement functions
         [DllImport(SQLITE_DLL, CharSet = CharSet.Unicode)]
