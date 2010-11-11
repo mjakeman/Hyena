@@ -23,7 +23,7 @@ namespace Hyena.Data.Sqlite
         public Connection (string dbPath)
         {
             DbPath = dbPath;
-            CheckError (Native.sqlite3_open (Encoding.UTF8.GetBytes (dbPath), out ptr));
+            CheckError (Native.sqlite3_open (Native.GetUtf8Bytes (dbPath), out ptr));
             if (ptr == IntPtr.Zero)
                 throw new Exception ("Unable to open connection");
 
@@ -568,6 +568,11 @@ namespace Hyena.Data.Sqlite
         internal static string PtrToString (this IntPtr ptr)
         {
             return System.Runtime.InteropServices.Marshal.PtrToStringUni (ptr);
+        }
+
+        internal static byte [] GetUtf8Bytes (string str)
+        {
+            return Encoding.UTF8.GetBytes (str + '\0');
         }
     }
 }
