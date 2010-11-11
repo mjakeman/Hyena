@@ -68,15 +68,6 @@ namespace Hyena.Data.Sqlite
         }
     }
 
-    internal class ExecutingEventArgs : EventArgs
-    {
-        public readonly Statement Command;
-        public ExecutingEventArgs (Statement command)
-        {
-            Command = command;
-        }
-    }
-
     public enum HyenaCommandType {
         Reader,
         Scalar,
@@ -115,8 +106,6 @@ namespace Hyena.Data.Sqlite
         }
 
         public string ServerVersion { get { return Query<string> ("SELECT sqlite_version ()"); } }
-
-        internal event EventHandler<ExecutingEventArgs> Executing;
 
         public HyenaSqliteConnection(string dbpath)
         {
@@ -456,14 +445,6 @@ namespace Hyena.Data.Sqlite
 
             // Finish
             connection.Dispose ();
-        }
-
-        internal void OnExecuting (Statement command)
-        {
-            EventHandler<ExecutingEventArgs> handler = Executing;
-            if (handler != null) {
-                handler (this, new ExecutingEventArgs (command));
-            }
         }
 
 #endregion

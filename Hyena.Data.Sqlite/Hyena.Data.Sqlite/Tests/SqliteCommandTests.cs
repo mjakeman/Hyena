@@ -95,23 +95,6 @@ namespace Hyena.Data.Sqlite.Tests
                     GetGeneratedSql (cmd3, new int [] {1, 2, 4}, new string [] {"foo", "baz"}));
         }
 
-        [Test]
-        public void ExecuteMustDisposeSqliteCommand ()
-        {
-            using(var connection = new HyenaSqliteConnection (":memory:")) {
-                bool disposed = false;
-                connection.Executing += delegate (object sender, ExecutingEventArgs args) {
-                    args.Command.Disposed += delegate {
-                        disposed = true;
-                    };
-                };
-
-                connection.Query<int> ("SELECT 42");
-
-                Assert.IsTrue (disposed);
-            }
-        }
-
         static PropertyInfo tf = typeof(HyenaSqliteCommand).GetProperty ("CurrentSqlText", BindingFlags.Instance | BindingFlags.NonPublic);
         private static string GetGeneratedSql (HyenaSqliteCommand cmd, params object [] p)
         {

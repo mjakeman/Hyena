@@ -94,7 +94,6 @@ namespace Hyena.Data.Sqlite
             bool dispose_command = ReaderDisposes;
             var sql_command = connection.CreateStatement (CurrentSqlText);
             sql_command.ReaderDisposes = ReaderDisposes;
-            hconnection.OnExecuting (sql_command);
 
             try {
                 ticks = System.Environment.TickCount;
