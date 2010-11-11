@@ -162,18 +162,43 @@ namespace Hyena.Data.Sqlite
         {
             CreateUsers (con);
 
-            var q1 = con.Query ("SELECT ID, Name FROM Users ORDER BY NAME");
-            var q2 = con.Query ("SELECT ID, Name FROM Users ORDER BY ID");
+            var q1 = con.Query ("SELECT ID, Name FROM Users ORDER BY NAME ASC");
+            var q2 = con.Query ("SELECT ID, Name FROM Users ORDER BY ID ASC");
 
             Assert.IsTrue (q1.Read ());
             Assert.IsTrue (q2.Read ());
             Assert.AreEqual ("Aaron", q1["Name"]);
             Assert.AreEqual ("Gabriel", q2["Name"]);
 
+            con.Execute ("INSERT INTO Users (Name) VALUES ('Zeus')");
+            Assert.AreEqual (3, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+
             Assert.IsTrue (q2.Read ());
-            Assert.AreEqual ("Aaron", q2["Name"]);
+            Assert.AreEqual ("Aaron", q2[1]);
             Assert.IsTrue (q1.Read ());
-            Assert.AreEqual ("Gabriel", q1["Name"]);
+            Assert.AreEqual ("Gabriel", q1[1]);
+
+            // The new value is already passed when sorting by Name ASC
+            // But it had ID=3, so it's available to the second query
+            Assert.IsFalse (q1.Read ());
+            Assert.IsTrue (q2.Read ());
+            Assert.AreEqual ("Zeus", q2[1]);
+
+            // Insert a value, see that q2 can see it, then delete it and try to
+            // get the now-deleted value from q2
+            con.Execute ("INSERT INTO Users (Name) VALUES ('Apollo')");
+            Assert.AreEqual (4, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.IsTrue (q2.Read ());
+
+            con.Execute ("DELETE FROM Users WHERE Name='Apollo'");
+            Assert.AreEqual (3, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.AreEqual ("Apollo", q2[1]);
+            Assert.IsFalse (q2.Read ());
+
+            try {
+                Console.WriteLine (q1[1]);
+                Assert.Fail ("Should have thrown");
+            } catch {}
 
             q1.Dispose ();
             q2.Dispose ();
