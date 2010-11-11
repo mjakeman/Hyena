@@ -91,9 +91,7 @@ namespace Hyena.Data.Sqlite
 
         public void Execute (string sql)
         {
-            using (var stmt = new Statement (this, sql)) {
-                stmt.Execute ();
-            }
+            CheckError (Native.sqlite3_exec (Ptr, Native.GetUtf8Bytes (sql), IntPtr.Zero, IntPtr.Zero, IntPtr.Zero), sql);
         }
 
         const int UTF16 = 4;
@@ -487,6 +485,9 @@ namespace Hyena.Data.Sqlite
 
         [DllImport(SQLITE_DLL)]
         internal static extern int sqlite3_reset(IntPtr stmt);
+
+        [DllImport(SQLITE_DLL)]
+        internal static extern int sqlite3_exec(IntPtr db, byte [] sql, IntPtr callback, IntPtr cbArg, IntPtr errPtr);
 
         [DllImport(SQLITE_DLL)]
         internal static extern int sqlite3_bind_parameter_index(IntPtr stmt, byte [] paramName);
