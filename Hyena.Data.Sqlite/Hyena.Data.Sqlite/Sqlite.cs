@@ -163,6 +163,7 @@ namespace Hyena.Data.Sqlite
         QueryReader reader;
         bool disposed;
 
+        internal bool Reading { get; set; }
         internal IntPtr Ptr { get { return ptr; } }
         internal bool Bound { get { return bound; } }
         internal Connection Connection { get { return connection; } }
@@ -194,6 +195,13 @@ namespace Hyena.Data.Sqlite
 
             ParameterCount = Native.sqlite3_bind_parameter_count (ptr);
             reader = new QueryReader () { Statement = this };
+        }
+
+        internal void CheckReading ()
+        {
+            CheckDisposed ();
+            if (!Reading)
+                throw new InvalidOperationException ("Statement is not readable");
         }
 
         internal void CheckDisposed ()
@@ -278,6 +286,7 @@ namespace Hyena.Data.Sqlite
         private void Reset ()
         {
             CheckError (Native.sqlite3_reset (ptr));
+            Reading = false;
         }
 
         public IEnumerator<IDataReader> GetEnumerator ()
@@ -349,8 +358,10 @@ namespace Hyena.Data.Sqlite
 
             int code = Native.sqlite3_step (Ptr);
             if (code == ROW) {
+                Statement.Reading = true;
                 return true;
             } else {
+                Statement.Reading = false;
                 Statement.CheckError (code);
                 return false;
             }
@@ -358,7 +369,7 @@ namespace Hyena.Data.Sqlite
 
         public object this[int i] {
             get {
-                Statement.CheckDisposed ();
+                Statement.CheckReading ();
                 int type = Native.sqlite3_column_type (Ptr, i);
                 switch (type) {
                     case SQLITE_INTEGER:
@@ -379,7 +390,7 @@ namespace Hyena.Data.Sqlite
 
         public object this[string columnName] {
             get {
-                Statement.CheckDisposed ();
+                Statement.CheckReading ();
                 if (columns == null) {
                     columns = new Dictionary<string, int> ();
                     for (int i = 0; i < FieldCount; i++) {
