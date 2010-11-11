@@ -82,10 +82,10 @@ namespace Hyena.Data.Sqlite
             return new Statement (this, sql) { ReaderDisposes = true }.Query ();
         }
 
-        public object QueryScalar (string sql)
+        public T Query<T> (string sql)
         {
             using (var stmt = new Statement (this, sql)) {
-                return stmt.QueryScalar ();
+                return stmt.Query<T> ();
             }
         }
 
@@ -150,6 +150,8 @@ namespace Hyena.Data.Sqlite
         bool Read ();
         object this[int i] { get; }
         object this[string columnName] { get; }
+        T Get<T> (int i);
+        T Get<T> (string columnName);
         int FieldCount { get; }
     }
 
@@ -239,9 +241,14 @@ namespace Hyena.Data.Sqlite
             Dispose ();
         }
 
+        object [] null_val = new object [] { null };
         public Statement Bind (params object [] vals)
         {
             CheckDisposed ();
+
+            if (vals == null && ParameterCount == 1)
+                vals = null_val;
+
             if (vals == null || vals.Length != ParameterCount || ParameterCount == 0)
                 throw new ArgumentException ("vals", String.Format ("Statement has {0} parameters", ParameterCount));
 
@@ -253,19 +260,25 @@ namespace Hyena.Data.Sqlite
 
                 if (o == null)
                     code = Native.sqlite3_bind_null (Ptr, i);
-                else if (o is double || o is float)
+                else if (o is double)
                     code = Native.sqlite3_bind_double (Ptr, i, (double)o);
-                else if (o is int || o is uint)
+                else if (o is float)
+                    code = Native.sqlite3_bind_double (Ptr, i, (double)(float)o);
+                else if (o is int)
                     code = Native.sqlite3_bind_int (Ptr, i, (int)o);
-                else if (o is long || o is ulong)
+                else if (o is uint)
+                    code = Native.sqlite3_bind_int (Ptr, i, (int)(uint)o);
+                else if (o is long)
                     code = Native.sqlite3_bind_int64 (Ptr, i, (long)o);
+                else if (o is ulong)
+                    code = Native.sqlite3_bind_int64 (Ptr, i, (long)(ulong)o);
                 else if (o is byte[]) {
                     byte [] bytes = o as byte[];
                     code = Native.sqlite3_bind_blob (Ptr, i, bytes, bytes.Length, (IntPtr)(-1));
                 } else {
                     // C# strings are UTF-16, so 2 bytes per char
                     // -1 for the last arg is the TRANSIENT destructor type so that sqlite will make its own copy of the string
-                    string str = o.ToString ();
+                    string str = (o as string) ?? o.ToString ();
                     code = Native.sqlite3_bind_text16 (Ptr, i, str, str.Length * 2, (IntPtr)(-1));
                 }
 
@@ -283,13 +296,13 @@ namespace Hyena.Data.Sqlite
 
         private void Reset ()
         {
+            CheckDisposed ();
             CheckError (Native.sqlite3_reset (ptr));
             Reading = false;
         }
 
         public IEnumerator<IDataReader> GetEnumerator ()
         {
-            CheckDisposed ();
             Reset ();
             while (reader.Read ()) {
                 yield return reader;
@@ -303,22 +316,20 @@ namespace Hyena.Data.Sqlite
 
         public Statement Execute ()
         {
-            CheckDisposed ();
             Reset ();
             reader.Read ();
             return this;
         }
 
-        public object QueryScalar ()
+        public T Query<T> ()
         {
-            CheckDisposed ();
             Reset ();
-            return reader.Read () ? reader[0] : null;
+            return reader.Read () ? reader.Get<T> (0) : (T) SqliteUtils.FromDbFormat <T> (null);
         }
 
         public QueryReader Query ()
         {
-            CheckDisposed ();
+            Reset ();
             return reader;
         }
     }
@@ -377,7 +388,13 @@ namespace Hyena.Data.Sqlite
                     case SQLITE3_TEXT:
                         return Native.sqlite3_column_text16 (Ptr, i).PtrToString ();
                     case SQLITE_BLOB:
-                        return Native.sqlite3_column_blob (Ptr, i);
+                        int num_bytes = Native.sqlite3_column_bytes (Ptr, i);
+                        if (num_bytes == 0)
+                            return null;
+
+                        byte [] bytes = new byte[num_bytes];
+                        Marshal.Copy (Native.sqlite3_column_blob (Ptr, i), bytes, 0, num_bytes);
+                        return bytes;
                     case SQLITE_NULL:
                         return null;
                     default:
@@ -387,21 +404,70 @@ namespace Hyena.Data.Sqlite
         }
 
         public object this[string columnName] {
-            get {
-                Statement.CheckReading ();
-                if (columns == null) {
-                    columns = new Dictionary<string, int> ();
-                    for (int i = 0; i < FieldCount; i++) {
-                        columns[Native.sqlite3_column_name16 (Ptr, i).PtrToString ()] = i;
-                    }
+            get { return this[GetColumnIndex (columnName)]; }
+        }
+
+        public T Get<T> (int i)
+        {
+            var type = typeof (T);
+            var o = GetAs (this[i], type);
+
+            if (o is T)
+                return (T) o;
+
+            return (T) SqliteUtils.FromDbFormat (type, o);
+        }
+
+        private object GetAs (object o, Type type)
+        {
+            if (o == null)
+                return null;
+            else if (type == typeof(uint))
+                return (uint)(long)o;
+            else if (type == typeof(ulong))
+                return (ulong)(long)o;
+            else if (type == typeof(float))
+                return (float)(double)o;
+            return o;
+        }
+
+        static Type long_type = typeof(long);
+        static Type double_type = typeof(double);
+        static Type [] long_types = { typeof(int), typeof(uint), typeof(ulong) };
+        static Type [] double_types = { typeof(float) };
+        static Type [] self_types = { typeof(string), typeof(byte[]), long_type, double_type};
+
+        static Type DbTypeFor (Type type)
+        {
+            if (long_types.Contains (type))
+                return typeof(int);
+            else if (double_types.Contains (type))
+                return double_type;
+            else if (self_types.Contains (type))
+                return type;
+            else
+                return null;
+        }
+
+        public T Get<T> (string columnName)
+        {
+            return Get<T> (GetColumnIndex (columnName));
+        }
+
+        private int GetColumnIndex (string columnName)
+        {
+            Statement.CheckReading ();
+            if (columns == null) {
+                columns = new Dictionary<string, int> ();
+                for (int i = 0; i < FieldCount; i++) {
+                    columns[Native.sqlite3_column_name16 (Ptr, i).PtrToString ()] = i;
                 }
-
-                int col = 0;
-                if (!columns.TryGetValue (columnName, out col))
-                    throw new ArgumentException ("columnName");
-
-                return this[col];
             }
+
+            int col = 0;
+            if (!columns.TryGetValue (columnName, out col))
+                throw new ArgumentException ("columnName");
+            return col;
         }
 
         const int SQLITE_INTEGER = 1;
@@ -466,7 +532,7 @@ namespace Hyena.Data.Sqlite
         internal static extern int sqlite3_column_type(IntPtr stmt, int iCol);
 
         [DllImport(SQLITE_DLL)]
-        internal static extern byte [] sqlite3_column_blob(IntPtr stmt, int iCol);
+        internal static extern IntPtr sqlite3_column_blob(IntPtr stmt, int iCol);
 
         [DllImport(SQLITE_DLL)]
         internal static extern int sqlite3_column_bytes(IntPtr stmt, int iCol);

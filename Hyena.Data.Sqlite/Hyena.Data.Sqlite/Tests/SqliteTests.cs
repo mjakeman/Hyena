@@ -40,17 +40,20 @@ namespace Hyena.Data.Sqlite
     public class SqliteTests
     {
         Connection con;
+        Statement select_literal;
         string dbfile = "hyena-data-sqlite-test.db";
 
         [SetUp]
         public void Setup ()
         {
             con = new Connection (dbfile);
+            select_literal = con.CreateStatement ("SELECT ?");
         }
 
         [TearDown]
         public void TearDown ()
         {
+            select_literal.Dispose ();
             Assert.AreEqual (0, con.Statements.Count);
             con.Dispose ();
             System.IO.File.Delete (dbfile);
@@ -60,13 +63,13 @@ namespace Hyena.Data.Sqlite
         public void Test ()
         {
             using (var stmt = con.CreateStatement ("SELECT 'foobar' as version")) {
-                Assert.AreEqual ("foobar", stmt.QueryScalar ());
+                Assert.AreEqual ("foobar", stmt.Query<string> ());
                 Assert.AreEqual ("foobar", stmt.First ()[0]);
                 Assert.AreEqual ("foobar", stmt.First ()["version"]);
             }
 
             using (var stmt = con.CreateStatement ("SELECT 2 + 5 as res")) {
-                Assert.AreEqual (7, stmt.QueryScalar ());
+                Assert.AreEqual (7, stmt.Query<int> ());
                 Assert.AreEqual (7, stmt.First ()[0]);
                 Assert.AreEqual (7, stmt.First ()["res"]);
 
@@ -107,7 +110,7 @@ namespace Hyena.Data.Sqlite
 
             using (var stmt = con.CreateStatement ("SELECT ? as a, ? as b, ?")) {
                 stmt.Bind (1, "two", 3.3);
-                Assert.AreEqual (1, stmt.QueryScalar ());
+                Assert.AreEqual (1, stmt.Query<int> ());
                 Assert.AreEqual ("two", stmt.First ()["b"]);
                 Assert.AreEqual (3.3, stmt.First ()[2]);
             }
@@ -119,7 +122,7 @@ namespace Hyena.Data.Sqlite
             CreateUsers (con);
 
             using (var stmt = con.CreateStatement ("SELECT COUNT(*) FROM Users")) {
-                Assert.AreEqual (2, stmt.QueryScalar ());
+                Assert.AreEqual (2, stmt.Query<int> ());
             }
 
             using (var stmt = con.CreateStatement ("SELECT ID, Name FROM Users ORDER BY NAME")) {
@@ -171,7 +174,7 @@ namespace Hyena.Data.Sqlite
             Assert.AreEqual ("Gabriel", q2["Name"]);
 
             con.Execute ("INSERT INTO Users (Name) VALUES ('Zeus')");
-            Assert.AreEqual (3, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.AreEqual (3, con.Query<int> ("SELECT COUNT(*) FROM Users"));
 
             Assert.IsTrue (q2.Read ());
             Assert.AreEqual ("Aaron", q2[1]);
@@ -187,11 +190,11 @@ namespace Hyena.Data.Sqlite
             // Insert a value, see that q2 can see it, then delete it and try to
             // get the now-deleted value from q2
             con.Execute ("INSERT INTO Users (Name) VALUES ('Apollo')");
-            Assert.AreEqual (4, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.AreEqual (4, con.Query<int> ("SELECT COUNT(*) FROM Users"));
             Assert.IsTrue (q2.Read ());
 
             con.Execute ("DELETE FROM Users WHERE Name='Apollo'");
-            Assert.AreEqual (3, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.AreEqual (3, con.Query<int> ("SELECT COUNT(*) FROM Users"));
             Assert.AreEqual ("Apollo", q2[1]);
             Assert.IsFalse (q2.Read ());
 
@@ -240,18 +243,18 @@ namespace Hyena.Data.Sqlite
         [Test]
         public void QueryScalar ()
         {
-            Assert.AreEqual (7, con.QueryScalar ("SELECT 7"));
+            Assert.AreEqual (7, con.Query<int> ("SELECT 7"));
         }
 
         [Test]
         public void Execute ()
         {
             try {
-                con.QueryScalar ("SELECT COUNT(*) FROM Users");
+                con.Query<int> ("SELECT COUNT(*) FROM Users");
                 Assert.Fail ("Should have thrown an exception");
             } catch {}
             con.Execute ("CREATE TABLE Users (ID INTEGER PRIMARY KEY, Name TEXT)");
-            Assert.AreEqual (0, con.QueryScalar ("SELECT COUNT(*) FROM Users"));
+            Assert.AreEqual (0, con.Query<int> ("SELECT COUNT(*) FROM Users"));
         }
 
         [Test]
@@ -260,17 +263,17 @@ namespace Hyena.Data.Sqlite
             con.AddFunction<Md5Function> ();
 
             using (var stmt = con.CreateStatement ("SELECT HYENA_MD5(?, ?)")) {
-                Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Bind (1, "testing").QueryScalar ());
-                Assert.AreEqual (null, stmt.Bind (1, null).QueryScalar ());
+                Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Bind (1, "testing").Query<string> ());
+                Assert.AreEqual (null, stmt.Bind (1, null).Query<string> ());
             }
 
             using (var stmt = con.CreateStatement ("SELECT HYENA_MD5(?, ?, ?)")) {
-                Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Bind (2, "test", "ing").QueryScalar ());
-                Assert.AreEqual (null, stmt.Bind (2, null, null).QueryScalar ());
+                Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Bind (2, "test", "ing").Query<string> ());
+                Assert.AreEqual (null, stmt.Bind (2, null, null).Query<string> ());
             }
 
             using (var stmt = con.CreateStatement ("SELECT HYENA_MD5(?, ?, ?, ?)")) {
-                Assert.AreEqual (null, stmt.Bind (3, null, "", null).QueryScalar ());
+                Assert.AreEqual (null, stmt.Bind (3, null, "", null).Query<string> ());
 
                 try {
                     con.RemoveFunction<Md5Function> ();
@@ -282,10 +285,109 @@ namespace Hyena.Data.Sqlite
 
             try {
                 using (var stmt = con.CreateStatement ("SELECT HYENA_MD5(?, ?, ?, ?)")) {
-                    Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.QueryScalar ());
+                    Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Query<string> ());
                     Assert.Fail ("Function HYENA_MD5 should no longer exist");
                 }
             } catch {}
+        }
+
+        [Test]
+        public void DataTypes ()
+        {
+            AssertGetNull<int> (0);
+            AssertRoundTrip<int> (0);
+            AssertRoundTrip<int> (1);
+            AssertRoundTrip<int> (-1);
+            AssertRoundTrip<int> (42);
+            AssertRoundTrip<int> (int.MaxValue);
+            AssertRoundTrip<int> (int.MinValue);
+
+            AssertGetNull<uint> (0);
+            AssertRoundTrip<uint> (0);
+            AssertRoundTrip<uint> (1);
+            AssertRoundTrip<uint> (42);
+            AssertRoundTrip<uint> (uint.MaxValue);
+            AssertRoundTrip<uint> (uint.MinValue);
+
+            AssertGetNull<long> (0);
+            AssertRoundTrip<long> (0);
+            AssertRoundTrip<long> (1);
+            AssertRoundTrip<long> (-1);
+            AssertRoundTrip<long> (42);
+            AssertRoundTrip<long> (long.MaxValue);
+            AssertRoundTrip<long> (long.MinValue);
+
+            AssertGetNull<ulong> (0);
+            AssertRoundTrip<ulong> (0);
+            AssertRoundTrip<ulong> (1);
+            AssertRoundTrip<ulong> (42);
+            AssertRoundTrip<ulong> (ulong.MaxValue);
+            AssertRoundTrip<ulong> (ulong.MinValue);
+
+            AssertGetNull<float> (0f);
+            AssertRoundTrip<float> (0f);
+            AssertRoundTrip<float> (1f);
+            AssertRoundTrip<float> (-1f);
+            AssertRoundTrip<float> (42.222f);
+            AssertRoundTrip<float> (float.MaxValue);
+            AssertRoundTrip<float> (float.MinValue);
+
+            AssertGetNull<double> (0);
+            AssertRoundTrip<double> (0);
+            AssertRoundTrip<double> (1);
+            AssertRoundTrip<double> (-1);
+            AssertRoundTrip<double> (42.222);
+            AssertRoundTrip<double> (double.MaxValue);
+            AssertRoundTrip<double> (double.MinValue);
+
+            AssertGetNull<string> (null);
+            AssertRoundTrip<string> ("a");
+            AssertRoundTrip<string> ("üb€r;&#co¯ol!~`\n\r\t");
+
+            AssertGetNull<byte[]> (null);
+            AssertRoundTrip<byte[]> (new byte [] { 0 });
+            AssertRoundTrip<byte[]> (new byte [] { 0, 1});
+            AssertRoundTrip<byte[]> (System.Text.Encoding.UTF8.GetBytes ("üb€r;&#co¯ol!~`\n\r\t"));
+
+            var ignore_ms = new Func<DateTime, DateTime, bool> ((a, b) => (a - b).TotalSeconds < 1);
+            AssertGetNull<DateTime> (DateTime.MinValue);
+            AssertRoundTrip<DateTime> (new DateTime (1970, 1, 1).ToLocalTime ());
+            AssertRoundTrip<DateTime> (DateTime.Now, ignore_ms);
+            AssertRoundTrip<DateTime> (DateTime.MinValue);
+            // FIXME
+            //AssertRoundTrip<DateTime> (DateTime.MaxValue);
+            Assert.AreEqual (new DateTime (1970, 1, 1).ToLocalTime (), con.Query<DateTime> ("SELECT 0"));
+
+            AssertGetNull<TimeSpan> (TimeSpan.MinValue);
+            AssertRoundTrip<TimeSpan> (TimeSpan.MinValue);
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromSeconds (0));
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromSeconds (0.001));
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromSeconds (0.002));
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromSeconds (0.503));
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromSeconds (1.01));
+            AssertRoundTrip<TimeSpan> (TimeSpan.FromHours (999.00193));
+            // FIXME
+            //AssertRoundTrip<TimeSpan> (TimeSpan.MaxValue);
+        }
+
+        private void AssertRoundTrip<T> (T val)
+        {
+            AssertRoundTrip (val, null);
+        }
+
+        private void AssertRoundTrip<T> (T val, Func<T, T, bool> func)
+        {
+            var o = select_literal.Bind (val).First ().Get<T> (0);
+            if (func == null) {
+                Assert.AreEqual (val, o);
+            } else {
+                Assert.IsTrue (func (val, o));
+            }
+        }
+
+        private void AssertGetNull<T> (T val)
+        {
+            Assert.AreEqual (val, select_literal.Bind (null).First ().Get<T> (0));
         }
     }
 }

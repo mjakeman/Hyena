@@ -104,7 +104,7 @@ namespace Hyena.Data.Sqlite
                         break;
 
                     case HyenaCommandType.Scalar:
-                        result = connection.QueryScalar (command_text);
+                        result = connection.Query<object> (command_text);
                         break;
 
                     case HyenaCommandType.Execute:
