@@ -27,7 +27,13 @@ namespace Hyena.Data.Sqlite
             if (ptr == IntPtr.Zero)
                 throw new Exception ("Unable to open connection");
 
+            Console.WriteLine ("Opened connection to {0}", dbPath);
             Native.sqlite3_extended_result_codes (ptr, 1);
+
+            AddFunction<BinaryFunction> ();
+            AddFunction<CollationKeyFunction> ();
+            AddFunction<SearchKeyFunction> ();
+            AddFunction<Md5Function> ();
         }
 
         public void Dispose ()
@@ -298,8 +304,10 @@ namespace Hyena.Data.Sqlite
         private void Reset ()
         {
             CheckDisposed ();
+            if (Reading)
+                throw new InvalidOperationException ("Can't reset statement while it's being read; make sure to Dispose any IDataReaders");
+
             CheckError (Native.sqlite3_reset (ptr));
-            Reading = false;
         }
 
         public IEnumerator<IDataReader> GetEnumerator ()
@@ -318,14 +326,18 @@ namespace Hyena.Data.Sqlite
         public Statement Execute ()
         {
             Reset ();
-            reader.Read ();
+            using (reader) {
+                reader.Read ();
+            }
             return this;
         }
 
         public T Query<T> ()
         {
             Reset ();
-            return reader.Read () ? reader.Get<T> (0) : (T) SqliteUtils.FromDbFormat <T> (null);
+            using (reader) {
+                return reader.Read () ? reader.Get<T> (0) : (T) SqliteUtils.FromDbFormat <T> (null);
+            }
         }
 
         public QueryReader Query ()
@@ -345,6 +357,7 @@ namespace Hyena.Data.Sqlite
 
         public void Dispose ()
         {
+            Statement.Reading = false;
             if (Statement.ReaderDisposes) {
                 Statement.Dispose ();
             }

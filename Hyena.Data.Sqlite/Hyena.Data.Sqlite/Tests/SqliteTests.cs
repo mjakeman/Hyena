@@ -60,23 +60,37 @@ namespace Hyena.Data.Sqlite
         }
 
         [Test]
+        public void TestBindWhileReading ()
+        {
+            Assert.Fail ();
+        }
+
+        [Test]
+        public void TestQueryWhileReading ()
+        {
+            // TODO
+            Assert.Fail ();
+        }
+
+        [Test]
         public void Test ()
         {
             using (var stmt = con.CreateStatement ("SELECT 'foobar' as version")) {
                 Assert.AreEqual ("foobar", stmt.Query<string> ());
-                Assert.AreEqual ("foobar", stmt.First ()[0]);
-                Assert.AreEqual ("foobar", stmt.First ()["version"]);
-            }
-
-            using (var stmt = con.CreateStatement ("SELECT 2 + 5 as res")) {
-                Assert.AreEqual (7, stmt.Query<int> ());
-                Assert.AreEqual (7, stmt.First ()[0]);
-                Assert.AreEqual (7, stmt.First ()["res"]);
 
                 try {
                     stmt.Bind ();
                     Assert.Fail ("should not be able to bind parameterless statement");
                 } catch {}
+            }
+
+            using (var stmt = con.CreateStatement ("SELECT 2 + 5 as res")) {
+                using (var reader = stmt.Query ()) {
+                    Assert.IsTrue (reader.Read ());
+                    Assert.AreEqual (7, reader.Get<int> (0));
+                    Assert.AreEqual (7, reader[0]);
+                    Assert.AreEqual (7, reader["res"]);
+                }
             }
         }
 
@@ -100,19 +114,26 @@ namespace Hyena.Data.Sqlite
                 } catch {}
 
                 stmt.Bind (21);
-                Assert.AreEqual (21, stmt.First ()[0]);
-                Assert.AreEqual (21, stmt.First ()["version"]);
+                Assert.AreEqual (21, stmt.Query<int> ());
 
                 stmt.Bind ("ffoooo");
-                Assert.AreEqual ("ffoooo", stmt.First ()[0]);
-                Assert.AreEqual ("ffoooo", stmt.First ()["version"]);
+                using (var reader = stmt.First ()) {
+                    Assert.AreEqual ("ffoooo", reader[0]);
+                    Assert.AreEqual ("ffoooo", reader["version"]);
+                }
             }
 
             using (var stmt = con.CreateStatement ("SELECT ? as a, ? as b, ?")) {
                 stmt.Bind (1, "two", 3.3);
-                Assert.AreEqual (1, stmt.Query<int> ());
-                Assert.AreEqual ("two", stmt.First ()["b"]);
-                Assert.AreEqual (3.3, stmt.First ()[2]);
+
+                using (var reader = stmt.Query ()) {
+                    Assert.IsTrue (reader.Read ());
+                    Assert.AreEqual (1, reader.Get<int> (0));
+                    Assert.AreEqual ("two", reader["b"]);
+                    Assert.AreEqual ("two", reader.Get<string> ("b"));
+                    Assert.AreEqual ("two", reader.Get<string> (1));
+                    Assert.AreEqual (3.3, reader[2]);
+                }
             }
         }
 
@@ -125,18 +146,20 @@ namespace Hyena.Data.Sqlite
                 Assert.AreEqual (2, stmt.Query<int> ());
             }
 
-            using (var stmt = con.CreateStatement ("SELECT ID, Name FROM Users ORDER BY NAME")) {
-                var row1 = stmt.First ();
-                Assert.AreEqual ("Aaron", row1["Name"]);
-                Assert.AreEqual ("Aaron", row1[1]);
-                Assert.AreEqual (2, row1["ID"]);
-                Assert.AreEqual (2, row1[0]);
+            using (var reader = con.Query ("SELECT ID, Name FROM Users ORDER BY NAME")) {
+                Assert.IsTrue (reader.Read ());
+                Assert.AreEqual ("Aaron", reader["Name"]);
+                Assert.AreEqual ("Aaron", reader[1]);
+                Assert.AreEqual (2, reader["ID"]);
+                Assert.AreEqual (2, reader[0]);
 
-                var row2 = stmt.Skip (1).First ();
-                Assert.AreEqual ("Gabriel", row2["Name"]);
-                Assert.AreEqual ("Gabriel", row2[1]);
-                Assert.AreEqual (1, row2["ID"]);
-                Assert.AreEqual (1, row2[0]);
+                Assert.IsTrue (reader.Read ());
+                Assert.AreEqual ("Gabriel", reader["Name"]);
+                Assert.AreEqual ("Gabriel", reader[1]);
+                Assert.AreEqual (1, reader["ID"]);
+                Assert.AreEqual (1, reader[0]);
+
+                Assert.IsFalse (reader.Read ());
             }
         }
 
@@ -377,7 +400,7 @@ namespace Hyena.Data.Sqlite
 
         private void AssertRoundTrip<T> (T val, Func<T, T, bool> func)
         {
-            var o = select_literal.Bind (val).First ().Get<T> (0);
+            var o = select_literal.Bind (val).Query<T> ();
             if (func == null) {
                 Assert.AreEqual (val, o);
             } else {
@@ -387,7 +410,7 @@ namespace Hyena.Data.Sqlite
 
         private void AssertGetNull<T> (T val)
         {
-            Assert.AreEqual (val, select_literal.Bind (null).First ().Get<T> (0));
+            Assert.AreEqual (val, select_literal.Bind (null).Query<T> ());
         }
     }
 }
