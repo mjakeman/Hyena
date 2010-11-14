@@ -62,14 +62,55 @@ namespace Hyena.Data.Sqlite
         [Test]
         public void TestBindWhileReading ()
         {
-            Assert.Fail ();
+            using (var stmt = con.CreateStatement ("SELECT ? as version")) {
+                stmt.Bind (7);
+                var reader = stmt.Query ();
+                Assert.IsTrue (reader.Read ());
+                Assert.AreEqual (7, reader[0]);
+
+                try {
+                    stmt.Bind (6);
+                    Assert.Fail ("Shouldn't be able to bind while a reader is active");
+                } catch {}
+
+                Assert.AreEqual (7, reader[0]);
+                reader.Dispose ();
+
+                stmt.Bind (6);
+                Assert.AreEqual (6, stmt.Query<int> ());
+            }
         }
 
         [Test]
         public void TestQueryWhileReading ()
         {
-            // TODO
-            Assert.Fail ();
+            using (var stmt = con.CreateStatement ("SELECT ? as version")) {
+                stmt.Bind (7);
+                var reader = stmt.Query ();
+                Assert.IsTrue (reader.Read ());
+                Assert.AreEqual (7, reader[0]);
+
+                try {
+                    stmt.Execute ();
+                    Assert.Fail ("Shouldn't be able to query while a reader is active");
+                } catch {}
+
+                try {
+                    stmt.Query ();
+                    Assert.Fail ("Shouldn't be able to query while a reader is active");
+                } catch {}
+
+                try {
+                    stmt.Query<int> ();
+                    Assert.Fail ("Shouldn't be able to query while a reader is active");
+                } catch {}
+
+                Assert.AreEqual (7, reader[0]);
+                reader.Dispose ();
+
+                stmt.Bind (6);
+                Assert.AreEqual (6, stmt.Query<int> ());
+            }
         }
 
         [Test]
@@ -281,10 +322,8 @@ namespace Hyena.Data.Sqlite
         }
 
         [Test]
-        public void Functions ()
+        public void Md5Function ()
         {
-            con.AddFunction<Md5Function> ();
-
             using (var stmt = con.CreateStatement ("SELECT HYENA_MD5(?, ?)")) {
                 Assert.AreEqual ("ae2b1fca515949e5d54fb22b8ed95575", stmt.Bind (1, "testing").Query<string> ());
                 Assert.AreEqual (null, stmt.Bind (1, null).Query<string> ());
@@ -312,6 +351,27 @@ namespace Hyena.Data.Sqlite
                     Assert.Fail ("Function HYENA_MD5 should no longer exist");
                 }
             } catch {}
+
+        }
+
+        [Test]
+        public void SearchKeyFunction ()
+        {
+            using (var stmt = con.CreateStatement ("SELECT HYENA_SEARCH_KEY(?)")) {
+                Assert.AreEqual (null,  stmt.Bind (null).Query<string> ());
+                Assert.AreEqual ("eee", stmt.Bind ("Éee").Query<string> ());
+                Assert.AreEqual ("a",   stmt.Bind ("\u0104").Query<string> ());
+            }
+
+            con.Execute ("SELECT HYENA_SEARCH_KEY('foo')");
+        }
+
+        [Test]
+        public void CollationKeyFunction ()
+        {
+            using (var stmt = con.CreateStatement ("SELECT HYENA_COLLATION_KEY(?)")) {
+                Assert.AreEqual (new byte[] {14, 2, 1, 27, 1, 1, 1, 0}, stmt.Bind ("\u0104").Query<byte[]> ());
+            }
         }
 
         [Test]
