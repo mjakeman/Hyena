@@ -1,9 +1,39 @@
+//
+// Sqlite.cs
+//
+// Authors:
+//   Gabriel Burt <gburt@novell.com>
+//
+// Copyright (C) 2010 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System;
 using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
+using Hyena;
 
 namespace Hyena.Data.Sqlite
 {
@@ -27,7 +57,6 @@ namespace Hyena.Data.Sqlite
             if (ptr == IntPtr.Zero)
                 throw new Exception ("Unable to open connection");
 
-            Console.WriteLine ("Opened connection to {0}", dbPath);
             Native.sqlite3_extended_result_codes (ptr, 1);
 
             AddFunction<BinaryFunction> ();
@@ -97,8 +126,16 @@ namespace Hyena.Data.Sqlite
 
         public void Execute (string sql)
         {
+            // TODO
+            // * The application must insure that the 1st parameter to sqlite3_exec() is a valid and open database connection.
+            // * The application must not close database connection specified by the 1st parameter to sqlite3_exec() while sqlite3_exec() is running.
+            // * The application must not modify the SQL statement text passed into the 2nd parameter of sqlite3_exec() while sqlite3_exec() is running. 
             CheckError (Native.sqlite3_exec (Ptr, Native.GetUtf8Bytes (sql), IntPtr.Zero, IntPtr.Zero, IntPtr.Zero), sql);
         }
+
+        // We need to keep a managed ref to the function objects we create so
+        // they won't get GC'd
+        List<SqliteFunction> functions = new List<SqliteFunction> ();
 
         const int UTF16 = 4;
         public void AddFunction<T> () where T : SqliteFunction
@@ -122,6 +159,7 @@ namespace Hyena.Data.Sqlite
                     ptr, pr.Name, UTF16, IntPtr.Zero, f._CompareFunc
                 ));
             }
+            functions.Add (f);
         }
 
         public void RemoveFunction<T> () where T : SqliteFunction
@@ -137,6 +175,11 @@ namespace Hyena.Data.Sqlite
                 CheckError (Native.sqlite3_create_collation16 (
                     ptr, pr.Name, UTF16, IntPtr.Zero, null
                 ));
+            }
+
+            var func = functions.FirstOrDefault (f => f is T);
+            if (func != null) {
+                functions.Remove (func);
             }
         }
     }
@@ -160,6 +203,7 @@ namespace Hyena.Data.Sqlite
         T Get<T> (string columnName);
         object Get (int i, Type asType);
         int FieldCount { get; }
+        string [] FieldNames { get; }
     }
 
     public class Statement : IDisposable, IEnumerable<IDataReader>
@@ -207,14 +251,16 @@ namespace Hyena.Data.Sqlite
         internal void CheckReading ()
         {
             CheckDisposed ();
-            if (!Reading)
+            if (!Reading) {
                 throw new InvalidOperationException ("Statement is not readable");
+            }
         }
 
         internal void CheckDisposed ()
         {
-            if (disposed)
+            if (disposed) {
                 throw new InvalidOperationException ("Statement is disposed");
+            }
         }
 
         private string ShortSql { get { return CommandText.Substring (0, Math.Min (CommandText.Length, 20)); } }
@@ -251,15 +297,13 @@ namespace Hyena.Data.Sqlite
         object [] null_val = new object [] { null };
         public Statement Bind (params object [] vals)
         {
-            CheckDisposed ();
+            Reset ();
 
             if (vals == null && ParameterCount == 1)
                 vals = null_val;
 
             if (vals == null || vals.Length != ParameterCount || ParameterCount == 0)
                 throw new ArgumentException ("vals", String.Format ("Statement has {0} parameters", ParameterCount));
-
-            Reset ();
 
             for (int i = 1; i <= vals.Length; i++) {
                 int code = 0;
@@ -304,8 +348,9 @@ namespace Hyena.Data.Sqlite
         private void Reset ()
         {
             CheckDisposed ();
-            if (Reading)
+            if (Reading) {
                 throw new InvalidOperationException ("Can't reset statement while it's being read; make sure to Dispose any IDataReaders");
+            }
 
             CheckError (Native.sqlite3_reset (ptr));
         }
@@ -347,7 +392,7 @@ namespace Hyena.Data.Sqlite
         }
     }
 
-    public class QueryReader : IDisposable, IDataReader
+    public class QueryReader : IDataReader
     {
         Dictionary<string, int> columns;
         int column_count = -1;
@@ -370,6 +415,16 @@ namespace Hyena.Data.Sqlite
                     column_count = Native.sqlite3_column_count (Ptr);
                 }
                 return column_count;
+            }
+        }
+
+        string [] field_names;
+        public string [] FieldNames {
+            get {
+                if (field_names == null) {
+                    field_names = Columns.Keys.OrderBy (f => Columns[f]).ToArray ();
+                }
+                return field_names;
             }
         }
 
@@ -428,28 +483,27 @@ namespace Hyena.Data.Sqlite
 
         public object Get (int i, Type asType)
         {
-            var o = this[i];
-            if (o != null && o.GetType () == asType)
-                return o;
-
-            o = GetAs (o, asType);
-            if (o != null && o.GetType () == asType)
-                return o;
-
-            return SqliteUtils.FromDbFormat (asType, o);
+            return GetAs (this[i], asType);
         }
 
-        private object GetAs (object o, Type type)
+        internal static object GetAs (object o, Type type)
         {
+            if (o != null && o.GetType () == type)
+                return o;
+
             if (o == null)
-                return null;
+                o = null;
             else if (type == typeof(uint))
-                return (uint)(long)o;
+                o = (uint)(long)o;
             else if (type == typeof(ulong))
-                return (ulong)(long)o;
+                o = (ulong)(long)o;
             else if (type == typeof(float))
-                return (float)(double)o;
-            return o;
+                o = (float)(double)o;
+
+            if (o != null && o.GetType () == type)
+                return o;
+
+            return SqliteUtils.FromDbFormat (type, o);
         }
 
         static Type long_type = typeof(long);
@@ -475,18 +529,24 @@ namespace Hyena.Data.Sqlite
             return Get<T> (GetColumnIndex (columnName));
         }
 
+        private Dictionary<string, int> Columns {
+            get {
+                if (columns == null) {
+                    columns = new Dictionary<string, int> ();
+                    for (int i = 0; i < FieldCount; i++) {
+                        columns[Native.sqlite3_column_name16 (Ptr, i).PtrToString ()] = i;
+                    }
+                }
+                return columns;
+            }
+        }
+
         private int GetColumnIndex (string columnName)
         {
             Statement.CheckReading ();
-            if (columns == null) {
-                columns = new Dictionary<string, int> ();
-                for (int i = 0; i < FieldCount; i++) {
-                    columns[Native.sqlite3_column_name16 (Ptr, i).PtrToString ()] = i;
-                }
-            }
 
             int col = 0;
-            if (!columns.TryGetValue (columnName, out col))
+            if (!Columns.TryGetValue (columnName, out col))
                 throw new ArgumentException ("columnName");
             return col;
         }
