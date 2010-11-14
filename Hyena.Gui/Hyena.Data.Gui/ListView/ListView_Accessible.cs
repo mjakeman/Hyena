@@ -40,6 +40,8 @@ namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase
     {
+        internal ListViewAccessible<T> accessible;
+
         static ListView ()
         {
 #if ENABLE_ATK
@@ -146,7 +148,6 @@ namespace Hyena.Data.Gui
 
         private void AccessibleCellRedrawn (int column, int row)
         {
-            var accessible = Accessible as ICellAccessibleParent;
             if (accessible != null) {
                 accessible.CellRedrawn (column, row);
             }
@@ -165,7 +166,10 @@ namespace Hyena.Data.Gui
 
         protected override Atk.Object OnCreateAccessible (GLib.Object obj)
         {
-            return new ListViewAccessible<T> (obj);
+            Log.InformationFormat ("Creating Accessible for {0}", obj);
+            var accessible = new ListViewAccessible<T> (obj);
+            (obj as ListView<T>).accessible = accessible;
+            return accessible;
         }
 
         protected override GLib.GType OnGetAccessibleType ()
