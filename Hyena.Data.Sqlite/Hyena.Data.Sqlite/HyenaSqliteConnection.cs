@@ -116,6 +116,17 @@ namespace Hyena.Data.Sqlite
             queue_thread.Start();
         }
 
+        public void AddFunction<T> () where T : SqliteFunction
+        {
+            connection.AddFunction<T> ();
+        }
+
+        public void RemoveFunction<T> () where T : SqliteFunction
+        {
+            connection.RemoveFunction<T> ();
+        }
+
+
 #region Public Query Methods
 
         // TODO special case for single object param to avoid object []
