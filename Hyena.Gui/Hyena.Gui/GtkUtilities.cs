@@ -80,9 +80,11 @@ namespace Hyena.Gui
         public static void SetChooserShortcuts (Gtk.FileChooserDialog chooser, params string [] shortcuts)
         {
             foreach (string shortcut in shortcuts) {
-                try {
-                    chooser.AddShortcutFolder (shortcut);
-                } catch {}
+                if (shortcut != null) {
+                    try {
+                        chooser.AddShortcutFolder (shortcut);
+                    } catch {}
+                }
             }
         }
 
