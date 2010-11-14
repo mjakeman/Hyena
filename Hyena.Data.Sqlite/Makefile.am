@@ -3,6 +3,7 @@ TARGET = library
 LINK = -r:Mono.Posix -r:System -r:System.Core -r:$(DIR_BIN)/Hyena.dll
 
 SOURCES =  \
+	Hyena.Data.Sqlite/ArrayDataReader.cs \
 	Hyena.Data.Sqlite/Sqlite.cs \
 	Hyena.Data.Sqlite/DatabaseColumn.cs \
 	Hyena.Data.Sqlite/DatabaseColumnAttribute.cs \

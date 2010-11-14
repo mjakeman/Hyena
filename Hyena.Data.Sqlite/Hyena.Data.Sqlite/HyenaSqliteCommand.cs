@@ -60,8 +60,6 @@ namespace Hyena.Data.Sqlite
         private object [] current_values;
         private int ticks;
 
-        private Thread last_thread;
-
         public string Text {
             get { return command; }
         }
@@ -97,10 +95,9 @@ namespace Hyena.Data.Sqlite
 
                 switch (CommandType) {
                     case HyenaCommandType.Reader:
-                        result = connection.Query (command_text);
-                        /*using (SqliteDataReader reader = sql_command.ExecuteReader ()) {
-                            result = new HyenaSqliteArrayDataReader (reader);
-                        }*/
+                        using (var reader = connection.Query (command_text)) {
+                            result = new ArrayDataReader (reader);
+                        }
                         break;
 
                     case HyenaCommandType.Scalar:
@@ -120,6 +117,7 @@ namespace Hyena.Data.Sqlite
                 }
             } catch (Exception e) {
                 Log.DebugFormat ("Exception executing command: {0}", command_text);
+                Log.Exception (e);
                 execution_exception = e;
             }
 
@@ -146,11 +144,6 @@ namespace Hyena.Data.Sqlite
 
         internal object WaitForResult (HyenaSqliteConnection conn)
         {
-            if (last_thread != null && last_thread != Thread.CurrentThread) {
-                Log.WarningFormat ("Calling HyenaSqliteCommand from different thread ({0}) than last time it was ran ({1})\n  sql: {2}", Thread.CurrentThread.Name, last_thread.Name, Text);
-            }
-            last_thread = Thread.CurrentThread;
-
             while (!finished) {
                 conn.ResultReadySignal.WaitOne ();
             }
