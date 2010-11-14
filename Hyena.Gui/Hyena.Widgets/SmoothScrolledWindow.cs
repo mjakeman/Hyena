@@ -29,7 +29,7 @@ using Hyena.Gui.Theatrics;
 
 namespace Hyena.Widgets
 {
-    public class SmoothScrolledWindow : Gtk.ScrolledWindow
+    public class SmoothScrolledWindow : Hyena.Widgets.ScrolledWindow
     {
         private bool ignore_value_changed;
         private uint timeout;
