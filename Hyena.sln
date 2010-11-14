@@ -21,16 +21,12 @@ Global
 		{95374549-9553-4C1E-9D89-667755F90E13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95374549-9553-4C1E-9D89-667755F90E13}.Submodule|Any CPU.ActiveCfg = Submodule|Any CPU
 		{95374549-9553-4C1E-9D89-667755F90E13}.Submodule|Any CPU.Build.0 = Submodule|Any CPU
-		{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}.Submodule|Any CPU.ActiveCfg = Submodule|Any CPU
-		{BB1D1D81-7A74-4183-B7B1-3E78B32D42F1}.Submodule|Any CPU.Build.0 = Submodule|Any CPU
 		{C856EFD8-E812-4E61-8B76-E3583D94C233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C856EFD8-E812-4E61-8B76-E3583D94C233}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C856EFD8-E812-4E61-8B76-E3583D94C233}.Submodule|Any CPU.ActiveCfg = Submodule|Any CPU
 		{C856EFD8-E812-4E61-8B76-E3583D94C233}.Submodule|Any CPU.Build.0 = Submodule|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Mono.Data.Sqlite\Mono.Data.Sqlite.csproj
+		StartupItem = Hyena\Hyena.csproj
 	EndGlobalSection
 EndGlobal
