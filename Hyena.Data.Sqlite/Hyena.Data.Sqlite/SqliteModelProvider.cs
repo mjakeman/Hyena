@@ -142,7 +142,7 @@ namespace Hyena.Data.Sqlite
             if (connection.TableExists (HyenaTableName)) {
                 using (IDataReader reader = connection.Query (SelectVersionSql (TableName))) {
                     if (reader.Read ()) {
-                        int table_version = (int)reader[0];
+                        int table_version = reader.Get<int> (0);
                         if (table_version < ModelVersion) {
                             MigrateTable (table_version);
                             UpdateVersion (TableName, ModelVersion);
