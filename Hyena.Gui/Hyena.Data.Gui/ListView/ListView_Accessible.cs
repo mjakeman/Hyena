@@ -40,7 +40,9 @@ namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase
     {
+#if ENABLE_ATK
         internal ListViewAccessible<T> accessible;
+#endif
 
         static ListView ()
         {
@@ -148,9 +150,11 @@ namespace Hyena.Data.Gui
 
         private void AccessibleCellRedrawn (int column, int row)
         {
+#if ENABLE_ATK
             if (accessible != null) {
                 accessible.CellRedrawn (column, row);
             }
+#endif
         }
 
     }
