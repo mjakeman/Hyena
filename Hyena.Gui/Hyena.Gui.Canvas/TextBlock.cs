@@ -35,6 +35,7 @@ namespace Hyena.Gui.Canvas
     public class TextBlock : CanvasItem
     {
         private Pango.Layout layout;
+        private Pango.FontDescription font_desc;
         private Rect text_alloc = Rect.Empty;
         private Rect invalidation_rect = Rect.Empty;
 
@@ -58,6 +59,7 @@ namespace Hyena.Gui.Canvas
 
             using (var cr = Gdk.CairoHelper.Create (widget.GdkWindow)) {
                 layout = CairoExtensions.CreateLayout (widget, cr);
+                font_desc = layout.FontDescription;
             }
 
             return layout != null;
@@ -76,19 +78,24 @@ namespace Hyena.Gui.Canvas
             TextWrap wrap = TextWrap;
             layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * (available.Width - Margin.X));
             layout.Wrap = GetPangoWrapMode (wrap);
-            layout.FontDescription.Weight = GetPangoFontWeight (FontWeight);
+            font_desc.Weight = GetPangoFontWeight (FontWeight);
             layout.SingleParagraphMode = wrap == TextWrap.None;
             layout.Ellipsize = EllipsizeMode;
             
-            last_text = GetFormattedText (GetText ()) ?? "";
-            if (TextWrap == TextWrap.None && last_text.IndexOfAny (lfcr) >= 0) {
-                last_text = last_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+            var text = GetText ();
+            if (text != last_text) {
+                last_formatted_text = GetFormattedText (text) ?? "";
+                last_text = text;
+            }
+
+            if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
+                last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
             }
 
             if (UseMarkup) {
-                layout.SetMarkup (last_text);
+                layout.SetMarkup (last_formatted_text);
             } else {
-                layout.SetText (last_text);
+                layout.SetText (last_formatted_text);
             }
 
             layout.GetPixelSize (out text_w, out text_h);
@@ -149,7 +156,7 @@ namespace Hyena.Gui.Canvas
             layout.GetPixelSize (out text_width, out text_height);
 
             if (layout.IsEllipsized || text_width > RenderSize.Width || text_height > RenderSize.Height) {
-                TooltipMarkup = last_text;
+                TooltipMarkup = last_formatted_text;
             } else {
                 TooltipMarkup = null;
             }
@@ -243,7 +250,7 @@ namespace Hyena.Gui.Canvas
 
         public override string ToString ()
         {
-            return String.Format ("<TextBlock Text='{0}' Allocation={1}>", last_text, Allocation);
+            return String.Format ("<TextBlock Text='{0}' Allocation={1}>", last_formatted_text, Allocation);
         }
 
         public string Text { get; set; }
@@ -261,5 +268,6 @@ namespace Hyena.Gui.Canvas
 
         private static char[] lfcr = new char[] {'\n', '\r'};
         private string last_text;
+        private string last_formatted_text = "";
     }
 }
