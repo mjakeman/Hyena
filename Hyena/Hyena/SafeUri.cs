@@ -48,7 +48,7 @@ namespace Hyena
 
         public SafeUri (string uri)
         {
-            int scheme_delimit_index = uri.IndexOf ("://");
+            int scheme_delimit_index = uri.IndexOf ("://", StringComparison.InvariantCulture);
             if (scheme_delimit_index > 0 && scheme_delimit_index <= MAX_SCHEME_LENGTH) {
                 this.uri = uri;
             } else {
@@ -181,7 +181,7 @@ namespace Hyena
         public string Scheme {
             get {
                 if (scheme == null) {
-                    scheme = uri.Substring (0, uri.IndexOf ("://"));
+                    scheme = uri.Substring (0, uri.IndexOf ("://", StringComparison.InvariantCulture));
                 }
 
                 return scheme;

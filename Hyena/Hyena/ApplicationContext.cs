@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Globalization;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -81,8 +82,13 @@ namespace Hyena
             return !String.IsNullOrEmpty (Environment.GetEnvironmentVariable (env));
         }
 
-        public static System.Globalization.CultureInfo InternalCultureInfo {
-            get { return System.Globalization.CultureInfo.InvariantCulture; }
+        private static CultureInfo current_culture = CultureInfo.CurrentCulture;
+        public static CultureInfo CurrentCulture {
+            get { return current_culture; }
+        }
+
+        public static CultureInfo InternalCultureInfo {
+            get { return CultureInfo.InvariantCulture; }
         }
 
         [DllImport ("libc")] // Linux

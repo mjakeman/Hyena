@@ -44,7 +44,7 @@ namespace Hyena
 
         public static int RelaxedIndexOf (string haystack, string needle)
         {
-            return CultureInfo.CurrentCulture.CompareInfo.IndexOf (haystack, needle, compare_options);
+            return ApplicationContext.CurrentCulture.CompareInfo.IndexOf (haystack, needle, compare_options);
         }
 
         public static int RelaxedCompare (string a, string b)
@@ -60,7 +60,7 @@ namespace Hyena
             int a_offset = a.StartsWith ("the ") ? 4 : 0;
             int b_offset = b.StartsWith ("the ") ? 4 : 0;
 
-            return CultureInfo.CurrentCulture.CompareInfo.Compare (a, a_offset, a.Length - a_offset,
+            return ApplicationContext.CurrentCulture.CompareInfo.Compare (a, a_offset, a.Length - a_offset,
                 b, b_offset, b.Length - b_offset, compare_options);
         }
 
@@ -258,7 +258,7 @@ namespace Hyena
             return new Regex (regex_str, RegexOptions.Compiled);
         }
 
-        private static CompareInfo culture_compare_info = CultureInfo.CurrentCulture.CompareInfo;
+        private static CompareInfo culture_compare_info = ApplicationContext.CurrentCulture.CompareInfo;
         public static byte[] SortKey (string orig)
         {
             if (orig == null) { return null; }
