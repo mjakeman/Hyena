@@ -82,21 +82,8 @@ namespace Hyena.Gui.Canvas
             layout.SingleParagraphMode = wrap == TextWrap.None;
             layout.Ellipsize = EllipsizeMode;
             
-            var text = GetText ();
-            if (text != last_text) {
-                last_formatted_text = GetFormattedText (text) ?? "";
-                last_text = text;
-            }
-
-            if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
-                last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
-            }
-
-            if (UseMarkup) {
-                layout.SetMarkup (last_formatted_text);
-            } else {
-                layout.SetText (last_formatted_text);
-            }
+            // Update layout
+            UpdateLayoutText (GetText ());
 
             layout.GetPixelSize (out text_w, out text_h);
 
@@ -117,6 +104,26 @@ namespace Hyena.Gui.Canvas
             }
 
             return size;
+        }
+
+        private void UpdateLayoutText (string text)
+        {
+            if (text == last_text) {
+                return;
+            }
+
+            last_formatted_text = GetFormattedText (text) ?? "";
+            last_text = text;
+
+            if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
+                last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+            }
+
+            if (UseMarkup) {
+                layout.SetMarkup (last_formatted_text);
+            } else {
+                layout.SetText (last_formatted_text);
+            }
         }
 
         private string GetText ()
@@ -208,6 +215,7 @@ namespace Hyena.Gui.Canvas
 
             cr.MoveTo (text_alloc.X, text_alloc.Y);
             Foreground.Apply (cr);
+            UpdateLayoutText (GetText ());
             Pango.CairoHelper.ShowLayout (cr, layout);
             cr.Fill ();
 

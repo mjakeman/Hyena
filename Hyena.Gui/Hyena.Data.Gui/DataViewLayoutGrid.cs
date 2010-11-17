@@ -144,6 +144,7 @@ namespace Hyena.Data.Gui
 
             var child = ChildAllocator ();
             child.Manager = CanvasManager;
+            child.Measure (Size.Empty);
             //child.ParentLayout = this;
             return child;
         }
