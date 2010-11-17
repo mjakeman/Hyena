@@ -493,6 +493,8 @@ namespace Hyena.Data.Sqlite
 
             if (o == null)
                 o = null;
+            else if (type == typeof(int))
+                o = (int)(long)o;
             else if (type == typeof(uint))
                 o = (uint)(long)o;
             else if (type == typeof(ulong))

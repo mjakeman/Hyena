@@ -80,10 +80,13 @@ namespace Hyena.Data.Sqlite
                 return TimeSpan.MinValue.Equals ((TimeSpan)value)
                     ? (object)null
                     : ((TimeSpan)value).TotalMilliseconds;
-            } else if (type.IsEnum) {
-                return Convert.ChangeType (value, Enum.GetUnderlyingType (type));
             } else if (type == typeof (bool)) {
                 return ((bool)value) ? 1 : 0;
+            } else if (enum_types.Contains (type)) {
+                return Convert.ChangeType (value, Enum.GetUnderlyingType (type));
+            } else if (type.IsEnum) {
+                enum_types.Add (type);
+                return Convert.ChangeType (value, Enum.GetUnderlyingType (type));
             }
 
             return value;
@@ -101,21 +104,23 @@ namespace Hyena.Data.Sqlite
                 value = null;
 
             if (type == typeof (DateTime)) {
-                return value == null
-                    ? DateTime.MinValue
-                    : DateTimeUtil.ToDateTime (Convert.ToInt64 (value));
+                if (value == null)
+                    return DateTime.MinValue;
+                else if (!(value is long))
+                    value = Convert.ToInt64 (value);
+                return DateTimeUtil.ToDateTime ((long)value);
             } else if (type == typeof (TimeSpan)) {
-                return value == null
-                    ? TimeSpan.MinValue
-                    : TimeSpan.FromMilliseconds (Convert.ToInt64 (value));
+                if (value == null)
+                    return TimeSpan.MinValue;
+                else if (!(value is long))
+                    value = Convert.ToInt64 (value);
+                return TimeSpan.FromMilliseconds ((long)value);
             } else if (value == null) {
                 if (type.IsValueType) {
                     return Activator.CreateInstance (type);
                 } else {
                     return null;
                 }
-            } else if (type.IsEnum) {
-                return Enum.ToObject (type, value);
             } else if (type == typeof (bool)) {
                 return ((long)value == 1);
             } else if (type == typeof (double?)) {
@@ -124,6 +129,8 @@ namespace Hyena.Data.Sqlite
 
                 double double_value = ((Single?) value).Value;
                 return (double?) double_value;
+            } else if (type.IsEnum) {
+                return Enum.ToObject (type, value);
             } else {
                 return Convert.ChangeType (value, type);
             }
@@ -151,6 +158,8 @@ namespace Hyena.Data.Sqlite
             }
             return builder.ToString ();
         }
+
+        static HashSet<Type> enum_types = new HashSet<Type> ();
     }
 
     [SqliteFunction (Name = "HYENA_BINARY_FUNCTION", FuncType = FunctionType.Scalar, Arguments = 3)]

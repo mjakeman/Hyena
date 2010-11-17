@@ -52,7 +52,7 @@ namespace Hyena.Data.Sqlite
             if (!read) {
                 Read ();
             }
-            return (T) SqliteUtils.FromDbFormat (typeof(T), reader[i]);
+            return reader.Get<T> (i);
         }
 
         public bool Read ()
@@ -162,7 +162,7 @@ namespace Hyena.Data.Sqlite
             Type type = typeof (T);
             using (IDataReader reader = Query (command)) {
                 while (reader.Read ()) {
-                    yield return (T) SqliteUtils.FromDbFormat (type, reader[0]);
+                    yield return (T) reader.Get (0, type);
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace Hyena.Data.Sqlite
             Type type = typeof (T);
             using (IDataReader reader = Query (command, param_values)) {
                 while (reader.Read ()) {
-                    yield return (T) SqliteUtils.FromDbFormat (type, reader[0]);
+                    yield return (T) reader.Get (0, type);
                 }
             }
         }
