@@ -78,7 +78,7 @@ namespace Hyena.Data.Gui
         {
             XPosition = x;
             YPosition = y;
-            InvalidateChildLayout ();
+            InvalidateChildLayout (false);
         }
 
         public void ModelUpdated ()
@@ -111,7 +111,12 @@ namespace Hyena.Data.Gui
         protected abstract void InvalidateChildSize ();
         protected abstract void InvalidateVirtualSize ();
         protected abstract void InvalidateChildCollection ();
-        protected virtual void InvalidateChildLayout ()
+        protected void InvalidateChildLayout ()
+        {
+            InvalidateChildLayout (true);
+        }
+
+        protected virtual void InvalidateChildLayout (bool arrange)
         {
             model_indices.Clear ();
         }

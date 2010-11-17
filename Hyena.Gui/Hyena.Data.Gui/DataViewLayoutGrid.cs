@@ -76,9 +76,9 @@ namespace Hyena.Data.Gui
             }
         }
 
-        protected override void InvalidateChildLayout ()
+        protected override void InvalidateChildLayout (bool arrange)
         {
-            base.InvalidateChildLayout ();
+            base.InvalidateChildLayout (arrange);
 
             if (ChildSize.Width <= 0 || ChildSize.Height <= 0) {
                 // FIXME: empty/reset all child slots here?
@@ -117,7 +117,9 @@ namespace Hyena.Data.Gui
                     child.Bind (Model.GetItem (i));
                 }
 
-                child.Arrange ();
+                if (arrange) {
+                    child.Arrange ();
+                }
 
                 // Update the allocation for the next child
                 if (++view_column_index % Columns == 0) {
