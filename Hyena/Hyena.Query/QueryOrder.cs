@@ -35,38 +35,24 @@ namespace Hyena.Query
 {
     public class QueryOrder
     {
-        private string name;
-        public string Name {
-            get { return name; }
-        }
+        public string Name { get; private set; }
+        public string Label { get; private set; }
+        public string OrderSql { get; private set; }
+        public QueryField Field { get; private set; }
+        public bool Ascending { get; private set; }
 
-        private string label;
-        public string Label {
-            get { return label; }
-            set { label = value; }
-        }
-
-        private string order_sql;
-        public string OrderSql {
-            get { return order_sql; }
-        }
-
-        private QueryField field;
-        public QueryField Field {
-            get { return field; }
-        }
-
-        public QueryOrder (string name, string label, string order_sql, QueryField field)
+        public QueryOrder (string name, string label, string order_sql, QueryField field, bool asc)
         {
-            this.name = name;
-            this.label = label;
-            this.order_sql = order_sql;
-            this.field = field;
+            Name = name;
+            Label = label;
+            OrderSql = order_sql;
+            Field = field;
+            Ascending = asc;
         }
 
         public string ToSql ()
         {
-            return String.Format ("ORDER BY {0}", order_sql);
+            return String.Format ("ORDER BY {0}", OrderSql);
         }
     }
 }
