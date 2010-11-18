@@ -65,20 +65,22 @@ namespace Hyena.Data.Gui
                 IsEverReorderable = model.CanReorder;
             }
 
+            if (ViewLayout != null) {
+                ViewLayout.Model = Model;
+            }
+
             ISortable sortable = model as ISortable;
             if (sortable != null && ColumnController != null) {
                 ISortableColumn sort_column = ColumnController.SortColumn ?? ColumnController.DefaultSortColumn;
                 if (sort_column != null) {
-                    sortable.Sort (sort_column);
+                    if (sortable.Sort (sort_column)) {
+                        model.Reload ();
+                    }
                     RecalculateColumnSizes ();
                     RegenerateColumnCache ();
                     InvalidateHeader ();
                     IsReorderable = sortable.SortColumn == null || sortable.SortColumn.SortType == SortType.None;
                 }
-            }
-
-            if (ViewLayout != null) {
-                ViewLayout.Model = Model;
             }
 
             RefreshViewForModel (vpos);
