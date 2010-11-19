@@ -90,7 +90,7 @@ namespace Hyena.Widgets
 
             string title = String.Format ("<span weight='bold' size='larger'>{0}" +
                               "</span>\n",
-                              header);
+                              GLib.Markup.EscapeText (header));
 
             Gtk.Label label;
 
@@ -103,8 +103,7 @@ namespace Hyena.Widgets
             label_vbox.PackStart (label, false, false, 0);
 
             message_label = label = new Gtk.Label ();
-            label.Markup = msg;
-            label.UseMarkup = true;
+            label.Text = msg;
             label.Justify = Gtk.Justification.Left;
             label.LineWrap = true;
             label.SetAlignment (0.0f, 0.5f);
