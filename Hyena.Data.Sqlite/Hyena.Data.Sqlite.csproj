@@ -37,8 +37,12 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Hyena.Data.Sqlite\ArrayDataReader.cs" />
     <Compile Include="Hyena.Data.Sqlite\DatabaseColumn.cs" />
     <Compile Include="Hyena.Data.Sqlite\DatabaseColumnAttribute.cs" />
+    <Compile Include="Hyena.Data.Sqlite\Sqlite.cs" />
+    <Compile Include="Hyena.Data.Sqlite\SqliteFunction.cs" />
+    <Compile Include="Hyena.Data.Sqlite\SqliteFunctionAttribute.cs" />
     <Compile Include="Hyena.Data.Sqlite\SqliteModelProvider.cs" />
     <Compile Include="Hyena.Data.Sqlite\HyenaSqliteCommand.cs" />
     <Compile Include="Hyena.Data.Sqlite\HyenaSqliteConnection.cs" />
@@ -48,7 +52,6 @@
     <Compile Include="Hyena.Data.Sqlite\Tests\DbBoundType.cs" />
     <Compile Include="Hyena.Data.Sqlite\Tests\SqliteCommandTests.cs" />
     <Compile Include="Hyena.Data.Sqlite\Tests\SqliteModelProviderTests.cs" />
-    <Compile Include="Hyena.Data.Sqlite\HyenaSqliteArrayDataReader.cs" />
     <Compile Include="Hyena.Data.Sqlite\Tests\SqliteUtilTests.cs" />
     <Compile Include="Hyena.Metrics\DbSampleStore.cs" />
     <Compile Include="Hyena.Metrics\MetricsCollection.cs" />
