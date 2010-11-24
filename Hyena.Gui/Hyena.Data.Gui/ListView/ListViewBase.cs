@@ -70,5 +70,6 @@ namespace Hyena.Data.Gui
         }
 
         public abstract Pango.Layout PangoLayout { get; }
+        public abstract Pango.FontDescription FontDescription { get; }
     }
 }

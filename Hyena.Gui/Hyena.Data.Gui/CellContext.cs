@@ -41,6 +41,7 @@ namespace Hyena.Data.Gui
 
         public Cairo.Context Context { get; set; }
         public Pango.Layout Layout { get; set; }
+        public Pango.FontDescription FontDescription { get; set; }
         public Gtk.Widget Widget { get; set; }
         public Gtk.StateType State { get; set; }
         public Gdk.Drawable Drawable { get; set; }

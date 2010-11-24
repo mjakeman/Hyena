@@ -304,6 +304,26 @@ namespace Hyena.Gui.Canvas
             }
         }
 
+        Pango.Layout layout;
+        public Pango.Layout PangoLayout {
+            get {
+                if (layout == null) {
+                    if (GdkWindow == null || !IsRealized) {
+                        return null;
+                    }
+
+                    using (var cr = Gdk.CairoHelper.Create (GdkWindow)) {
+                        layout = CairoExtensions.CreateLayout (this, cr);
+                        FontDescription = layout.FontDescription;
+                    }
+                }
+
+                return layout;
+            }
+        }
+
+        public Pango.FontDescription FontDescription { get; private set; }
+
         public bool Debug {
             get { return debug; }
             set { debug = value; }

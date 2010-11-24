@@ -49,20 +49,8 @@ namespace Hyena.Gui.Canvas
 
         private bool EnsureLayout ()
         {
-            if (layout != null) {
-                return true;
-            }
-
-            Gtk.Widget widget = Manager == null ? null : Manager.Host as Gtk.Widget;
-            if (widget == null || widget.GdkWindow == null || !widget.IsRealized) {
-                return false;
-            }
-
-            using (var cr = Gdk.CairoHelper.Create (widget.GdkWindow)) {
-                layout = CairoExtensions.CreateLayout (widget, cr);
-                font_desc = layout.FontDescription;
-            }
-
+            layout = Manager.Host.PangoLayout;
+            font_desc = Manager.Host.FontDescription;
             return layout != null;
         }
 
@@ -76,15 +64,8 @@ namespace Hyena.Gui.Canvas
 
             int text_w, text_h;
 
-            TextWrap wrap = TextWrap;
-            layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * (available.Width - Margin.X));
-            layout.Wrap = GetPangoWrapMode (wrap);
-            font_desc.Weight = GetPangoFontWeight (FontWeight);
-            layout.SingleParagraphMode = wrap == TextWrap.None;
-            layout.Ellipsize = EllipsizeMode;
-            
             // Update layout
-            UpdateLayoutText (GetText ());
+            UpdateLayout (GetText (), available.Width);
 
             layout.GetPixelSize (out text_w, out text_h);
 
@@ -107,7 +88,7 @@ namespace Hyena.Gui.Canvas
             return size;
         }
 
-        private void UpdateLayoutText (string text)
+        private void UpdateLayout (string text, double width)
         {
             if (text == last_text) {
                 return;
@@ -119,6 +100,13 @@ namespace Hyena.Gui.Canvas
             if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
                 last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
             }
+
+            TextWrap wrap = TextWrap;
+            layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * (width - Margin.X));
+            layout.Wrap = GetPangoWrapMode (wrap);
+            font_desc.Weight = GetPangoFontWeight (FontWeight);
+            layout.SingleParagraphMode = wrap == TextWrap.None;
+            layout.Ellipsize = EllipsizeMode;
 
             if (UseMarkup) {
                 layout.SetMarkup (last_formatted_text);
@@ -196,11 +184,11 @@ namespace Hyena.Gui.Canvas
 
         protected override void ClippedRender (Hyena.Data.Gui.CellContext context)
         {
-            var cr = context.Context;
             if (!EnsureLayout ()) {
                 return;
             }
 
+            var cr = context.Context;
             Foreground = new Brush (context.Theme.Colors.GetWidgetColor (
                 context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, context.State));
 
@@ -220,7 +208,7 @@ namespace Hyena.Gui.Canvas
 
             cr.MoveTo (text_alloc.X, text_alloc.Y);
             Foreground.Apply (cr);
-            UpdateLayoutText (GetText ());
+            UpdateLayout (GetText (), RenderSize.Width);
             Pango.CairoHelper.ShowLayout (cr, layout);
             cr.Fill ();
 

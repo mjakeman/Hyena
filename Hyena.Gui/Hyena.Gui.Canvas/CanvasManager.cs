@@ -30,9 +30,9 @@ namespace Hyena.Gui.Canvas
 {
     public class CanvasManager
     {
-        private object host;
+        private ICanvasHost host;
 
-        public CanvasManager (object host)
+        public CanvasManager (ICanvasHost host)
         {
             this.host = host;
         }
@@ -49,7 +49,6 @@ namespace Hyena.Gui.Canvas
 
         public void QueueRender (CanvasItem item, Rect rect)
         {
-            ICanvasHost host = Host as ICanvasHost;
             if (host == null) {
                 return;
             }
@@ -57,7 +56,7 @@ namespace Hyena.Gui.Canvas
             host.QueueRender (item, rect);
         }
 
-        public object Host {
+        public ICanvasHost Host {
             get { return host; }
         }
     }

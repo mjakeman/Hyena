@@ -51,6 +51,10 @@ namespace Hyena.Data.Gui
             get { return cell_context.Layout; }
         }
 
+        public override Pango.FontDescription FontDescription {
+            get { return cell_context.FontDescription; }
+        }
+
         private List<int> selected_rows = new List<int> ();
 
         private Theme theme;
@@ -90,7 +94,7 @@ namespace Hyena.Data.Gui
             Gdk.Drawable drawable = cell_context != null ? cell_context.Drawable : null;
 
             if (pango_layout != null) {
-                pango_layout.FontDescription.Dispose ();
+                cell_context.FontDescription.Dispose ();
                 pango_layout.Dispose ();
                 pango_layout = null;
             }
@@ -133,6 +137,7 @@ namespace Hyena.Data.Gui
 
             cell_context.Context = cairo_context;
             cell_context.Layout = pango_layout;
+            cell_context.FontDescription = pango_layout.FontDescription;
 
             // FIXME: legacy list foo
             if (ViewLayout == null) {
