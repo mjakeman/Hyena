@@ -38,6 +38,8 @@ namespace Hyena.Data.Gui
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
+        public bool Fill { get; set; }
+
         public Func<CanvasItem> ChildAllocator { get; set; }
         public event EventHandler<EventArgs<int>> ChildCountChanged;
 
@@ -96,12 +98,14 @@ namespace Hyena.Data.Gui
             int view_row_index = 0;
             int view_column_index = 0;
 
+            int flex_width = Fill ? 0 : (int)Math.Floor (Math.Max (0, child_span_width - ChildSize.Width) / (Columns + 1));
+
             // Allocation of the first child in the layout, this
             // will change as we iterate the layout children
             var child_allocation = new Rect () {
-                X = ActualAllocation.X,
+                X = ActualAllocation.X + flex_width,
                 Y = offset,
-                Width = ChildSize.Width,
+                Width = Fill ? child_span_width : ChildSize.Width,
                 Height = ChildSize.Height
             };
 
@@ -127,7 +131,7 @@ namespace Hyena.Data.Gui
                     view_column_index = 0;
 
                     child_allocation.Y += ChildSize.Height;
-                    child_allocation.X = ActualAllocation.X;
+                    child_allocation.X = ActualAllocation.X + flex_width;
                 } else {
                     child_allocation.X += child_span_width;
                 }
