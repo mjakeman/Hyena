@@ -29,6 +29,7 @@ using System.Linq;
 
 using Cairo;
 using Hyena.Gui;
+using Hyena.Gui.Theming;
 
 namespace Hyena.Gui.Canvas
 {
@@ -193,11 +194,15 @@ namespace Hyena.Gui.Canvas
             text_alloc = new_alloc;
         }
 
-        protected override void ClippedRender (Context cr)
+        protected override void ClippedRender (Hyena.Data.Gui.CellContext context)
         {
+            var cr = context.Context;
             if (!EnsureLayout ()) {
                 return;
             }
+
+            Foreground = new Brush (context.Theme.Colors.GetWidgetColor (
+                context.TextAsForeground ? GtkColorClass.Foreground : GtkColorClass.Text, context.State));
 
             Brush foreground = Foreground;
             if (!foreground.IsValid) {
