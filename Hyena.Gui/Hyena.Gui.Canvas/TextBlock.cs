@@ -65,7 +65,7 @@ namespace Hyena.Gui.Canvas
             int text_w, text_h;
 
             // Update layout
-            UpdateLayout (GetText (), available.Width);
+            UpdateLayout (GetText (), available.Width - Margin.X, null, false);
 
             layout.GetPixelSize (out text_w, out text_h);
 
@@ -75,7 +75,7 @@ namespace Hyena.Gui.Canvas
             }
 
             //DesiredSize = new Size (width, text_h);
-            var size = new Size (width, text_h);
+            var size = DesiredSize = new Size (width, text_h);
 
             // Hack, as this prevents the TextBlock from
             // being flexible in a Vertical StackPanel
@@ -88,22 +88,23 @@ namespace Hyena.Gui.Canvas
             return size;
         }
 
-        private void UpdateLayout (string text, double width)
+        private void UpdateLayout (string text, double width, double? height, bool forceWidth)
         {
-            if (text == last_text) {
-                return;
-            }
+            if (text != last_text) {
+                last_formatted_text = GetFormattedText (text) ?? "";
+                last_text = text;
 
-            last_formatted_text = GetFormattedText (text) ?? "";
-            last_text = text;
-
-            if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
-                last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+                if (TextWrap == TextWrap.None && last_formatted_text.IndexOfAny (lfcr) >= 0) {
+                    last_formatted_text = last_formatted_text.Replace ("\r\n", "\x20").Replace ('\n', '\x20').Replace ('\r', '\x20');
+                }
             }
 
             TextWrap wrap = TextWrap;
-            layout.Width = wrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * (width - Margin.X));
+            layout.Width = wrap != TextWrap.None || forceWidth ? (int)(Pango.Scale.PangoScale * width) : -1;
             layout.Wrap = GetPangoWrapMode (wrap);
+            if (height != null && wrap != TextWrap.None) {
+                layout.SetHeight ((int)(Pango.Scale.PangoScale * height.Value));
+            }
             font_desc.Weight = GetPangoFontWeight (FontWeight);
             layout.SingleParagraphMode = wrap == TextWrap.None;
             layout.Ellipsize = EllipsizeMode;
@@ -139,16 +140,10 @@ namespace Hyena.Gui.Canvas
                 return;
             }
 
-            //int layout_width = TextWrap == TextWrap.None ? -1 : (int)(Pango.Scale.PangoScale * RenderSize.Width);
-            int layout_width = (int)(Pango.Scale.PangoScale * RenderSize.Width);
-            if (layout.Width != layout_width) {
-                layout.Width = layout_width;
-            }
+            UpdateLayout (GetText (), RenderSize.Width, RenderSize.Height, true);
 
             int text_width, text_height;
-            if (TextWrap != TextWrap.None) {
-                layout.SetHeight ((int)(Pango.Scale.PangoScale * RenderSize.Height));
-            }
+
             layout.GetPixelSize (out text_width, out text_height);
 
             if (layout.IsEllipsized || text_width > RenderSize.Width || text_height > RenderSize.Height) {
@@ -208,7 +203,7 @@ namespace Hyena.Gui.Canvas
 
             cr.MoveTo (text_alloc.X, text_alloc.Y);
             Foreground.Apply (cr);
-            UpdateLayout (GetText (), RenderSize.Width);
+            UpdateLayout (GetText (), RenderSize.Width, RenderSize.Height, true);
             Pango.CairoHelper.ShowLayout (cr, layout);
             cr.Fill ();
 
