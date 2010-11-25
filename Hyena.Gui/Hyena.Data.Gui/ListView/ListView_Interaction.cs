@@ -5,9 +5,11 @@
 //   Aaron Bockover <abockover@novell.com>
 //   Gabriel Burt <gburt@novell.com>
 //   Eitan Isaacson <eitan@ascender.com>
+//   Alex Launi <alex.launi@canonical.com>
 //
 // Copyright (C) 2007-2009 Novell, Inc.
 // Copyright (C) 2009 Eitan Isaacson
+// Copyright (C) 2010 Alex Launi
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -40,6 +42,11 @@ namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase
     {
+        private enum KeyDirection {
+            Press,
+            Release
+        }
+
         private bool header_focused = false;
         public bool HeaderFocused {
             get { return header_focused; }
@@ -118,7 +125,7 @@ namespace Hyena.Data.Gui
                 return true;
             }
 
-            int row_index = Math.Min (Model.Count - 1, Math.Max (0, Selection.FocusedIndex + relative_row));
+            int scroll_target_item_index = Math.Min (Model.Count - 1, Math.Max (0, Selection.FocusedIndex + relative_row));
 
             if (Selection != null) {
                 if ((modifier & Gdk.ModifierType.ControlMask) != 0) {
@@ -128,21 +135,21 @@ namespace Hyena.Data.Gui
                     // is not selected, select it and don't move the focus or vadjustment.
                     // Otherwise, select the new row and scroll etc as necessary.
                     if (relative_row * relative_row != 1) {
-                        Selection.SelectFromFirst (row_index, true);
+                        Selection.SelectFromFirst (scroll_target_item_index, true, false);
                     } else if (Selection.Contains (Selection.FocusedIndex)) {
-                        Selection.SelectFromFirst (row_index, true);
+                        Selection.SelectFromFirst (scroll_target_item_index, true, false);
                     } else {
-                        Selection.Select (Selection.FocusedIndex);
+                        Selection.Select (Selection.FocusedIndex, false);
                         return true;
                     }
                 } else {
                     Selection.Clear (false);
-                    Selection.Select (row_index);
+                    Selection.Select (scroll_target_item_index, false);
                 }
             }
 
             // Scroll if needed
-            double y_at_row = GetViewPointForModelRow (row_index).Y;
+            double y_at_row = GetViewPointForModelRow (scroll_target_item_index).Y;
             if (align_y) {
                 if (y_at_row < VadjustmentValue) {
                     ScrollToY (y_at_row);
@@ -158,12 +165,89 @@ namespace Hyena.Data.Gui
                 ScrollToY (vadjustment.Value + y_at_row - GetViewPointForModelRow (Selection.FocusedIndex).Y);
             }
 
-            Selection.FocusedIndex = row_index;
+            Selection.FocusedIndex = scroll_target_item_index;
             InvalidateList ();
             return true;
         }
 
+        private bool UpdateSelectionForKeyboardScroll (Gdk.ModifierType modifier, int relative_row)
+        {
+            if (Selection != null) {
+                if ((modifier & Gdk.ModifierType.ControlMask) != 0) {
+                    // Don't change the selection
+                } else {
+                    //Console.WriteLine ("Selection.Notify!");
+                    Selection.Notify ();
+                }
+            }
+            return true;
+        }
+
         protected override bool OnKeyPressEvent (Gdk.EventKey press)
+        {
+            bool handled = false;
+
+            switch (press.Key) {
+            case Gdk.Key.a:
+                if ((press.State & Gdk.ModifierType.ControlMask) != 0 && Model.Count > 0) {
+                    SelectionProxy.Selection.SelectAll ();
+                    handled = true;
+                }
+                break;
+
+            case Gdk.Key.A:
+                if ((press.State & Gdk.ModifierType.ControlMask) != 0 && Selection.Count > 0) {
+                    SelectionProxy.Selection.Clear ();
+                    handled = true;
+                }
+                break;
+
+            case Gdk.Key.Return:
+            case Gdk.Key.KP_Enter:
+                if (!HeaderFocused) {
+                    handled = ActivateSelection ();
+                } else if (HeaderFocused && ActiveColumn >= 0) {
+                    OnColumnLeftClicked (
+                        column_cache[ActiveColumn].Column);
+                    handled = true;
+                }
+                break;
+
+            case Gdk.Key.Escape:
+                handled = CancelColumnDrag ();
+                break;
+
+            case Gdk.Key.space:
+                if (Selection != null && Selection.FocusedIndex != 1 &&
+                    !HeaderFocused) {
+                    Selection.ToggleSelect (Selection.FocusedIndex);
+                    handled = true;
+                }
+                break;
+
+            case Gdk.Key.F10:
+                if ((press.State & Gdk.ModifierType.ShiftMask) != 0)
+                    goto case Gdk.Key.Menu;
+                break;
+
+            case Gdk.Key.Menu:
+                // OnPopupMenu() is reserved for list items in derived classes.
+                if (HeaderFocused) {
+                    InvokeColumnHeaderMenu (ActiveColumn);
+                    handled = true;
+                }
+                break;
+
+            default:
+                handled = HandleKeyboardScrollKey (press, KeyDirection.Press);
+                break;
+            }
+
+            Console.WriteLine ("OnKeyPress for {0}; handled? {1}", press.Key, handled);
+            return handled ? true : base.OnKeyPressEvent (press);
+        }
+
+        private bool HandleKeyboardScrollKey (Gdk.EventKey press, KeyDirection direction)
         {
             bool handled = false;
             // FIXME: hard-coded grid logic here...
@@ -171,132 +255,113 @@ namespace Hyena.Data.Gui
             int items_per_row = grid ? (ViewLayout as DataViewLayoutGrid).Columns : 1;
 
             switch (press.Key) {
-                case Gdk.Key.a:
-                    if ((press.State & Gdk.ModifierType.ControlMask) != 0 && Model.Count > 0) {
-                        SelectionProxy.Selection.SelectAll ();
-                        handled = true;
-                    }
-                    break;
+            case Gdk.Key.k:
+            case Gdk.Key.K:
+            case Gdk.Key.Up:
+            case Gdk.Key.KP_Up:
+                if (!HeaderFocused) {
+                    handled = (direction == KeyDirection.Press)
+                        ? KeyboardScroll (press.State, -items_per_row, true)
+                        : UpdateSelectionForKeyboardScroll (press.State, -items_per_row);
+                }
+                break;
 
-                case Gdk.Key.A:
-                    if ((press.State & Gdk.ModifierType.ControlMask) != 0 && Selection.Count > 0) {
-                        SelectionProxy.Selection.Clear ();
-                        handled = true;
-                    }
-                    break;
-
-                case Gdk.Key.k:
-                case Gdk.Key.K:
-                case Gdk.Key.Up:
-                case Gdk.Key.KP_Up:
-                    if (!HeaderFocused) {
-                        handled = KeyboardScroll (press.State, -items_per_row, true);
-                    }
-                    break;
-
-                case Gdk.Key.j:
-                case Gdk.Key.J:
-                case Gdk.Key.Down:
-                case Gdk.Key.KP_Down:
+            case Gdk.Key.j:
+            case Gdk.Key.J:
+            case Gdk.Key.Down:
+            case Gdk.Key.KP_Down:
+                if (direction == KeyDirection.Press) {
                     if (!HeaderFocused) {
                         handled = KeyboardScroll (press.State, items_per_row, true);
                     } else {
                         handled = true;
                         HeaderFocused = false;
                     }
-                    break;
-                case Gdk.Key.l:
-                case Gdk.Key.L:
-                case Gdk.Key.Right:
-                case Gdk.Key.KP_Right:
-                    handled = true;
+                } else if (!HeaderFocused) {
+                    handled = UpdateSelectionForKeyboardScroll (press.State, items_per_row);
+                }
+                break;
+
+            case Gdk.Key.l:
+            case Gdk.Key.L:
+            case Gdk.Key.Right:
+            case Gdk.Key.KP_Right:
+                handled = true;
+                if (direction == KeyDirection.Press) {
                     if (grid && !HeaderFocused) {
                         handled = KeyboardScroll (press.State, 1, true);
                     } else if (ActiveColumn + 1 < column_cache.Length) {
                         ActiveColumn++;
                         InvalidateHeader ();
                     }
-                    break;
-                case Gdk.Key.h:
-                case Gdk.Key.H:
-                case Gdk.Key.Left:
-                case Gdk.Key.KP_Left:
-                    handled = true;
+                } else if (grid && !HeaderFocused) {
+                    handled = UpdateSelectionForKeyboardScroll (press.State, 1);
+                }
+                break;
+
+            case Gdk.Key.h:
+            case Gdk.Key.H:
+            case Gdk.Key.Left:
+            case Gdk.Key.KP_Left:
+                handled = true;
+                if (direction == KeyDirection.Press) {
                     if (grid && !HeaderFocused) {
                         handled = KeyboardScroll (press.State, -1, true);
                     } else if (ActiveColumn - 1 >= 0) {
                         ActiveColumn--;
                         InvalidateHeader ();
                     }
-                    break;
-                case Gdk.Key.Page_Up:
-                case Gdk.Key.KP_Page_Up:
-                    if (!HeaderFocused)
-                        handled = vadjustment != null && KeyboardScroll (press.State,
-                            (int)(-vadjustment.PageIncrement / (double)ChildSize.Height) * items_per_row, false);
-                    break;
+                } else if (grid && !HeaderFocused) {
+                    handled = UpdateSelectionForKeyboardScroll (press.State, -1);
+                }
+                break;
 
-                case Gdk.Key.Page_Down:
-                case Gdk.Key.KP_Page_Down:
-                    if (!HeaderFocused)
-                        handled = vadjustment != null && KeyboardScroll (press.State,
-                            (int)(vadjustment.PageIncrement / (double)ChildSize.Height) * items_per_row, false);
-                    break;
+            case Gdk.Key.Page_Up:
+            case Gdk.Key.KP_Page_Up:
+                if (!HeaderFocused) {
+                    int relativeRow = (int)(-vadjustment.PageIncrement / (double)ChildSize.Height) * items_per_row;
+                    handled = vadjustment != null && (direction == KeyDirection.Press
+                                                      ? KeyboardScroll (press.State, relativeRow, false)
+                                                      : UpdateSelectionForKeyboardScroll (press.State, relativeRow));
+                }
+                break;
 
-                case Gdk.Key.Home:
-                case Gdk.Key.KP_Home:
-                    if (!HeaderFocused)
-                        handled = KeyboardScroll (press.State, -10000000, true);
-                    break;
+            case Gdk.Key.Page_Down:
+            case Gdk.Key.KP_Page_Down:
+                if (!HeaderFocused) {
+                    int relativeRow = (int)(vadjustment.PageIncrement / (double)ChildSize.Height) * items_per_row;
+                    handled = vadjustment != null && (direction == KeyDirection.Press
+                                                          ? KeyboardScroll (press.State, relativeRow, false)
+                                                          : UpdateSelectionForKeyboardScroll (press.State, relativeRow));
+                }
+                break;
 
-                case Gdk.Key.End:
-                case Gdk.Key.KP_End:
-                    if (!HeaderFocused)
-                        handled = KeyboardScroll (press.State, 10000000, true);
-                    break;
+            case Gdk.Key.Home:
+            case Gdk.Key.KP_Home:
+                if (!HeaderFocused) {
+                    handled = direction == KeyDirection.Press
+                        ? KeyboardScroll (press.State, int.MinValue, true)
+                        : UpdateSelectionForKeyboardScroll (press.State, int.MinValue);
+                }
+                break;
 
-                case Gdk.Key.Return:
-                case Gdk.Key.KP_Enter:
-                    if (!HeaderFocused) {
-                        handled = ActivateSelection ();
-                    } else if (HeaderFocused && ActiveColumn >= 0) {
-                        OnColumnLeftClicked (
-                            column_cache[ActiveColumn].Column);
-                        handled = true;
-                    }
-                    break;
-
-                case Gdk.Key.Escape:
-                    handled = CancelColumnDrag ();
-                    break;
-
-                case Gdk.Key.space:
-                    if (Selection != null && Selection.FocusedIndex != 1 &&
-                        !HeaderFocused) {
-                        Selection.ToggleSelect (Selection.FocusedIndex);
-                        handled = true;
-                    }
-                    break;
-
-                case Gdk.Key.F10:
-                    if ((press.State & Gdk.ModifierType.ShiftMask) != 0)
-                        goto case Gdk.Key.Menu;
-                    break;
-
-                case Gdk.Key.Menu:
-                    // OnPopupMenu() is reserved for list items in derived classes.
-                    if (HeaderFocused) {
-                        InvokeColumnHeaderMenu (ActiveColumn);
-                        handled = true;
-                    }
-                    break;
+            case Gdk.Key.End:
+            case Gdk.Key.KP_End:
+                if (!HeaderFocused) {
+                    handled = direction == KeyDirection.Press
+                        ? KeyboardScroll (press.State, int.MaxValue, true)
+                        : UpdateSelectionForKeyboardScroll (press.State, int.MaxValue);
+                }
+                break;
             }
 
-            if (handled) {
-                return true;
-            }
+            return handled;
+        }
 
-            return base.OnKeyPressEvent (press);
+        protected override bool OnKeyReleaseEvent (Gdk.EventKey press)
+        {
+            Console.WriteLine ("OnKeyRelease for {0}", press.Key);
+            return HandleKeyboardScrollKey (press, KeyDirection.Release) ? true : base.OnKeyReleaseEvent (press);
         }
 
         protected bool ActivateSelection ()

@@ -4,8 +4,10 @@
 // Author:
 //   Aaron Bockover <abockover@novell.com>
 //   Gabriel Burt <gburt@novell.com>
+//   Alex Launi <alex.launi@canonical.com>
 //
 // Copyright (C) 2007 Novell, Inc.
+// Copyright (C) 2010 Alex Launi
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -72,6 +74,11 @@ namespace Hyena.Collections
             }
         }
 
+        public void Notify ()
+        {
+            OnChanged ();
+        }
+
         protected virtual void OnChanged ()
         {
             EventHandler handler = Changed;
@@ -89,12 +96,21 @@ namespace Hyena.Collections
             OnChanged ();
         }
 
-        public void Select (int index)
+        public void Select (int index, bool notify)
         {
             ranges.Add (index);
-            if (Count == 1)
+            if (Count == 1) {
                 first_selected_index = index;
-            OnChanged ();
+            }
+
+            if (notify) {
+                OnChanged ();
+            }
+        }
+
+        public void Select (int index)
+        {
+            Select (index, true);
         }
 
         public void QuietSelect (int index)
@@ -120,20 +136,25 @@ namespace Hyena.Collections
             return ranges.Contains (index);
         }
 
-        public void SelectFromFirst (int end, bool clear)
+        public void SelectFromFirst (int end, bool clear, bool notify)
         {
             bool contains = Contains (first_selected_index);
 
             if (clear)
-                Clear(false);
+                Clear (false);
 
             if (contains)
-                SelectRange (first_selected_index, end);
+                SelectRange (first_selected_index, end, notify);
             else
-                Select (end);
+                Select (end, notify);
         }
 
-        public void SelectRange (int a, int b)
+        public void SelectFromFirst (int end, bool clear)
+        {
+            SelectFromFirst (end, clear, true);
+        }
+
+        public void SelectRange (int a, int b, bool notify)
         {
             int start = Math.Min (a, b);
             int end = Math.Max (a, b);
@@ -146,10 +167,17 @@ namespace Hyena.Collections
             if (Count == i)
                 first_selected_index = a;
 
-            OnChanged ();
+            if (notify) {
+                OnChanged ();
+            }
         }
 
-        public void UnselectRange (int a, int b)
+        public void SelectRange (int a, int b)
+        {
+            SelectRange (a, b, true);
+        }
+
+        public void UnselectRange (int a, int b, bool notify)
         {
             int start = Math.Min (a, b);
             int end = Math.Max (a, b);
@@ -159,7 +187,14 @@ namespace Hyena.Collections
                 ranges.Remove (i);
             }
 
-            OnChanged ();
+            if (notify) {
+                OnChanged ();
+            }
+        }
+
+        public void UnselectRange (int a, int b)
+        {
+            UnselectRange (a, b, true);
         }
 
         public virtual void SelectAll ()
