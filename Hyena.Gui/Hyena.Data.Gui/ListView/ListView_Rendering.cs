@@ -133,11 +133,11 @@ namespace Hyena.Data.Gui
 
             if (pango_layout == null) {
                 pango_layout = CairoExtensions.CreateLayout (this, cairo_context);
+                cell_context.FontDescription = pango_layout.FontDescription;
+                cell_context.Layout = pango_layout;
             }
 
             cell_context.Context = cairo_context;
-            cell_context.Layout = pango_layout;
-            cell_context.FontDescription = pango_layout.FontDescription;
 
             // FIXME: legacy list foo
             if (ViewLayout == null) {
