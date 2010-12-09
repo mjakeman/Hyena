@@ -48,7 +48,16 @@ namespace Hyena.Data.Gui
         private Pango.Layout pango_layout;
 
         public override Pango.Layout PangoLayout {
-            get { return cell_context.Layout; }
+            get {
+                if (pango_layout == null && GdkWindow != null && IsRealized) {
+                    using (var cr = Gdk.CairoHelper.Create (GdkWindow)) {
+                        pango_layout = CairoExtensions.CreateLayout (this, cr);
+                        cell_context.FontDescription = pango_layout.FontDescription;
+                        cell_context.Layout = pango_layout;
+                    }
+                }
+                return pango_layout;
+            }
         }
 
         public override Pango.FontDescription FontDescription {
@@ -97,6 +106,8 @@ namespace Hyena.Data.Gui
                 cell_context.FontDescription.Dispose ();
                 pango_layout.Dispose ();
                 pango_layout = null;
+                cell_context.Layout = null;
+                cell_context.FontDescription = null;
             }
 
             cell_context = new CellContext ();
@@ -131,12 +142,7 @@ namespace Hyena.Data.Gui
 
             cairo_context = CairoHelper.Create (evnt.Window);
 
-            if (pango_layout == null) {
-                pango_layout = CairoExtensions.CreateLayout (this, cairo_context);
-                cell_context.FontDescription = pango_layout.FontDescription;
-                cell_context.Layout = pango_layout;
-            }
-
+            cell_context.Layout = PangoLayout;
             cell_context.Context = cairo_context;
 
             // FIXME: legacy list foo
