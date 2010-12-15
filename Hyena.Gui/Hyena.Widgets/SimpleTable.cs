@@ -39,16 +39,24 @@ namespace Hyena.Widgets
         private List<T> items = new List<T> ();
         private Dictionary<T, Widget []> item_widgets = new Dictionary<T, Widget []> ();
 
-        public SimpleTable () : base (1, 2, false)
+        public SimpleTable () : this (2) {}
+
+        public SimpleTable (int n_columns) : base (1, (uint)n_columns, false)
         {
             ColumnSpacing = 5;
             RowSpacing = 5;
+
+            XOptions = new AttachOptions [n_columns];
+            YOptions = new AttachOptions [n_columns];
         }
 
         public void AddRow (T item, params Widget [] cols)
         {
             InsertRow (item, (uint)items.Count, cols);
         }
+
+        public AttachOptions [] XOptions { get; private set; }
+        public AttachOptions [] YOptions { get; private set; }
 
         public void InsertRow (T item, uint row, params Widget [] cols)
         {
@@ -64,7 +72,7 @@ namespace Hyena.Widgets
                 for (uint x = 0; x < NColumns; x++) {
                     var widget = item_widgets[items[y]][x];
                     Remove (widget);
-                    Attach (widget, x, x + 1, (uint) y + 1, (uint) y + 2);
+                    Attach (widget, x, x + 1, (uint) y + 1, (uint) y + 2, XOptions[x], YOptions[y], 0, 0);
                 }
             }
 
@@ -72,7 +80,7 @@ namespace Hyena.Widgets
             item_widgets[item] = cols;
 
             for (uint x = 0; x < NColumns; x++) {
-                Attach (cols[x], x, x + 1, row, row + 1);
+                Attach (cols[x], x, x + 1, row, row + 1, XOptions[x], YOptions[row], 0, 0);
             }
         }
 
@@ -89,7 +97,7 @@ namespace Hyena.Widgets
                 for (uint x = 0; x < NColumns; x++) {
                     var widget = item_widgets[items[y]][x];
                     Remove (widget);
-                    Attach (widget, x, x + 1, (uint) y - 1, (uint) y);
+                    Attach (widget, x, x + 1, (uint) y - 1, (uint) y, XOptions[x], YOptions[y], 0, 0);
                 }
             }
 
