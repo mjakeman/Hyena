@@ -146,12 +146,6 @@ namespace Hyena.Gui.Canvas
 
             layout.GetPixelSize (out text_width, out text_height);
 
-            if (layout.IsEllipsized || text_width > RenderSize.Width || text_height > RenderSize.Height) {
-                TooltipMarkup = last_formatted_text;
-            } else {
-                TooltipMarkup = null;
-            }
-
             Rect new_alloc = new Rect (
                 Math.Round ((RenderSize.Width - text_width) * HorizontalAlignment),
                 Math.Round ((RenderSize.Height - text_height) * VerticalAlignment),
@@ -206,6 +200,8 @@ namespace Hyena.Gui.Canvas
             UpdateLayout (GetText (), RenderSize.Width, RenderSize.Height, true);
             Pango.CairoHelper.ShowLayout (cr, layout);
             cr.Fill ();
+
+            TooltipMarkup = layout.IsEllipsized ? last_formatted_text : null;
 
             if (fade) {
                 LinearGradient mask = new LinearGradient (RenderSize.Width - 20, 0, RenderSize.Width, 0);
