@@ -38,6 +38,7 @@ namespace Hyena.Widgets
 
         private List<T> items = new List<T> ();
         private Dictionary<T, Widget []> item_widgets = new Dictionary<T, Widget []> ();
+        private AttachOptions default_options = AttachOptions.Fill | AttachOptions.Expand;
 
         public SimpleTable () : this (2) {}
 
@@ -47,7 +48,9 @@ namespace Hyena.Widgets
             RowSpacing = 5;
 
             XOptions = new AttachOptions [n_columns];
-            YOptions = new AttachOptions [n_columns];
+            for (int i = 0; i < n_columns; i++) {
+                XOptions[i] = default_options;
+            }
         }
 
         public void AddRow (T item, params Widget [] cols)
@@ -56,7 +59,6 @@ namespace Hyena.Widgets
         }
 
         public AttachOptions [] XOptions { get; private set; }
-        public AttachOptions [] YOptions { get; private set; }
 
         public void InsertRow (T item, uint row, params Widget [] cols)
         {
@@ -72,7 +74,7 @@ namespace Hyena.Widgets
                 for (uint x = 0; x < NColumns; x++) {
                     var widget = item_widgets[items[y]][x];
                     Remove (widget);
-                    Attach (widget, x, x + 1, (uint) y + 1, (uint) y + 2, XOptions[x], YOptions[y], 0, 0);
+                    Attach (widget, x, x + 1, (uint) y + 1, (uint) y + 2, XOptions[x], default_options, 0, 0);
                 }
             }
 
@@ -80,7 +82,7 @@ namespace Hyena.Widgets
             item_widgets[item] = cols;
 
             for (uint x = 0; x < NColumns; x++) {
-                Attach (cols[x], x, x + 1, row, row + 1, XOptions[x], YOptions[row], 0, 0);
+                Attach (cols[x], x, x + 1, row, row + 1, XOptions[x], default_options, 0, 0);
             }
         }
 
@@ -97,7 +99,7 @@ namespace Hyena.Widgets
                 for (uint x = 0; x < NColumns; x++) {
                     var widget = item_widgets[items[y]][x];
                     Remove (widget);
-                    Attach (widget, x, x + 1, (uint) y - 1, (uint) y, XOptions[x], YOptions[y], 0, 0);
+                    Attach (widget, x, x + 1, (uint) y - 1, (uint) y, XOptions[x], default_options, 0, 0);
                 }
             }
 
