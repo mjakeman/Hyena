@@ -176,7 +176,6 @@ namespace Hyena.Data.Gui
                 if ((modifier & Gdk.ModifierType.ControlMask) != 0) {
                     // Don't change the selection
                 } else {
-                    //Console.WriteLine ("Selection.Notify!");
                     Selection.Notify ();
                 }
             }
@@ -243,7 +242,6 @@ namespace Hyena.Data.Gui
                 break;
             }
 
-            Console.WriteLine ("OnKeyPress for {0}; handled? {1}", press.Key, handled);
             return handled ? true : base.OnKeyPressEvent (press);
         }
 
@@ -360,7 +358,6 @@ namespace Hyena.Data.Gui
 
         protected override bool OnKeyReleaseEvent (Gdk.EventKey press)
         {
-            Console.WriteLine ("OnKeyRelease for {0}", press.Key);
             return HandleKeyboardScrollKey (press, KeyDirection.Release) ? true : base.OnKeyReleaseEvent (press);
         }
 
