@@ -96,7 +96,7 @@ namespace Hyena.Data.Sqlite
                 switch (CommandType) {
                     case HyenaCommandType.Reader:
                         using (var reader = connection.Query (command_text)) {
-                            result = new ArrayDataReader (reader);
+                            result = new ArrayDataReader (reader, command_text);
                         }
                         break;
 

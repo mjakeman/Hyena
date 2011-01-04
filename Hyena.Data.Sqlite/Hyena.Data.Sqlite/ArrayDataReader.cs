@@ -39,11 +39,13 @@ namespace Hyena.Data.Sqlite
 {
     internal class ArrayDataReader : IDataReader
     {
+        string sql;
         int rows;
         int row = -1;
+        int max_got_row = -1;
         List<object[]> data = new List<object[]> ();
 
-        internal ArrayDataReader (IDataReader reader)
+        internal ArrayDataReader (IDataReader reader, string sql)
         {
             if (!reader.Read ())
                 return;
@@ -60,11 +62,17 @@ namespace Hyena.Data.Sqlite
                 data.Add (vals);
                 rows++;
             } while (reader.Read ());
+
+            this.sql = sql;
         }
 
         public void Dispose ()
         {
+            if (rows > 1 && max_got_row < (rows - 1) && Log.Debugging) {
+                Log.WarningFormat ("Disposing ArrayDataReader that has {0} rows but we only read {1} of them\n{2}", rows, row, sql);
+            }
             row = -1;
+            max_got_row = -1;
         }
 
         public int FieldCount { get; private set; }
@@ -73,11 +81,15 @@ namespace Hyena.Data.Sqlite
         public bool Read ()
         {
             row++;
+            max_got_row++;
             return row < rows;
         }
 
         public object this[int i] {
-            get { return data[row][i]; }
+            get {
+                max_got_row = Math.Max (i, max_got_row);
+                return data[row][i];
+            }
         }
 
         public object this[string columnName] {
