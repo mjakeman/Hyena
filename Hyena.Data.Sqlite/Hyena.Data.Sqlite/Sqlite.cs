@@ -263,8 +263,6 @@ namespace Hyena.Data.Sqlite
             }
         }
 
-        private string ShortSql { get { return CommandText.Substring (0, Math.Min (CommandText.Length, 20)); } }
-
         public void Dispose ()
         {
             if (disposed)
@@ -506,24 +504,6 @@ namespace Hyena.Data.Sqlite
                 return o;
 
             return SqliteUtils.FromDbFormat (type, o);
-        }
-
-        static Type long_type = typeof(long);
-        static Type double_type = typeof(double);
-        static Type [] long_types = { typeof(int), typeof(uint), typeof(ulong) };
-        static Type [] double_types = { typeof(float) };
-        static Type [] self_types = { typeof(string), typeof(byte[]), long_type, double_type};
-
-        static Type DbTypeFor (Type type)
-        {
-            if (long_types.Contains (type))
-                return typeof(int);
-            else if (double_types.Contains (type))
-                return double_type;
-            else if (self_types.Contains (type))
-                return type;
-            else
-                return null;
         }
 
         public T Get<T> (string columnName)
