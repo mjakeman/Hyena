@@ -13,7 +13,6 @@
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RootNamespace>Hyena.Gui</RootNamespace>
@@ -23,7 +22,7 @@
     <ReleaseVersion>1.3</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>NET_2_0</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
@@ -33,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Submodule|AnyCPU' ">
-    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputPath>..\..\..\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>NET_2_0</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
@@ -42,12 +41,22 @@
     <Optimize>true</Optimize>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SubmoduleWindows|AnyCPU' ">
+    <DefineConstants>NET_2_0,WIN32</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>..\..\..\bin\bin</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\bin\bin\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\bin\Mono.Posix.dll</HintPath>
+      <HintPath>..\..\..\bin\bin\Mono.Posix.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
