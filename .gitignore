@@ -12,3 +12,6 @@ install-sh
 missing
 *.pc
 *.exe
+Hyena/obj
+Hyena.Gui/obj
+Hyena.Data.Sqlite/obj
