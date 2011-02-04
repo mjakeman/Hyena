@@ -222,8 +222,14 @@ namespace Hyena
                     installed_application_prefix = Path.GetDirectoryName (
                         System.Reflection.Assembly.GetExecutingAssembly ().Location);
 
+                    // For Banshee on Linux running uninstalled, share/ is located within the assembly's dir
                     if (Directory.Exists (Paths.Combine (installed_application_prefix, "share", ApplicationName))) {
                         return installed_application_prefix;
+                    }
+
+                    // For Banshee on Windows, share/ is one up from bin/ where the assembly is located
+                    if (Directory.Exists (Paths.Combine (installed_application_prefix, "..", "share", ApplicationName))) {
+                        return installed_application_prefix = new DirectoryInfo (installed_application_prefix).Parent.FullName;
                     }
 
                     DirectoryInfo entry_directory = new DirectoryInfo (installed_application_prefix);
