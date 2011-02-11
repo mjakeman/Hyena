@@ -89,8 +89,9 @@ namespace Hyena.Data.Sqlite
             result = null;
             int execution_ms = 0;
 
-            string command_text = CurrentSqlText;
+            string command_text = null;
             try {
+                command_text = CurrentSqlText;
                 ticks = System.Environment.TickCount;
 
                 switch (CommandType) {
@@ -116,7 +117,7 @@ namespace Hyena.Data.Sqlite
                     Log.DebugFormat ("Executed in {0}ms {1}", execution_ms, command_text);
                 }
             } catch (Exception e) {
-                Log.DebugFormat ("Exception executing command: {0}", command_text);
+                Log.DebugFormat ("Exception executing command: {0}", command_text ?? command);
                 Log.Exception (e);
                 execution_exception = e;
             }
