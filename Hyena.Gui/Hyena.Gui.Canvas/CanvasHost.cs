@@ -218,6 +218,7 @@ namespace Hyena.Gui.Canvas
             changing_style = true;
 
             theme = new GtkTheme (this);
+            context.Theme = theme;
             if (canvas_child != null) {
                 canvas_child.Theme = theme;
             }
