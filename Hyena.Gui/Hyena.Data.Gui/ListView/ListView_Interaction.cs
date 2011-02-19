@@ -713,6 +713,7 @@ namespace Hyena.Data.Gui
             if (pressed_column_drag_started) {
                 CancelColumnDrag ();
                 pressed_column_drag_started = false;
+                QueueDraw ();
                 return true;
             }
 
