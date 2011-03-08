@@ -61,7 +61,11 @@ namespace Hyena.Gui.Theming
             base.OnColorsRefreshed ();
 
             rule_color = CairoExtensions.ColorShade (ViewFill, 0.95);
-            border_color = Colors.GetWidgetColor (GtkColorClass.Dark, StateType.Active);
+
+            // On Windows we use Normal b/c Active incorrectly returns black (at least on XP)
+            border_color = Colors.GetWidgetColor (GtkColorClass.Dark,
+              Hyena.PlatformDetection.IsWindows ? StateType.Normal : StateType.Active
+            );
         }
 
         public override void DrawPie (double fraction)
@@ -186,7 +190,8 @@ namespace Hyena.Gui.Theming
                 }
             }
 
-            if (Widget.HasFocus) {
+            // FIXME Windows; shading the color by .8 makes it blend into the bg
+            if (Widget.HasFocus && !Hyena.PlatformDetection.IsWindows) {
                 cr.LineWidth = BorderWidth * 1.5;
                 cr.Color = CairoExtensions.ColorShade (border_color, 0.8);
             } else {
