@@ -198,7 +198,14 @@ namespace Hyena.Gui.Canvas
             cr.MoveTo (text_alloc.X, text_alloc.Y);
             Foreground.Apply (cr);
             UpdateLayout (GetText (), RenderSize.Width, RenderSize.Height, true);
-            Pango.CairoHelper.ShowLayout (cr, layout);
+            if (Hyena.PlatformDetection.IsWindows) {
+              // FIXME windows; working around some unknown issue with ShowLayout; bgo#644311
+
+              cr.Antialias = Cairo.Antialias.None;
+              PangoCairoHelper.LayoutPath (cr, layout, true);
+            } else {
+              PangoCairoHelper.ShowLayout (cr, layout);
+            }
             cr.Fill ();
 
             TooltipMarkup = layout.IsEllipsized ? last_formatted_text : null;
