@@ -96,12 +96,16 @@ namespace Hyena
             // On Windows, if running uninstalled, leave STDOUT alone so it's visible in the IDE,
             // otherwise write it to a file so it's not lost.
             if (PlatformDetection.IsWindows && !ApplicationContext.CommandLine.Contains ("uninstalled")) {
-                var log_path = Paths.Combine (Paths.ApplicationData, "log");
+                var log_path = Paths.Combine (Paths.ApplicationData, "banshee.log");
                 Console.WriteLine ("Logging to {0}", log_path);
 
-                var log_writer = new System.IO.StreamWriter (log_path, false);
-                log_writer.AutoFlush = true;
-                Console.SetOut (log_writer);
+                try {
+                    var log_writer = new System.IO.StreamWriter (log_path, false);
+                    log_writer.AutoFlush = true;
+                    Console.SetOut (log_writer);
+                } catch (Exception ex) {
+                    Console.Error.WriteLine ("Unable to log to {0}: {1}", log_path, ex);
+                }
             }
         }
 
