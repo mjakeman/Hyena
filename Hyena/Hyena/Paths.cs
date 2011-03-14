@@ -214,12 +214,11 @@ namespace Hyena
             get { return "/tmp/"; }
         }
 
-        // FIXME the behavior of calling this getter is very unexpected;
-        // it's not thread-safe and really shouldn't delete anything
         public static string TempDir {
             get {
                 string dir = Path.Combine (ApplicationCache, "temp");
 
+                // If this location exists, but as a file not a directory, delete it
                 if (File.Exists (dir)) {
                     File.Delete (dir);
                 }
