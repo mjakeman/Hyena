@@ -180,14 +180,26 @@ namespace Hyena
             set { application_name = value; InitializePaths (); }
         }
 
+        private static string user_application_name = null;
+        public static string UserApplicationName {
+            get {
+                var application_name = user_application_name ?? ApplicationName;
+                if (application_name == null) {
+                    throw new ApplicationException ("Paths.ApplicationName must be set first");
+                }
+                return application_name;
+            }
+            set { user_application_name = value; }
+        }
+
         // This can only happen after ApplicationName is set.
         private static void InitializePaths ()
         {
             ApplicationCache = Path.Combine (XdgBaseDirectorySpec.GetUserDirectory (
-                "XDG_CACHE_HOME", ".cache"), ApplicationName);
+                "XDG_CACHE_HOME", ".cache"), UserApplicationName);
 
             ApplicationData = Path.Combine (Environment.GetFolderPath (
-                Environment.SpecialFolder.ApplicationData), ApplicationName);
+                Environment.SpecialFolder.ApplicationData), UserApplicationName);
             if (!Directory.Exists (ApplicationData)) {
                 Directory.CreateDirectory (ApplicationData);
             }
@@ -202,6 +214,8 @@ namespace Hyena
             get { return "/tmp/"; }
         }
 
+        // FIXME the behavior of calling this getter is very unexpected;
+        // it's not thread-safe and really shouldn't delete anything
         public static string TempDir {
             get {
                 string dir = Path.Combine (ApplicationCache, "temp");
