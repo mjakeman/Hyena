@@ -173,11 +173,14 @@ namespace Hyena.Query
 
         public static string ToTermString (string alias, string op, string value)
         {
-            value = String.Format (
-                "{1}{0}{1}",
-                value, value.IndexOf (" ") == -1 ? String.Empty : "\""
-            );
-
+            if (!String.IsNullOrEmpty (value)) {
+                value = String.Format (
+                    "{1}{0}{1}",
+                    value, value.IndexOf (" ") == -1 ? String.Empty : "\""
+                );
+            } else {
+                value = String.Empty;
+            }
             return String.IsNullOrEmpty (alias)
                 ? value
                 : String.Format ("{0}{1}{2}", alias, op, value);
