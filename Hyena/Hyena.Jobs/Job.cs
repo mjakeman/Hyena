@@ -220,7 +220,7 @@ namespace Hyena.Jobs
 
         public void SetResources (params Resource [] resources)
         {
-            Resources = resources;
+            Resources = resources ?? new Resource [0];
         }
 
 #endregion
@@ -235,7 +235,7 @@ namespace Hyena.Jobs
         {
             Title = title;
             PriorityHints = hints;
-            Resources = resources;
+            SetResources (resources);
         }
 
 #endregion
