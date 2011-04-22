@@ -115,6 +115,8 @@ namespace Hyena.Data.Sqlite
                 execution_ms = System.Environment.TickCount - ticks;
                 if (log_all) {
                     Log.DebugFormat ("Executed in {0}ms {1}", execution_ms, command_text);
+                } else if (Log.Debugging && execution_ms > 500) {
+                    Log.WarningFormat ("Executed in {0}ms {1}", execution_ms, command_text);
                 }
             } catch (Exception e) {
                 Log.DebugFormat ("Exception executing command: {0}", command_text ?? command);
