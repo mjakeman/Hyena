@@ -34,7 +34,6 @@ using Atk;
 
 namespace Hyena.Gui
 {
-#if ENABLE_ATK
     public class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor
     {
         private Gtk.Widget widget;
@@ -258,5 +257,4 @@ namespace Hyena.Gui
         #endregion Atk.Component
 
     }
-#endif
 }

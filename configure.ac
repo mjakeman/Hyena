@@ -58,12 +58,8 @@ SHAMROCK_CHECK_MONO_2_0_GAC_ASSEMBLIES([
 ])
 
 dnl package checks, common for all configs
-PKG_CHECK_MODULES([GTKSHARP], [gtk-sharp-2.0])
-PKG_CHECK_MODULES([GLIBSHARP], [glib-sharp-2.0])
-
-dnl See if Gtk# is recent enought to enable managed widget a11y
-PKG_CHECK_MODULES(GTKSHARP_A11Y, gtk-sharp-2.0 >= 2.12.10, gtksharp_with_a11y=yes, gtksharp_with_a11y=no)
-AM_CONDITIONAL(ENABLE_ATK, test "x$gtksharp_with_a11y" = "xyes")
+PKG_CHECK_MODULES([GTKSHARP], gtk-sharp-2.0 >= 2.12.10)
+PKG_CHECK_MODULES([GLIBSHARP], glib-sharp-2.0)
 
 AM_CONDITIONAL(GCONF_SCHEMAS_INSTALL, false)
 AM_CONDITIONAL(HYENA_PKG_CONFIG, true)
@@ -115,7 +111,6 @@ cat <<EOF
 ${PACKAGE}-${VERSION}
 
 Unit Tests:        ${do_tests} (requires nunit >= ${NUNIT_REQUIRED})
-Custom a11y:       ${gtksharp_with_a11y} (requires gtk-sharp >= 2.12.10)
 
 EOF
 
