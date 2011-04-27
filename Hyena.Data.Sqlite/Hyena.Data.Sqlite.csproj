@@ -41,7 +41,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SubmoduleWindows|AnyCPU' ">
     <OutputPath>..\..\..\bin\bin</OutputPath>
-    <DefineConstants>NET_2_0,WIN32</DefineConstants>
+    <DefineConstants>NET_2_0</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
