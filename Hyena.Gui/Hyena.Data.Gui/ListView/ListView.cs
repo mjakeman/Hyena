@@ -34,6 +34,8 @@ namespace Hyena.Data.Gui
 {
     public partial class ListView<T> : ListViewBase, IListView<T>
     {
+        private CanvasManager manager;
+        
         protected ListView (IntPtr ptr) : base (ptr)
         {
         }
@@ -47,6 +49,7 @@ namespace Hyena.Data.Gui
             HasTooltip = true;
             QueryTooltip += OnQueryTooltip;
             DirectionChanged += (o, a) => SetDirection ();
+            manager = new CanvasManager (this);
         }
 
         private void OnQueryTooltip (object o, Gtk.QueryTooltipArgs args)

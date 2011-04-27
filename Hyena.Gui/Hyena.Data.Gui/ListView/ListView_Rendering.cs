@@ -437,6 +437,7 @@ namespace Hyena.Data.Gui
         {
             ColumnCell cell = column_cache[column_index].Column.GetCell (0);
             cell.Bind (item);
+            cell.Manager = manager;
             ColumnCellDataProvider (cell, item);
 
             ITextCell text_cell = cell as ITextCell;
