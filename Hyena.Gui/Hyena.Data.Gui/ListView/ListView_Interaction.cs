@@ -517,7 +517,7 @@ namespace Hyena.Data.Gui
 
             var view_point = GetViewPointForModelRow (row_index);
             icell_area.Y = (int)view_point.Y + list_interaction_alloc.Y + Allocation.Y;
-            icell_area.X = cached_column.X1 + Allocation.X;
+            icell_area.X = cached_column.X1 + list_rendering_alloc.X;
             icell_area.Width = cached_column.Width;
             icell_area.Height = ChildSize.Height;
 
