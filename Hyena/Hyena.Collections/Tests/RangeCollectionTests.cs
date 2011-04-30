@@ -146,20 +146,6 @@ namespace Hyena.Collections.Tests
             foreach (int index in range) {
                 Assert.AreEqual (indexes[i++], index);
             }
-
-            #pragma warning disable 0618
-
-            i = 0;
-            foreach (int index in range.Indexes) {
-                Assert.AreEqual (indexes[i++], index);
-            }
-
-            for (i = 0; i < range.Indexes.Length; i++) {
-                Assert.AreEqual (indexes[i], range.Indexes[i]);
-            }
-
-            #pragma warning restore 0618
-
         }
 
         [Test]
@@ -287,34 +273,6 @@ namespace Hyena.Collections.Tests
 
             return range;
         }
-
-        #pragma warning disable 0618
-
-        [Test]
-        public void IndexesCacheGeneration ()
-        {
-            RangeCollection range = new RangeCollection ();
-            int [] index_cache = range.Indexes;
-
-            Assert.AreSame (index_cache, range.Indexes);
-
-            range.Add (0);
-            range.Add (5);
-
-            if (index_cache == range.Indexes) {
-                Assert.Fail ("Indexes Cache not regenerated after change");
-            }
-
-            index_cache = range.Indexes;
-            range.Remove (0);
-            range.Add (3);
-
-            if (index_cache == range.Indexes) {
-                Assert.Fail ("Indexes Cache not regenerated after change");
-            }
-        }
-
-        #pragma warning restore 0618
 
         [Test]
         public void IndexOf ()

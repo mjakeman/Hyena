@@ -71,9 +71,6 @@ namespace Hyena.Collections
         private Range [] ranges;
         private int range_count;
         private int index_count;
-        private int generation;
-        private int [] indexes_cache;
-        private int indexes_cache_generation;
 
         public RangeCollection ()
         {
@@ -252,26 +249,6 @@ namespace Hyena.Collections
             get { return range_count; }
         }
 
-        [Obsolete ("Do not use the Indexes property in 2.0 profiles if enumerating only; Indexes allocates an array to avoid boxing in the 1.1 profile")]
-        public int [] Indexes {
-            get {
-                if (indexes_cache != null && generation == indexes_cache_generation) {
-                    return indexes_cache;
-                }
-
-                indexes_cache = new int[Count];
-                indexes_cache_generation = generation;
-
-                for (int i = 0, j = 0; i < range_count; i++) {
-                    for (int k = ranges[i].Start; k <= ranges[i].End; j++, k++) {
-                        indexes_cache[j] = k;
-                    }
-                }
-
-                return indexes_cache;
-            }
-        }
-
         public int IndexOf (int value)
         {
             int offset = 0;
@@ -306,7 +283,6 @@ namespace Hyena.Collections
         public bool Add (int value)
         {
             if (!Contains (value)) {
-                generation++;
                 InsertRange (new Range (value, value));
                 index_count++;
                 return true;
@@ -322,7 +298,6 @@ namespace Hyena.Collections
 
         public bool Remove (int value)
         {
-            generation++;
             return RemoveIndexFromRange (value);
         }
 
@@ -330,7 +305,6 @@ namespace Hyena.Collections
         {
             range_count = 0;
             index_count = 0;
-            generation++;
             ranges = new Range[MIN_CAPACITY];
         }
 
