@@ -31,25 +31,13 @@
 
 using System;
 using System.Collections;
-
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace Hyena.Collections
 {
-#if NET_1_1
-    internal
-#else
     public
-#endif
 
-    class Selection :
-#if NET_2_0
-        IEnumerable<int>
-#else
-        IEnumerable
-#endif
+    class Selection : IEnumerable<int>
     {
         RangeCollection ranges = new RangeCollection ();
         private int max_index;
@@ -254,7 +242,6 @@ namespace Hyena.Collections
             get { return Count > 0 ? ranges[Count - 1]: -1; }
         }
 
-#if NET_2_0
         public IEnumerator<int> GetEnumerator ()
         {
             return ranges.GetEnumerator ();
@@ -264,12 +251,6 @@ namespace Hyena.Collections
         {
             return GetEnumerator ();
         }
-#else
-        public IEnumerator GetEnumerator ()
-        {
-            return ranges.GetEnumerator ();
-        }
-#endif
 
         public override string ToString ()
         {

@@ -28,30 +28,13 @@
 
 using System;
 using System.Collections;
-
-#if NET_2_0
 using System.Collections.Generic;
-#endif
 
-#if NET_1_1
-namespace System.Collections
-#else
 namespace Hyena.Collections
-#endif
 {
-#if NET_1_1
-    internal
-#else
     public
-#endif
 
-    class RangeCollection :
-        ICloneable,
-#if NET_2_0
-        ICollection<int>
-#else
-        ICollection
-#endif
+    class RangeCollection : ICloneable, ICollection<int>
     {
         public struct Range
         {
@@ -121,13 +104,7 @@ namespace Hyena.Collections
                 new_capacity <<= 1;
             }
 
-#if NET_2_0
             Array.Resize (ref ranges, new_capacity);
-#else
-            Range [] new_ranges = new Range[new_capacity];
-            Array.Copy (ranges, 0, new_ranges, 0, ranges.Length);
-            ranges = new_ranges;
-#endif
         }
 
         private void Insert (int position, Range range)
@@ -275,9 +252,7 @@ namespace Hyena.Collections
             get { return range_count; }
         }
 
-#if NET_2_0
         [Obsolete ("Do not use the Indexes property in 2.0 profiles if enumerating only; Indexes allocates an array to avoid boxing in the 1.1 profile")]
-#endif
         public int [] Indexes {
             get {
                 if (indexes_cache != null && generation == indexes_cache_generation) {
@@ -340,13 +315,7 @@ namespace Hyena.Collections
             return false;
         }
 
-        void
-#if NET_2_0
-        ICollection<int>.
-#else
-        ICollection.
-#endif
-        Add (int value)
+        void ICollection<int>.Add (int value)
         {
             Add (value);
         }
@@ -388,16 +357,6 @@ namespace Hyena.Collections
             get { return false; }
         }
 
-#if !NET_2_0
-        public bool IsSynchronized {
-            get { return false; }
-        }
-
-        public object SyncRoot {
-            get { return this; }
-        }
-#endif
-
 #endregion
 
 #region ICloneable Implementation
@@ -411,7 +370,6 @@ namespace Hyena.Collections
 
 #region IEnumerable Implementation
 
-#if NET_2_0
         public IEnumerator<int> GetEnumerator ()
         {
             for (int i = 0; i < range_count; i++) {
@@ -425,12 +383,6 @@ namespace Hyena.Collections
         {
             return GetEnumerator ();
         }
-#else
-        public IEnumerator GetEnumerator ()
-        {
-            return Indexes.GetEnumerator ();
-        }
-#endif
 
 #endregion
 

@@ -30,16 +30,13 @@
 //
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Security.Permissions;
 using System.Text;
 using System.Web.Util;
-
-#if NET_2_0
-using System.Collections.Generic;
-#endif
 
 namespace System.Web {
 
@@ -409,11 +406,7 @@ namespace System.Web {
 				e = Encoding.UTF8;
 
 			long len = s.Length;
-#if NET_2_0
 			var bytes = new List <byte> ();
-#else
-			ArrayList bytes = new ArrayList ();
-#endif
 			int xchar;
 			char ch;
 			
@@ -443,11 +436,7 @@ namespace System.Web {
 					WriteCharBytes (bytes, ch, e);
 			}
 			
-#if NET_2_0
 			byte[] buf = bytes.ToArray ();
-#else
-			byte[] buf = (byte[])bytes.ToArray (typeof (byte));
-#endif
 			bytes = null;
 			return e.GetString (buf);
 			
@@ -1005,46 +994,6 @@ namespace System.Web {
 				output.Write (HtmlEncode (s));
 		}
 
-#if NET_1_1
-		public static string UrlPathEncode (string s)
-		{
-			if (s == null || s.Length == 0)
-				return s;
-
-			MemoryStream result = new MemoryStream ();
-			int length = s.Length;
-            for (int i = 0; i < length; i++) {
-				UrlPathEncodeChar (s [i], result);
-			}
-			return Encoding.ASCII.GetString (result.ToArray ());
-		}
-		
-		static void UrlPathEncodeChar (char c, Stream result) {
-#if NET_2_0
-			if (c < 33 || c > 126) {
-#else
-			if (c > 127) {
-#endif
-				byte [] bIn = Encoding.UTF8.GetBytes (c.ToString ());
-				for (int i = 0; i < bIn.Length; i++) {
-					result.WriteByte ((byte) '%');
-					int idx = ((int) bIn [i]) >> 4;
-					result.WriteByte ((byte) hexChars [idx]);
-					idx = ((int) bIn [i]) & 0x0F;
-					result.WriteByte ((byte) hexChars [idx]);
-				}
-			}
-			else if (c == ' ') {
-				result.WriteByte ((byte) '%');
-				result.WriteByte ((byte) '2');
-				result.WriteByte ((byte) '0');
-			}
-			else
-				result.WriteByte ((byte) c);
-		}
-#endif
-
-#if NET_2_0
 		class HttpQSCollection : NameValueCollection {
 			public override string ToString ()
 			{
@@ -1082,7 +1031,6 @@ namespace System.Web {
 			ParseQueryString (query, encoding, result);
 			return result;
 		} 				
-#endif
 
 		internal static void ParseQueryString (string query, Encoding encoding, NameValueCollection result)
 		{
