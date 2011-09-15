@@ -48,6 +48,10 @@ namespace Hyena
 
         public SafeUri (string uri)
         {
+            if (String.IsNullOrEmpty (uri)) {
+                throw new ArgumentNullException ("uri");
+            }
+
             int scheme_delimit_index = uri.IndexOf ("://", StringComparison.InvariantCulture);
             if (scheme_delimit_index > 0 && scheme_delimit_index <= MAX_SCHEME_LENGTH) {
                 this.uri = uri;
@@ -58,6 +62,10 @@ namespace Hyena
 
         public SafeUri (string uri, bool isUri)
         {
+            if (String.IsNullOrEmpty (uri)) {
+                throw new ArgumentNullException ("uri");
+            }
+
             if (isUri) {
                 this.uri = uri;
             } else {
@@ -67,6 +75,10 @@ namespace Hyena
 
         public SafeUri (Uri uri)
         {
+            if (uri == null) {
+                throw new ArgumentNullException ("uri");
+            }
+
             this.uri = uri.AbsoluteUri;
         }
 
