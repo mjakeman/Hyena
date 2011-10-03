@@ -785,6 +785,10 @@ namespace Hyena.Data.Gui
 
         protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
         {
+            if (evnt == null) {
+                throw new ArgumentNullException ("evnt");
+            }
+
             int x = (int)evnt.X - header_interaction_alloc.X;
 
             if (pressed_column_index >= 0 && !pressed_column_is_dragging &&
