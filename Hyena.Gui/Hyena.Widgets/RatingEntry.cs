@@ -69,6 +69,10 @@ namespace Hyena.Widgets
             Name = "GtkEntry";
         }
 
+        protected RatingEntry (IntPtr raw) : base (raw)
+        {
+        }
+
         protected virtual void OnChanging ()
         {
             EventHandler handler = Changing;
