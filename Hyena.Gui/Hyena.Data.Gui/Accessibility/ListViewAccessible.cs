@@ -63,6 +63,10 @@ namespace Hyena.Data.Gui.Accessibility
             ListViewAccessible_Table ();
         }
 
+        protected ListViewAccessible (IntPtr raw) : base (raw)
+        {
+        }
+
         protected override Atk.StateSet OnRefStateSet ()
         {
             Atk.StateSet states = base.OnRefStateSet ();

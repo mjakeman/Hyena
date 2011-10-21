@@ -52,6 +52,10 @@ namespace Hyena.Gui
             widget.AddNotification ("visible",   (o, a) => NotifyStateChange (StateType.Visible, widget.Visible));
         }
 
+        protected BaseWidgetAccessible (IntPtr raw) : base (raw)
+        {
+        }
+
         public virtual new Atk.Layer Layer {
             get { return Layer.Widget; }
         }
