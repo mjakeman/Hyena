@@ -53,6 +53,10 @@ namespace Hyena.Widgets
             stage.Actor.CanExpire = false;
         }
 
+        protected AnimatedImage (IntPtr raw) : base (raw)
+        {
+        }
+
         protected override void OnShown ()
         {
             base.OnShown ();
