@@ -104,6 +104,10 @@ namespace Hyena.Widgets
             BorderWidth = 3;
         }
 
+        protected MessageBar (IntPtr raw) : base (raw)
+        {
+        }
+
         protected override void OnShown ()
         {
             base.OnShown ();
