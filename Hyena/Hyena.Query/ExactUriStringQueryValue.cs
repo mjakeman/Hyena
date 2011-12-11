@@ -4,7 +4,7 @@
 // Authors:
 //   Andrés G. Aragoneses <knocte@gmail.com>
 //
-// Copyright (C) 2010 Andrés G. Aragoneses
+// Copyright (C) 2010-2011 Andrés G. Aragoneses
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -32,8 +32,17 @@ namespace Hyena.Query
 {
     public class ExactUriStringQueryValue : ExactStringQueryValue
     {
-        protected override string StringValue {
-            get { return Uri.EscapeUriString (base.StringValue); }
-        }
+        public override string ToSql (Operator op)
+        {
+            if (String.IsNullOrEmpty (value)) {
+                return null;
+            }
+
+            string escaped_value = EscapeString (op, Uri.EscapeUriString (value.ToLower ()));
+            if (op == StartsWith) {
+                return "file://" + escaped_value;
+            }
+            return escaped_value;
+         }
     }
 }

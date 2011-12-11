@@ -35,11 +35,7 @@ namespace Hyena.Query
     {
         public override string ToSql (Operator op)
         {
-            return String.IsNullOrEmpty (value) ? null : EscapeString (op, StringValue);
-        }
-
-        protected virtual string StringValue {
-            get { return value.ToLower (); }
+            return String.IsNullOrEmpty (value) ? null : EscapeString (op, value.ToLower ());
         }
     }
 }

@@ -232,6 +232,19 @@ namespace Hyena.Query.Tests
             );
         }
 
+        [Test] // http://bugzilla.gnome.org/show_bug.cgi?id=644145
+        public void EscapeUriWithStartsWithOperator ()
+        {
+            QueryValue val = new ExactUriStringQueryValue ();
+            val.ParseUserQuery ("/mnt/mydrive/rock & roll");
+
+            Assert.AreEqual (
+                @"(CoreTracks.Uri IS NOT NULL AND" + 
+                @" CoreTracks.Uri LIKE 'file:///mnt/mydrive/rock\%20&\%20roll%' ESCAPE '\')",
+                UriField.ToSql (StringQueryValue.StartsWith, val)
+            );
+        }
+
         [Test]
         // Test behavior issues described in
         // http://bugzilla.gnome.org/show_bug.cgi?id=547078
