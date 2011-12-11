@@ -157,9 +157,9 @@ namespace Hyena.Query
                 sb.AppendFormat ("{0} {1}", column_with_key, String.Format (op.SqlFormat, value));
 
                 if (op.IsNot) {
-                    return String.Format ("({0} OR {1} IS NULL)", sb.ToString (), Column);
+                    return String.Format ("({0} IS NULL OR {1})", Column, sb.ToString ());
                 } else {
-                    return String.Format ("({0} AND {1} IS NOT NULL)", sb.ToString (), Column);
+                    return String.Format ("({0} IS NOT NULL AND {1})", Column, sb.ToString ());
                 }
             } else {
                 sb.AppendFormat (

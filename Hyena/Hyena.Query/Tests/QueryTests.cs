@@ -167,7 +167,7 @@ namespace Hyena.Query.Tests
             val.ParseUserQuery ("Kelli O'Hara");
 
             Assert.AreEqual (
-                "(CoreArtists.NameLowered LIKE '%kelli ohara%' ESCAPE '\\' AND CoreArtists.NameLowered IS NOT NULL)",
+                "(CoreArtists.NameLowered IS NOT NULL AND CoreArtists.NameLowered LIKE '%kelli ohara%' ESCAPE '\\')",
                 ArtistField.ToSql (StringQueryValue.Contains, val)
             );
         }
@@ -179,7 +179,7 @@ namespace Hyena.Query.Tests
             val.ParseUserQuery ("100% Techno");
 
             Assert.AreEqual (
-                "(CoreAlbums.TitleLowered LIKE '%100 techno%' ESCAPE '\\' AND CoreAlbums.TitleLowered IS NOT NULL)",
+                "(CoreAlbums.TitleLowered IS NOT NULL AND CoreAlbums.TitleLowered LIKE '%100 techno%' ESCAPE '\\')",
                 AlbumField.ToSql (StringQueryValue.Contains, val)
             );
         }
@@ -191,7 +191,7 @@ namespace Hyena.Query.Tests
             val.ParseUserQuery ("-_-");
 
             Assert.AreEqual (
-                "(CoreAlbums.TitleLowered LIKE '%-\\_-%' ESCAPE '\\' AND CoreAlbums.TitleLowered IS NOT NULL)",
+                "(CoreAlbums.TitleLowered IS NOT NULL AND CoreAlbums.TitleLowered LIKE '%-\\_-%' ESCAPE '\\')",
                 AlbumField.ToSql (StringQueryValue.Contains, val)
             );
         }
@@ -203,7 +203,7 @@ namespace Hyena.Query.Tests
             val.ParseUserQuery ("Metallic/\\");
 
             Assert.AreEqual (
-                "(CoreAlbums.TitleLowered LIKE '%metallic%' ESCAPE '\\' AND CoreAlbums.TitleLowered IS NOT NULL)",
+                "(CoreAlbums.TitleLowered IS NOT NULL AND CoreAlbums.TitleLowered LIKE '%metallic%' ESCAPE '\\')",
                 AlbumField.ToSql (StringQueryValue.Contains, val)
             );
         }
@@ -227,7 +227,7 @@ namespace Hyena.Query.Tests
             val.ParseUserQuery ("space 3quotes`'\"underscore_percentage%slash/backslash\\");
 
             Assert.AreEqual (
-                @"(CoreTracks.Uri LIKE '%space\%203quotes\%60''\%22underscore\_percentage\%25slash/backslash\%5C%' ESCAPE '\' AND CoreTracks.Uri IS NOT NULL)",
+                @"(CoreTracks.Uri IS NOT NULL AND CoreTracks.Uri LIKE '%space\%203quotes\%60''\%22underscore\_percentage\%25slash/backslash\%5C%' ESCAPE '\')",
                 UriField.ToSql (StringQueryValue.Contains, val)
             );
         }
