@@ -426,7 +426,6 @@ namespace Hyena
                 }
             }
 
-            // FIXME: We should save these to an actual log file
             Log.Warning (message ?? "Caught an exception", builder.ToString (), false);
         }
 
