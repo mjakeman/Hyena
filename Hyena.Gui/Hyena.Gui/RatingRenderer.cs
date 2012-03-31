@@ -59,6 +59,8 @@ namespace Hyena.Gui
                 return;
             }
 
+            cr.Save ();
+
             Cairo.Color fill_color = color;
             fill_color.A = fillOpacity;
             Cairo.Color stroke_color = fill_color;
@@ -101,6 +103,7 @@ namespace Hyena.Gui
                     cr.Stroke ();
                 }
             }
+            cr.Restore ();
         }
 
         protected void ComputePosition (Gdk.Rectangle area, out double x, out double y)
