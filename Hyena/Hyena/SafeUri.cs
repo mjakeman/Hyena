@@ -60,16 +60,16 @@ namespace Hyena
             }
         }
 
-        public SafeUri (string uri, bool isUri)
+        public SafeUri (string uriOrFilename, bool isUri)
         {
-            if (String.IsNullOrEmpty (uri)) {
-                throw new ArgumentNullException ("uri");
+            if (String.IsNullOrEmpty (uriOrFilename)) {
+                throw new ArgumentNullException ("uriOrFilename");
             }
 
             if (isUri) {
-                this.uri = uri;
+                this.uri = uriOrFilename;
             } else {
-                this.uri = FilenameToUri (uri);
+                this.uri = FilenameToUri (uriOrFilename);
             }
         }
 
