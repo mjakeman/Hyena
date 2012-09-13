@@ -43,7 +43,7 @@ namespace Hyena.Data.Gui.Accessibility
 
         public ListViewAccessible (GLib.Object widget) : base (widget as Gtk.Widget)
         {
-            list_view = widget as ListView<T>;
+            list_view = (ListView<T>) widget;
             // TODO replace with list_view.Name?
             Name = "ListView";
             Description = "ListView";
