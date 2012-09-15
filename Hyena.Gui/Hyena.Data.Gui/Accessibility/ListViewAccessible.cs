@@ -48,7 +48,9 @@ namespace Hyena.Data.Gui.Accessibility
             Name = "ListView";
             Description = "ListView";
             Role = Atk.Role.Table;
-            Parent = list_view.Parent.RefAccessible ();
+            if (list_view.Parent != null) {
+                Parent = list_view.Parent.RefAccessible ();
+            }
 
             cell_cache = new Dictionary<int, ColumnCellAccessible> ();
 
