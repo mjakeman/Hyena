@@ -35,6 +35,9 @@ namespace Hyena
 {
     public class Paths
     {
+        public const char UnixSeparator = ':';
+        public const char DosSeparator = ';';
+
         public static string GetTempFileName (string dir)
         {
             return GetTempFileName (dir, null);
@@ -104,7 +107,7 @@ namespace Hyena
             }
 
             // this is super lame, should handle quoting/escaping
-            return path.Split (':');
+            return path.Split (UnixSeparator);
         }
 
         public static string MakePathRelative (string path, string to)
