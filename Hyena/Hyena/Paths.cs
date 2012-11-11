@@ -38,6 +38,12 @@ namespace Hyena
         public const char UnixSeparator = ':';
         public const char DosSeparator = ';';
 
+        public static class Folder
+        {
+            public const char UnixSeparator = '/';
+            public const char DosSeparator = '\\';
+        }
+
         public static string GetTempFileName (string dir)
         {
             return GetTempFileName (dir, null);
@@ -161,6 +167,19 @@ namespace Hyena
             relativePath.Append (String.Join (Path.DirectorySeparatorChar.ToString (), required));
 
             return relativePath.ToString ();
+        }
+
+        public static string NormalizeToDos (string path)
+        {
+            return path.Replace (Folder.UnixSeparator, Folder.DosSeparator);
+        }
+
+        public static string NormalizeToUnix (string path)
+        {
+            if (!path.Contains (Folder.UnixSeparator.ToString ()) && path.Contains (Folder.DosSeparator.ToString ())) {
+                return path.Replace (Folder.DosSeparator, Folder.UnixSeparator);
+            }
+            return path;
         }
 
         public static string ApplicationData {
