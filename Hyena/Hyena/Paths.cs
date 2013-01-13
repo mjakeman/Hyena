@@ -116,6 +116,14 @@ namespace Hyena
             return path.Split (UnixSeparator);
         }
 
+        public static string SwitchRoot (string path, string mountPoint, string rootPath)
+        {
+            if (!path.StartsWith (mountPoint)) {
+                throw new ArgumentException ("mountPoint must be contained in first part of the path");
+            }
+            return path.Replace (mountPoint, rootPath);
+        }
+
         public static string MakePathRelative (string path, string to)
         {
             if (String.IsNullOrEmpty (path) || String.IsNullOrEmpty (to)) {
