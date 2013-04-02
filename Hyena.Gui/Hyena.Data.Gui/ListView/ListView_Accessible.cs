@@ -157,8 +157,17 @@ namespace Hyena.Data.Gui
     {
         public static void Init ()
         {
-            new ListViewAccessibleFactory<T> ();
-            Atk.Global.DefaultRegistry.SetFactoryType ((GLib.GType)typeof (ListView<T>), (GLib.GType)typeof (ListViewAccessibleFactory<T>));
+            try {
+                // Test creating a dummy accessible, which may throw if gobject binding has issues.
+                // If it throws, a11y for ListView will not be enabled.
+                // (workaround for https://bugzilla.xamarin.com/show_bug.cgi?id=11510)
+                new ListViewAccessible<T> (new ListView<T> ());
+
+                new ListViewAccessibleFactory<T> ();
+                Atk.Global.DefaultRegistry.SetFactoryType ((GLib.GType)typeof (ListView<T>), (GLib.GType)typeof (ListViewAccessibleFactory<T>));
+            } catch (Exception ex) {
+                Log.Exception ("Initialization of accessibility support for ListView widgets failed", ex);
+            }
         }
 
         protected override Atk.Object OnCreateAccessible (GLib.Object obj)
