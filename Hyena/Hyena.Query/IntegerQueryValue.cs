@@ -30,8 +30,6 @@ using System;
 using System.Xml;
 using System.Text;
 
-using Mono.Unix;
-
 using Hyena;
 
 namespace Hyena.Query

@@ -32,8 +32,6 @@ using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Mono.Unix;
-
 using Hyena;
 
 namespace Hyena.Query

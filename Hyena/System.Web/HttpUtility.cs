@@ -40,10 +40,12 @@ using System.Web.Util;
 
 namespace System.Web {
 
-#if !MONOTOUCH
+/*#if !MONOTOUCH
+	// TODO: This does not compile under .NET Core
+	// Do we need this?
 	// CAS - no InheritanceDemand here as the class is sealed
 	[AspNetHostingPermission (SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal)]
-#endif
+#endif*/
 
 	public sealed class HttpUtility {
 		#region Fields

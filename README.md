@@ -1,3 +1,19 @@
+# Hyena
+A utility library primarily used by Banshee.
+
+This is an attempt at porting Hyena to .NET Core and removing mono
+from the codebase.
+
+Please note, this port is *very* incomplete and much of it
+does not compile. The `Hyena.Tests` directory doesn't actually
+work, and is just a dumping ground for now. I will look at rewriting
+the tests for NUnit 3 in the future.
+
+See `TODO.md` for current status.
+
+The original README can be seen below:
+
+```txt
 This is a library of useful GUI and non-GUI C# code, originally used in Banshee.
 
 NOTE
@@ -46,3 +62,4 @@ There are three ways to use Hyena in your app:
 3) Bundle the .dll files in your project
 
    It's an expedient, but not good form for FOSS projects.
+```

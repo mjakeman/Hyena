@@ -84,44 +84,51 @@ namespace Hyena
 
         public static string FilenameToUri (string localPath)
         {
-            // TODO: replace with managed conversion to avoid marshalling
-            IntPtr path_ptr = GLib.Marshaller.StringToPtrGStrdup (localPath);
+            // // TODO: replace with managed conversion to avoid marshalling
+            // IntPtr path_ptr = GLib.Marshaller.StringToPtrGStrdup (localPath);
 
-            IntPtr uri_ptr = PlatformDetection.IsWindows
-                ? g_filename_to_uri_utf8 (path_ptr, IntPtr.Zero, IntPtr.Zero)
-                : g_filename_to_uri (path_ptr, IntPtr.Zero, IntPtr.Zero);
+            // IntPtr uri_ptr = PlatformDetection.IsWindows
+            //     ? g_filename_to_uri_utf8 (path_ptr, IntPtr.Zero, IntPtr.Zero)
+            //     : g_filename_to_uri (path_ptr, IntPtr.Zero, IntPtr.Zero);
 
-            GLib.Marshaller.Free (path_ptr);
+            // GLib.Marshaller.Free (path_ptr);
 
-            if (uri_ptr == IntPtr.Zero) {
-                throw new ApplicationException ("Filename path must be absolute");
-            }
+            // if (uri_ptr == IntPtr.Zero) {
+            //     throw new ApplicationException ("Filename path must be absolute");
+            // }
 
-            string uri = GLib.Marshaller.Utf8PtrToString (uri_ptr);
-            GLib.Marshaller.Free (uri_ptr);
+            // string uri = GLib.Marshaller.Utf8PtrToString (uri_ptr);
+            // GLib.Marshaller.Free (uri_ptr);
 
-            return uri;
+            throw new NotImplementedException("Using SafeUri! Check Implementation");
+
+            var uri = new Uri(localPath);
+            return uri.AbsoluteUri;
         }
 
         public static string UriToFilename (string uri)
         {
             // TODO: replace with managed conversion to avoid marshalling
-            IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup (uri);
+            // IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup (uri);
 
-            IntPtr path_ptr = PlatformDetection.IsWindows
-                ? g_filename_from_uri_utf8 (uri_ptr, IntPtr.Zero, IntPtr.Zero)
-                : g_filename_from_uri (uri_ptr, IntPtr.Zero, IntPtr.Zero);
+            // IntPtr path_ptr = PlatformDetection.IsWindows
+            //     ? g_filename_from_uri_utf8 (uri_ptr, IntPtr.Zero, IntPtr.Zero)
+            //     : g_filename_from_uri (uri_ptr, IntPtr.Zero, IntPtr.Zero);
 
-            GLib.Marshaller.Free (uri_ptr);
+            // GLib.Marshaller.Free (uri_ptr);
 
-            if (path_ptr == IntPtr.Zero) {
-                throw new ApplicationException ("URI could not be converted to local file location");
-            }
+            // if (path_ptr == IntPtr.Zero) {
+            //     throw new ApplicationException ("URI could not be converted to local file location");
+            // }
 
-            string path = GLib.Marshaller.Utf8PtrToString (path_ptr);
-            GLib.Marshaller.Free (path_ptr);
+            // string path = GLib.Marshaller.Utf8PtrToString (path_ptr);
+            // GLib.Marshaller.Free (path_ptr);
 
-            return path;
+            throw new NotImplementedException("Using SafeUri! Check Implementation");
+
+            // var path = 
+
+            // return path;
         }
 
         public static string UriToFilename (SafeUri uri)
@@ -202,16 +209,16 @@ namespace Hyena
             get { return Scheme == System.Uri.UriSchemeFile; }
         }
 
-        [DllImport ("libglib-2.0-0.dll")]
-        private static extern IntPtr g_filename_to_uri_utf8 (IntPtr filename, IntPtr hostname, IntPtr error);
+        // [DllImport ("libglib-2.0-0.dll")]
+        // private static extern IntPtr g_filename_to_uri_utf8 (IntPtr filename, IntPtr hostname, IntPtr error);
 
-        [DllImport ("libglib-2.0-0.dll")]
-        private static extern IntPtr g_filename_from_uri_utf8 (IntPtr uri, IntPtr hostname, IntPtr error);
+        // [DllImport ("libglib-2.0-0.dll")]
+        // private static extern IntPtr g_filename_from_uri_utf8 (IntPtr uri, IntPtr hostname, IntPtr error);
 
-        [DllImport ("libglib-2.0-0.dll")]
-        private static extern IntPtr g_filename_to_uri (IntPtr filename, IntPtr hostname, IntPtr error);
+        // [DllImport ("libglib-2.0-0.dll")]
+        // private static extern IntPtr g_filename_to_uri (IntPtr filename, IntPtr hostname, IntPtr error);
 
-        [DllImport ("libglib-2.0-0.dll")]
-        private static extern IntPtr g_filename_from_uri (IntPtr uri, IntPtr hostname, IntPtr error);
+        // [DllImport ("libglib-2.0-0.dll")]
+        // private static extern IntPtr g_filename_from_uri (IntPtr uri, IntPtr hostname, IntPtr error);
     }
 }

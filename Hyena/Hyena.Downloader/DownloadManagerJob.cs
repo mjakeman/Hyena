@@ -30,8 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
-using Mono.Unix;
-
 using Hyena;
 
 namespace Hyena.Downloader

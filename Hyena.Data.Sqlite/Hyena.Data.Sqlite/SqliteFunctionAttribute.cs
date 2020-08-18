@@ -51,7 +51,7 @@ namespace Hyena.Data.Sqlite
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public class SqliteFunctionAttribute : Attribute
     {
-        internal Type        _instanceType;
+        // internal Type _instanceType;
 
         /// <summary>
         /// Default constructor, initializes the internal variables for the function.

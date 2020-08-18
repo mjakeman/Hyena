@@ -279,15 +279,15 @@ namespace Hyena.Collections
 
         private class SyncIntervalHeap : IntervalHeap<T>
         {
-            private IntervalHeap<T> heap;
+            private IntervalHeap<T> intervalHeap;
 
             internal SyncIntervalHeap (IntervalHeap<T> heap)
             {
-                this.heap = heap;
+                this.intervalHeap = heap;
             }
 
             public override int Count {
-                get { lock (heap) { return heap.Count; } }
+                get { lock (intervalHeap) { return intervalHeap.Count; } }
             }
 
             public override bool IsSynchronized {
@@ -295,57 +295,57 @@ namespace Hyena.Collections
             }
 
             public override object SyncRoot {
-                get { return heap.SyncRoot; }
+                get { return intervalHeap.SyncRoot; }
             }
 
             public override void Clear ()
             {
-                lock (heap) { heap.Clear (); }
+                lock (intervalHeap) { intervalHeap.Clear (); }
             }
 
             public override bool Contains(T item)
             {
-                lock (heap) { return heap.Contains (item); }
+                lock (intervalHeap) { return intervalHeap.Contains (item); }
             }
 
             public override T Pop()
             {
-                lock (heap) { return heap.Pop (); }
+                lock (intervalHeap) { return intervalHeap.Pop (); }
             }
 
             public override T Peek ()
             {
-                lock (heap) { return heap.Peek (); }
+                lock (intervalHeap) { return intervalHeap.Peek (); }
             }
 
             public override void Push (T item, int priority)
             {
-                lock (heap) { heap.Push (item, priority); }
+                lock (intervalHeap) { intervalHeap.Push (item, priority); }
             }
 
             public override void Add (T item)
             {
-                lock (heap) { heap.Add (item); }
+                lock (intervalHeap) { intervalHeap.Add (item); }
             }
 
             public override bool Remove (T item)
             {
-                lock (heap) { return heap.Remove (item); }
+                lock (intervalHeap) { return intervalHeap.Remove (item); }
             }
 
             public override void TrimExcess ()
             {
-                lock (heap) { heap.TrimExcess (); }
+                lock (intervalHeap) { intervalHeap.TrimExcess (); }
             }
 
             public override void CopyTo (T [] array, int index)
             {
-                lock (heap) { heap.CopyTo (array, index); }
+                lock (intervalHeap) { intervalHeap.CopyTo (array, index); }
             }
 
             public override IEnumerator<T> GetEnumerator ()
             {
-                lock (heap) { return new IntervalHeapEnumerator (this); }
+                lock (intervalHeap) { return new IntervalHeapEnumerator (this); }
             }
         }
 

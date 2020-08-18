@@ -103,16 +103,18 @@ namespace Hyena
                 return;
             }
 
-            try {
-                if (prctl (15 /* PR_SET_NAME */, Encoding.ASCII.GetBytes (name + "\0"),
-                    IntPtr.Zero, IntPtr.Zero, IntPtr.Zero) != 0) {
-                    throw new ApplicationException ("Error setting process name: " +
-                        Mono.Unix.Native.Stdlib.GetLastError ());
-                }
-            } catch (EntryPointNotFoundException) {
-                setproctitle (Encoding.ASCII.GetBytes ("%s\0"),
-                    Encoding.ASCII.GetBytes (name + "\0"));
-            }
+            throw new NotImplementedException("TODO: Implement SetProcessName() for .NET Core");
+
+            // try {
+            //     if (prctl (15 /* PR_SET_NAME */, Encoding.ASCII.GetBytes (name + "\0"),
+            //         IntPtr.Zero, IntPtr.Zero, IntPtr.Zero) != 0) {
+            //         throw new ApplicationException ("Error setting process name: " +
+            //             Mono.Unix.Native.Stdlib.GetLastError ());
+            //     }
+            // } catch (EntryPointNotFoundException) {
+            //     setproctitle (Encoding.ASCII.GetBytes ("%s\0"),
+            //         Encoding.ASCII.GetBytes (name + "\0"));
+            // }
         }
 
         public static void TrySetProcessName (string name)
