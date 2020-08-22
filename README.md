@@ -11,6 +11,11 @@ the tests for NUnit 3 in the future.
 
 See `TODO.md` for current status.
 
+Adds `Hyena.Addins` as stub code for `Mono.Addins`. I would like to avoid
+maintaining an in-tree fork of mono-addins if possible. Perhaps we could
+look at porting to another addin framework, using .NET Core's assembly
+loading code directly?
+
 The original README can be seen below:
 
 ```txt

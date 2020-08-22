@@ -29,7 +29,6 @@
 using System;
 using System.Reflection;
 using Gtk;
-using Mono.Unix;
 
 namespace Hyena.Gui.Dialogs
 {
@@ -74,15 +73,15 @@ namespace Hyena.Gui.Dialogs
             scroll.ShadowType = ShadowType.In;
             scroll.SetSizeRequest(420, 200);
 
-            VBox.PackStart(scroll, true, true, 0);
-            VBox.Spacing = 5;
+            ContentArea.PackStart(scroll, true, true, 0);
+            ContentArea.Spacing = 5;
 
             path_label = new Label();
             path_label.Ellipsize = Pango.EllipsizeMode.End;
             path_label.Hide();
             path_label.Xalign = 0.0f;
             path_label.Yalign = 1.0f;
-            VBox.PackStart(path_label, false, true, 0);
+            ContentArea.PackStart(path_label, false, true, 0);
 
             scroll.ShowAll();
         }

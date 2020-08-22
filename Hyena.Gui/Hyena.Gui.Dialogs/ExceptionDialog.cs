@@ -32,7 +32,6 @@ using System.Resources;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
-using Mono.Unix;
 using Gtk;
 
 namespace Hyena.Gui.Dialogs
@@ -46,14 +45,14 @@ namespace Hyena.Gui.Dialogs
         {
             debugInfo = BuildExceptionMessage(e);
 
-            HasSeparator = false;
+            //HasSeparator = false;
             BorderWidth = 5;
             Resizable = false;
             //Translators: {0} is substituted with the application name
             Title = String.Format(Catalog.GetString("{0} Encountered a Fatal Error"),
                                   ApplicationContext.ApplicationName);
 
-            VBox.Spacing = 12;
+            ContentArea.Spacing = 12;
             ActionArea.Layout = ButtonBoxStyle.End;
 
             accel_group = new AccelGroup();
@@ -61,7 +60,7 @@ namespace Hyena.Gui.Dialogs
 
             HBox hbox = new HBox(false, 12);
             hbox.BorderWidth = 5;
-            VBox.PackStart(hbox, false, false, 0);
+            ContentArea.PackStart(hbox, false, false, 0);
 
             Image image = new Image(Stock.DialogError, IconSize.Dialog);
             image.Yalign = 0.0f;

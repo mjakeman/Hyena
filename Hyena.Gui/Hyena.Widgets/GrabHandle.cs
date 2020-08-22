@@ -51,11 +51,12 @@ namespace Hyena.Widgets
             EnterNotifyEvent += (o, a) => Inside = true;
             LeaveNotifyEvent += (o, a) => Inside = false;
 
-            da.ExposeEvent += (o, a) => {
-                if (da.IsDrawable) {
-                    Gtk.Style.PaintHandle (da.Style, da.GdkWindow, da.State, ShadowType.In,
-                        a.Event.Area, this, "entry", 0, 0, da.Allocation.Width, da.Allocation.Height, Orientation);
-                }
+            da.Drawn += (obj, args) => {
+                throw new NotImplementedException("GrabHandles not implemented!");
+                // if (da.IsDrawable) {
+                //     Gtk.Style.PaintHandle (da.Style, da.GdkWindow, da.State, ShadowType.In,
+                //         a.Event.Area, this, "entry", 0, 0, da.Allocation.Width, da.Allocation.Height, Orientation);
+                // }
             };
         }
 

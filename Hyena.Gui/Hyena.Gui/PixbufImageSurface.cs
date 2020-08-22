@@ -121,6 +121,8 @@ namespace Hyena.Gui
             }
         }
 
+        // TODO: Can this be made safe?
+        // Or if not, moved to a different 'unsafe' project?
         private unsafe void CreateSurface (int width, int height, int channels, int gdk_rowstride, IntPtr pixels)
         {
             byte *gdk_pixels = (byte *)pixels;

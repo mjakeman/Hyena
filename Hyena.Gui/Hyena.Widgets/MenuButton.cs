@@ -31,8 +31,10 @@ using Gdk;
 
 namespace Hyena.Widgets
 {
+    [Obsolete]
     public class MenuButton : Container
     {
+        /*
         private ToggleButton toggle_button = new ToggleButton ();
         private HBox box = new HBox ();
         private Alignment alignment;
@@ -176,6 +178,6 @@ namespace Hyena.Widgets
             }
 
             push_in = false;
-        }
+        }*/
     }
 }

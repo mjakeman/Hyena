@@ -41,7 +41,7 @@ namespace Hyena.Gui.Theming
         {
         }
 
-        public static Cairo.Color GetCairoTextMidColor (Widget widget)
+        /*public static Cairo.Color GetCairoTextMidColor (Widget widget)
         {
             Cairo.Color text_color = CairoExtensions.GdkColorToCairoColor (widget.Style.Foreground (StateType.Normal));
             Cairo.Color background_color = CairoExtensions.GdkColorToCairoColor (widget.Style.Background (StateType.Normal));
@@ -54,7 +54,7 @@ namespace Hyena.Gui.Theming
             Gdk.Color gdk_color = new Gdk.Color ((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
             Gdk.Colormap.System.AllocColor (ref gdk_color, true, true);
             return gdk_color;
-        }
+        }*/
 
         protected override void OnColorsRefreshed ()
         {

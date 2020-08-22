@@ -62,7 +62,7 @@ namespace Hyena.Widgets
         private readonly bool horizontal;
         private double percent;
         private Rectangle widget_alloc;
-        private Pixmap canvas;
+        //private Pixmap canvas;
 
         public AnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, bool horizontal)
         {
@@ -117,11 +117,11 @@ namespace Hyena.Widgets
 
         protected override void OnRealized ()
         {
-            WidgetFlags |= WidgetFlags.Realized;
+            this.IsRealized = false;
 
             Gdk.WindowAttr attributes = new Gdk.WindowAttr ();
             attributes.WindowType = Gdk.WindowType.Child;
-            attributes.Wclass = Gdk.WindowClass.InputOutput;
+            attributes.Wclass = Gdk.WindowWindowClass.InputOutput;
             attributes.EventMask = (int)Gdk.EventMask.ExposureMask;
 
             GdkWindow = new Gdk.Window (Parent.GdkWindow, attributes, 0);
@@ -130,10 +130,11 @@ namespace Hyena.Widgets
             Style.Attach (GdkWindow);
         }
 
-        protected override void OnSizeRequested (ref Requisition requisition)
+        protected void SizeRequest (ref Requisition requisition)
         {
             if (Widget != null) {
-                Requisition req = Widget.SizeRequest ();
+                Widget.GetPreferredSize (out var minimalSize, out var naturalSize);
+                Gtk.Requisition req = naturalSize; // TODO: Use minimal size?
                 widget_alloc.Width = req.Width;
                 widget_alloc.Height = req.Height;
             }
@@ -148,6 +149,21 @@ namespace Hyena.Widgets
 
             requisition.Width = Width;
             requisition.Height = Height;
+        }
+
+        // TODO: Modernise Sizing Code
+        protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_height = natural_height = req.Height;
+        }
+
+        protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_width = natural_width = req.Width;
         }
 
         protected override void OnSizeAllocated (Rectangle allocation)
@@ -174,16 +190,29 @@ namespace Hyena.Widgets
             }
         }
 
-        protected override bool OnExposeEvent (EventExpose evnt)
+        protected override bool OnDrawn(Cairo.Context cr)
         {
-            if (canvas != null) {
+            if (canvas != null)
+            {
                 GdkWindow.DrawDrawable (Style.BackgroundGC (State), canvas,
                     0, 0, widget_alloc.X, widget_alloc.Y, widget_alloc.Width, widget_alloc.Height);
                 return true;
-            } else {
-                return base.OnExposeEvent (evnt);
             }
+
+            // TODO: Return false here?
+            return false;
         }
+
+        // protected override bool OnExposeEvent (EventExpose evnt)
+        // {
+        //     if (canvas != null) {
+        //         GdkWindow.DrawDrawable (Style.BackgroundGC (State), canvas,
+        //             0, 0, widget_alloc.X, widget_alloc.Y, widget_alloc.Width, widget_alloc.Height);
+        //         return true;
+        //     } else {
+        //         return base.OnExposeEvent (evnt);
+        //     }
+        // }
 
         protected override void ForAll (bool include_internals, Callback callback)
         {

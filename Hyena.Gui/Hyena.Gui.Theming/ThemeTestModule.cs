@@ -80,7 +80,14 @@ namespace Hyena.Gui.Theming
                 theme.Context.Radius = 10;
             }
 
-            protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+            protected override bool OnDrawn(Cairo.Context cr)
+            {
+                theme.DrawListBackground(cr, alloc, true);
+                theme.DrawListBackground(cr, alloc);
+                return true;
+            }
+
+            /*protected override bool OnExposeEvent (Gdk.EventExpose evnt)
             {
                 Cairo.Context cr = null;
                 try {
@@ -97,7 +104,7 @@ namespace Hyena.Gui.Theming
                     CairoExtensions.DisposeContext (cr);
                 }
                 return true;
-            }
+            }*/
         }
     }
 }

@@ -31,8 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Mono.Unix;
-
 using Gtk;
 using Hyena;
 using Hyena.Query;
@@ -52,7 +50,7 @@ namespace Hyena.Query.Gui
             get { return limit_box; }
         }
 
-        private ComboBox terms_logic_combo;
+        private ComboBoxText terms_logic_combo;
         private CheckButton terms_enabled_checkbox;
         private Label terms_label;
         private QueryFieldSet field_set;
@@ -107,7 +105,7 @@ namespace Hyena.Query.Gui
             terms_enabled_checkbox.Toggled += OnMatchCheckBoxToggled;
             header.PackStart (terms_enabled_checkbox, false, false, 0);
 
-            terms_logic_combo = ComboBox.NewText ();
+            terms_logic_combo = new ComboBoxText ();
             terms_logic_combo.AppendText (Catalog.GetString ("all"));
             terms_logic_combo.AppendText (Catalog.GetString ("any"));
             terms_logic_combo.Show ();
@@ -163,7 +161,7 @@ namespace Hyena.Query.Gui
                         }
                     } catch (ArgumentException) {
                         complex_query = true;
-                        matchesFrame.HideAll ();
+                        matchesFrame.Hide(); /*HideAll()*/
                         terms_entry.Text = value.ToUserQuery ();
                         terms_entry_box.ShowAll ();
                     }

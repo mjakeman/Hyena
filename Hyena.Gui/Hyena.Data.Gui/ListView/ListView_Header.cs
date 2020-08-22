@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Unix;
 using Gtk;
 
 namespace Hyena.Data.Gui

@@ -104,7 +104,7 @@ namespace Hyena.Widgets
             InitTheme ();
         }
 
-        protected override void OnSizeRequested (ref Requisition requisition)
+        protected void SizeRequest (ref Requisition requisition)
         {
             if (child != null && child.Visible) {
                 // Add the child's width/height
@@ -119,6 +119,21 @@ namespace Hyena.Widgets
             // Add the frame border
             requisition.Width += ((int)BorderWidth + frame_width) * 2;
             requisition.Height += ((int)BorderWidth + frame_width) * 2;
+        }
+
+        // TODO: Modernise Sizing Code
+        protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_height = natural_height = req.Height;
+        }
+
+        protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_width = natural_width = req.Width;
         }
 
         protected override void OnSizeAllocated (Gdk.Rectangle allocation)

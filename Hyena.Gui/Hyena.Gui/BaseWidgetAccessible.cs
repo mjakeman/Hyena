@@ -34,10 +34,11 @@ using Atk;
 
 namespace Hyena.Gui
 {
-    public class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor
+    public class BaseWidgetAccessible : Gtk.Accessible, Atk.IComponentImplementor
     {
         private Gtk.Widget widget;
         private uint focus_id = 0;
+        public int MdiZorder { get; } /* Why do we need this? */
         private Dictionary<uint, Atk.FocusHandler> focus_handlers = new Dictionary<uint, Atk.FocusHandler> ();
 
         public BaseWidgetAccessible (Gtk.Widget widget)
@@ -218,13 +219,13 @@ namespace Hyena.Gui
 
         private bool SetSizeAndPosition (int x, int y, int w, int h, Atk.CoordType coordType, bool setSize)
         {
-            if (!widget.IsTopLevel) {
+            if (!widget.IsToplevel) {
                 return false;
             }
 
             if (coordType == CoordType.Window) {
                 int x_off, y_off;
-                widget.GdkWindow.GetOrigin (out x_off, out y_off);
+                widget.Window.GetOrigin (out x_off, out y_off);
                 x += x_off;
                 y += y_off;
 
@@ -234,7 +235,9 @@ namespace Hyena.Gui
             }
 
             #pragma warning disable 0612
-            widget.SetUposition (x, y);
+            // widget.SetUposition (x, y);
+            // TODO: Does this work?
+            SetPosition(x, y, coordType);
             #pragma warning restore 0612
 
             if (setSize) {
@@ -246,7 +249,7 @@ namespace Hyena.Gui
 
         public bool SetSize (int w, int h)
         {
-            if (widget.IsTopLevel) {
+            if (widget.IsToplevel) {
                 widget.SetSizeRequest (w, h);
                 return true;
             } else {

@@ -44,7 +44,7 @@ namespace Hyena.Gui.Canvas
 
         public CanvasHost ()
         {
-            WidgetFlags |= WidgetFlags.NoWindow;
+            this.HasWindow = false;
             manager = new CanvasManager (this);
         }
 
@@ -62,7 +62,7 @@ namespace Hyena.Gui.Canvas
             attributes.Y = Allocation.Y;
             attributes.Width = Allocation.Width;
             attributes.Height = Allocation.Height;
-            attributes.Wclass = WindowClass.InputOnly;
+            attributes.Wclass = WindowWindowClass.InputOnly;
             attributes.EventMask = (int)(
                 EventMask.PointerMotionMask |
                 EventMask.ButtonPressMask |
@@ -83,7 +83,8 @@ namespace Hyena.Gui.Canvas
 
         protected override void OnUnrealized ()
         {
-            WidgetFlags ^= WidgetFlags.Realized;
+            //WidgetFlags ^= WidgetFlags.Realized;
+            this.IsRealized = false;
 
             event_window.UserData = IntPtr.Zero;
             Hyena.Gui.GtkWorkarounds.WindowDestroy (event_window);
@@ -114,7 +115,7 @@ namespace Hyena.Gui.Canvas
             }
         }
 
-        protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+        protected void SizeRequest (ref Gtk.Requisition requisition)
         {
             if (canvas_child != null) {
                 Size size = canvas_child.Measure (Size.Empty);
@@ -129,19 +130,33 @@ namespace Hyena.Gui.Canvas
             }
         }
 
+        // TODO: Modernise Sizing Code
+        protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_height = natural_height = req.Height;
+        }
+
+        protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_width = natural_width = req.Width;
+        }
+
         private Random rand;
 
-        protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+        protected override bool OnDrawn(Cairo.Context cr)
         {
             if (canvas_child == null || !canvas_child.Visible || !Visible || !IsMapped) {
                 return true;
             }
 
-            Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
-            context.Context = cr;
-
-            foreach (Gdk.Rectangle damage in evnt.Region.GetRectangles ()) {
-                cr.Rectangle (damage.X, damage.Y, damage.Width, damage.Height);
+            // TODO: Removed foreach loop - Does this break things?
+            Gdk.Rectangle alloc = Allocation;
+            {
+                cr.Rectangle (alloc.X, alloc.Y, alloc.Width, alloc.Height);
                 cr.Clip ();
 
                 cr.Translate (Allocation.X, Allocation.Y);
@@ -150,16 +165,14 @@ namespace Hyena.Gui.Canvas
 
                 if (Debug) {
                     cr.LineWidth = 1.0;
-                    cr.Color = CairoExtensions.RgbToColor (
-                        (uint)(rand = rand ?? new Random ()).Next (0, 0xffffff));
-                    cr.Rectangle (damage.X + 0.5, damage.Y + 0.5, damage.Width - 1, damage.Height - 1);
+                    cr.SetSourceColor(CairoExtensions.RgbToColor (
+                        (uint)(rand = rand ?? new Random ()).Next (0, 0xffffff)));
+                    cr.Rectangle (alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
                     cr.Stroke ();
                 }
 
                 cr.ResetClip ();
             }
-
-            CairoExtensions.DisposeContext (cr);
 
             if (fps.Update ()) {
                 // Console.WriteLine ("FPS: {0}", fps.FramesPerSecond);
@@ -167,6 +180,43 @@ namespace Hyena.Gui.Canvas
 
             return true;
         }
+
+        // protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+        // {
+        //     if (canvas_child == null || !canvas_child.Visible || !Visible || !IsMapped) {
+        //         return true;
+        //     }
+
+        //     Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
+        //     context.Context = cr;
+
+        //     foreach (Gdk.Rectangle damage in evnt.Region.GetRectangles ()) {
+        //         cr.Rectangle (damage.X, damage.Y, damage.Width, damage.Height);
+        //         cr.Clip ();
+
+        //         cr.Translate (Allocation.X, Allocation.Y);
+        //         canvas_child.Render (context);
+        //         cr.Translate (-Allocation.X, -Allocation.Y);
+
+        //         if (Debug) {
+        //             cr.LineWidth = 1.0;
+        //             cr.Color = CairoExtensions.RgbToColor (
+        //                 (uint)(rand = rand ?? new Random ()).Next (0, 0xffffff));
+        //             cr.Rectangle (damage.X + 0.5, damage.Y + 0.5, damage.Width - 1, damage.Height - 1);
+        //             cr.Stroke ();
+        //         }
+
+        //         cr.ResetClip ();
+        //     }
+
+        //     CairoExtensions.DisposeContext (cr);
+
+        //     if (fps.Update ()) {
+        //         // Console.WriteLine ("FPS: {0}", fps.FramesPerSecond);
+        //     }
+
+        //     return true;
+        // }
 
         private void AllocateChild ()
         {

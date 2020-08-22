@@ -35,12 +35,12 @@ namespace Hyena.Gui
 {
     internal class EditableInsertAction : IUndoAction
     {
-        private Editable editable;
+        private IEditable editable;
         private string text;
         private int index;
         private bool is_paste;
 
-        public EditableInsertAction (Editable editable, int start, string text, int length)
+        public EditableInsertAction (IEditable editable, int start, string text, int length)
         {
             this.editable = editable;
             this.text = text;

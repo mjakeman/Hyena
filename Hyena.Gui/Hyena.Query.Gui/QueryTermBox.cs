@@ -54,13 +54,13 @@ namespace Hyena.Query.Gui
 
         private QueryField [] sorted_fields;
 
-        private ComboBox field_chooser;
-        public ComboBox FieldChooser {
+        private ComboBoxText field_chooser;
+        public ComboBoxText FieldChooser {
             get { return field_chooser; }
         }
 
-        private ComboBox op_chooser;
-        public ComboBox OpChooser {
+        private ComboBoxText op_chooser;
+        public ComboBoxText OpChooser {
             get { return op_chooser; }
         }
 
@@ -82,10 +82,10 @@ namespace Hyena.Query.Gui
 
         private void BuildInterface ()
         {
-            field_chooser = ComboBox.NewText ();
+            field_chooser = new ComboBoxText ();
             field_chooser.Changed += HandleFieldChanged;
 
-            op_chooser = ComboBox.NewText ();
+            op_chooser = new ComboBoxText ();
             op_chooser.RowSeparatorFunc = IsRowSeparator;
             op_chooser.Changed += HandleOperatorChanged;
 
@@ -111,7 +111,7 @@ namespace Hyena.Query.Gui
             field_chooser.Active = 0;
         }
 
-        private bool IsRowSeparator (TreeModel model, TreeIter iter)
+        private bool IsRowSeparator (ITreeModel model, TreeIter iter)
         {
             return String.IsNullOrEmpty (model.GetValue (iter, 0) as string);
         }
@@ -157,7 +157,7 @@ namespace Hyena.Query.Gui
 
             // Remove old type's operators
             while (op_chooser.Model.IterNChildren () > 0) {
-                op_chooser.RemoveText (0);
+                op_chooser.Remove (0);
             }
 
             // Add new field's operators

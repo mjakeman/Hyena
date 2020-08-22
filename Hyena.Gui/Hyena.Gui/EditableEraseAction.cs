@@ -35,14 +35,14 @@ namespace Hyena.Gui
 {
     internal class EditableEraseAction : IUndoAction
     {
-        private Editable editable;
+        private IEditable editable;
         private string text;
         private int start;
         private int end;
         private bool is_forward;
         private bool is_cut;
 
-        public EditableEraseAction (Editable editable, int start, int end)
+        public EditableEraseAction (IEditable editable, int start, int end)
         {
             this.editable = editable;
             this.text = editable.GetChars (start, end);

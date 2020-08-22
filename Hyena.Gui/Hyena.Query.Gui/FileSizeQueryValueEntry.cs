@@ -28,8 +28,6 @@
 
 using System;
 
-using Mono.Unix;
-
 using Hyena.Query;
 using Gtk;
 
@@ -38,7 +36,7 @@ namespace Hyena.Query.Gui
     public class FileSizeQueryValueEntry : QueryValueEntry
     {
         protected SpinButton spin_button;
-        protected ComboBox combo;
+        protected ComboBoxText combo;
         protected FileSizeQueryValue query_value;
 
         protected static readonly FileSizeFactor [] factors = new FileSizeFactor [] {
@@ -57,7 +55,7 @@ namespace Hyena.Query.Gui
             spin_button.SetRange (0.0, Double.MaxValue);
             Add (spin_button);
 
-            combo = ComboBox.NewText ();
+            combo = new ComboBoxText();
             combo.AppendText (Catalog.GetString ("bytes"));
             combo.AppendText (Catalog.GetString ("KB"));
             combo.AppendText (Catalog.GetString ("MB"));

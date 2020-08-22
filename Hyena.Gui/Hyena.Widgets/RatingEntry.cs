@@ -54,7 +54,7 @@ namespace Hyena.Widgets
 
         public RatingEntry () : this (0)
         {
-            WidgetFlags |= Gtk.WidgetFlags.NoWindow;
+            this.HasWindow = false;
         }
 
         public RatingEntry (int rating) : this (rating, new RatingRenderer ())
@@ -153,8 +153,9 @@ namespace Hyena.Widgets
 
         protected override void OnRealized ()
         {
-            WidgetFlags |= WidgetFlags.Realized | WidgetFlags.NoWindow;
-            GdkWindow = Parent.GdkWindow;
+            this.IsRealized = true;
+            this.HasWindow = true;
+            Window = Parent.Window;
 
             Gdk.WindowAttr attributes = new Gdk.WindowAttr ();
             attributes.WindowType = Gdk.WindowType.Child;
@@ -162,7 +163,7 @@ namespace Hyena.Widgets
             attributes.Y = Allocation.Y;
             attributes.Width = Allocation.Width;
             attributes.Height = Allocation.Height;
-            attributes.Wclass = Gdk.WindowClass.InputOnly;
+            attributes.Wclass = Gdk.WindowWindowClass.InputOnly;
             attributes.EventMask = (int)(
                 Gdk.EventMask.PointerMotionMask |
                 Gdk.EventMask.EnterNotifyMask |
@@ -181,14 +182,14 @@ namespace Hyena.Widgets
             event_window = new Gdk.Window (GdkWindow, attributes, attributes_mask);
             event_window.UserData = Handle;
 
-            Style = Gtk.Rc.GetStyleByPaths (Settings, "*.GtkEntry", "*.GtkEntry", GType);
+            // Style = Gtk.Rc.GetStyleByPaths (Settings, "*.GtkEntry", "*.GtkEntry", GType);
 
             base.OnRealized ();
         }
 
         protected override void OnUnrealized ()
         {
-            WidgetFlags &= ~WidgetFlags.Realized;
+            this.IsRealized = false;
 
             event_window.UserData = IntPtr.Zero;
             Hyena.Gui.GtkWorkarounds.WindowDestroy (event_window);
@@ -199,13 +200,13 @@ namespace Hyena.Widgets
 
         protected override void OnMapped ()
         {
-            WidgetFlags |= WidgetFlags.Mapped;
+            this.IsMapped = true;
             event_window.Show ();
         }
 
         protected override void OnUnmapped ()
         {
-            WidgetFlags &= ~WidgetFlags.Mapped;
+            this.IsMapped = false;
             event_window.Hide ();
         }
 
@@ -233,7 +234,7 @@ namespace Hyena.Widgets
             }
         }
 
-        protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+        protected void SizeRequest (ref Gtk.Requisition requisition)
         {
             EnsureStyle ();
 
@@ -251,6 +252,21 @@ namespace Hyena.Widgets
 
             requisition.Width = renderer.Width;
             requisition.Height = renderer.Height;
+        }
+        
+        // TODO: Modernise Sizing Code
+        protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_height = natural_height = req.Height;
+        }
+
+        protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+        {
+            var req = new Gtk.Requisition();
+            SizeRequest (ref req);
+            minimum_width = natural_width = req.Width;
         }
 
         protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -393,7 +409,7 @@ namespace Hyena.Widgets
 
 #region Test Module
 
-    public class RatingAccessible : Atk.Object, Atk.Value, Atk.ValueImplementor
+    public class RatingAccessible : Atk.Object /*, Atk.IValue, Atk.IValueImplementor*/
     {
         private RatingEntry rating;
 
@@ -442,7 +458,7 @@ namespace Hyena.Widgets
         }
     }
 
-    internal class RatingAccessibleFactory : Atk.ObjectFactory
+    /*internal class RatingAccessibleFactory : Atk.ObjectFactory
     {
         public static void Init ()
         {
@@ -459,7 +475,7 @@ namespace Hyena.Widgets
         {
             return RatingAccessible.GType;
         }
-    }
+    }*/
 
     [Hyena.Gui.TestModule ("Rating Entry")]
     internal class RatingEntryTestModule : Gtk.Window

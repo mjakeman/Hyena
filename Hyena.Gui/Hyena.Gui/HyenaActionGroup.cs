@@ -75,7 +75,7 @@ namespace Hyena.Gui
             }
         }
 
-        public override void Dispose ()
+        protected override void Dispose(bool disposing)
         {
             Hyena.ThreadAssist.ProxyToMain (delegate {
                 UnRegister ();

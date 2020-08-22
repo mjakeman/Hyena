@@ -28,7 +28,6 @@
 
 using System;
 using Gtk;
-using Mono.Unix;
 
 using Hyena.Gui;
 

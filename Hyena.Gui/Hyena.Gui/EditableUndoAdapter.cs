@@ -34,7 +34,7 @@ using Hyena;
 
 namespace Hyena.Gui
 {
-    public class EditableUndoAdapter<T> where T : Widget, Editable
+    public class EditableUndoAdapter<T> where T : Widget, IEditable
     {
         private T editable;
         private UndoManager undo_manager = new UndoManager ();
@@ -47,7 +47,8 @@ namespace Hyena.Gui
             this.editable = editable;
             popup_event_info = editable.GetType ().GetEvent ("PopulatePopup");
             if (popup_event_info != null) {
-                populate_popup_handler = new PopulatePopupHandler (OnPopulatePopup);
+                Console.WriteLine("EditableUndoAdapter.cs: PopulatePopup not implemented!");
+                //populate_popup_handler = new PopulatePopupHandler (OnPopulatePopup);
             }
         }
 
@@ -109,10 +110,11 @@ namespace Hyena.Gui
         [GLib.ConnectBefore]
         private void OnTextInserted (object o, TextInsertedArgs args)
         {
-            undo_manager.AddUndoAction (new EditableInsertAction (editable, args.Position, args.Text, args.Length));
+            undo_manager.AddUndoAction (new EditableInsertAction (editable, args.Position, args.NewText, args.NewTextLength));
         }
 
-        private void OnPopulatePopup (object o, PopulatePopupArgs args)
+        // TODO: Port to GTK3 menu code
+        /*private void OnPopulatePopup (object o, PopulatePopupArgs args)
         {
             Menu menu = args.Menu;
             MenuItem item;
@@ -137,7 +139,7 @@ namespace Hyena.Gui
                 Gdk.ModifierType.ControlMask, AccelFlags.Visible);
             item.Show ();
             menu.Prepend (item);
-        }
+        }*/
 
         public UndoManager UndoManager {
             get { return undo_manager; }
