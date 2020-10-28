@@ -15,3 +15,5 @@ missing
 Hyena/obj
 Hyena.Gui/obj
 Hyena.Data.Sqlite/obj
+Hyena.Glue/obj
+Hyena.Gui.Old/obj

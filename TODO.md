@@ -14,9 +14,9 @@ at some point.
  - Builds (apparently successfully?)
 
 ## Hyena Gui
-Does not build
- - Port to GtkSharp3
- - Better yet, gir.core?
+ - Ported ExtensionDialog.cs only
+ - Uses gir.core/Gtk3
+ - Incrementally port over library as gir.core improves
 
 ## Tests
  - Do not build

@@ -39,7 +39,7 @@ namespace Hyena
     // for building with .NET Core
     // Functionally equivalent to Mono.Unix.Catalog
     // We should transition to using NGettext directly
-    static class Catalog
+    public static class Catalog
     {
         private static NGettext.Catalog catalog = new NGettext.Catalog();
 

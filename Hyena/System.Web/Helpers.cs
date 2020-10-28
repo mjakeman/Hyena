@@ -26,6 +26,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+// TODO(firox263) 27/10/20: Can we get rid of this?
+/*
 using System;
 using System.Globalization;
 
@@ -36,3 +39,4 @@ namespace System.Web.Util
 		public static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 	}
 }
+*/
