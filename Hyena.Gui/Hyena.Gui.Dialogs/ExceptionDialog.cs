@@ -52,8 +52,7 @@ namespace Hyena.Gui.Dialogs
             Resizable = false;
             SetBorderWidth(5);
 
-            this.AddStyleProvider(HyenaStyle.GlobalCssProvider, 800);
-            this.AddStyleClass("hyena-exception-dialog");
+            this.AddHyenaStyleClass("hyena-exception-dialog");
 
             // Translators: {0} is substituted with the application name
             Title = String.Format(Catalog.GetString("{0} Encountered a Fatal Error"),
@@ -67,19 +66,19 @@ namespace Hyena.Gui.Dialogs
             vbox.Spacing = 12;
 
             // Header
-            var hbox = new Box(Orientation.horizontal, 12);
+            var hbox = new Box(Orientation.Horizontal, 12);
             vbox.PackStart(hbox, false, false, 0);
             
-            var image = Image.NewFromIconName("dialog-error", IconSize.dialog);
-            image.VAlign = Align.start;
+            var image = Image.NewFromIconName("dialog-error", IconSize.Dialog);
+            image.VAlign = Align.Start;
             hbox.PackStart(image, false, false, 0);
 
-            Box label_vbox = new Box(Orientation.vertical, 12);
+            Box label_vbox = new Box(Orientation.Vertical, 12);
             hbox.PackStart(label_vbox, true, true, 0);
 
             Label label = new Label(String.Format("<b><big>{0}</big></b>", Title));
             label.UseMarkup = true;
-            label.Justify = Justification.left;
+            label.Justify = Justification.Left;
             label.Wrap = true;
             label.XAlign = 0;
             label_vbox.PackStart(label, false, false, 0);
@@ -88,7 +87,7 @@ namespace Hyena.Gui.Dialogs
 
             label.UseMarkup = true;
             label.UseUnderline = false;
-            label.Justify = Justification.left;
+            label.Justify = Justification.Left;
             label.Wrap = true;
             label.Selectable = true;
             label.XAlign = 0;
@@ -107,8 +106,8 @@ namespace Hyena.Gui.Dialogs
             var textView = new TextView();
             scrolledWindow.Add(textView);
 
-            scrolledWindow.SetMinContentWidth(650);
-            scrolledWindow.SetMinContentHeight(450);
+            scrolledWindow.SetMinContentWidth(450);
+            scrolledWindow.SetMinContentHeight(250);
             
             textView.Editable = false;
             textView.Buffer.Text = debugInfo;
@@ -117,8 +116,7 @@ namespace Hyena.Gui.Dialogs
             
             ShowAll();
 
-            // TODO: Button
-            // AddButton(Stock.Close, ResponseType.Close, true);
+            AddButton("Close", ResponseType.Close);
         }
 
         private string BuildExceptionMessage(Exception e)

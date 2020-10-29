@@ -9,14 +9,16 @@ namespace Hyena.Gui
 {
     public static class HyenaStyleExtensions
     {
-        public static void AddStyleClass(this Widget widget, string str)
+        public static void AddHyenaStyleClass(this Widget widget, string str)
         {
+            HyenaStyle.EnsureStylesheet();
             var styleContext = widget.GetStyleContext();
             styleContext.AddClass(str);
         }
 
-        public static void RemoveStyleClass(this Widget widget, string str)
+        public static void RemoveHyenaStyleClass(this Widget widget, string str)
         {
+            HyenaStyle.EnsureStylesheet();
             var styleContext = widget.GetStyleContext();
             styleContext.RemoveClass(str);
         }
@@ -46,9 +48,8 @@ namespace Hyena.Gui
             if (!usingStylesheet)
             {
                 var screen = Gdk.Screen.GetDefault();
+                StyleContext.AddProviderForScreen(screen, GlobalCssProvider, 600);
             }
-            var screen = 
-            styleContext.AddProvider(GlobalCssProvider, 600);
         }
 
         private static CssProvider CreateProvider(Assembly asm)
