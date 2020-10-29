@@ -2,7 +2,8 @@
 A utility library primarily used by Banshee.
 
 This is an attempt at porting Hyena to .NET Core and removing mono
-from the codebase.
+from the codebase. Additionally, it has evolved to contain an experimental
+(READ: *very experimental*) port to Gtk3 using the gir.core bindings.
 
 Please note, this port is *very* incomplete and much of it
 does not compile. The `Hyena.Tests` directory doesn't actually
@@ -11,6 +12,28 @@ the tests for NUnit 3 in the future.
 
 See `TODO.md` for current status.
 
+## Demo: ExceptionDialog
+The first example of a widget ported from gtk-sharp (Gtk2) to gir.core (Gtk3). Note that the Gtk2 dialog is running on WSL via VcXsrv, hence the size of the window.
+
+![Small Exception Dialog](exception-dialog-1.png)
+![Big Exception Dialog](exception-dialog-2.png)
+
+This dialog takes a C# exception and generates a user-facing dialog with
+information about the cause of the problem. There are some slight changes,
+such as the omission of the 'X' on the close button, but otherwise they are
+very much the same, even in parts of the source code. It has been updated to
+use modern CSS Styling.
+
+## Building
+You're on your own :)
+
+`Hyena.Gui.Old` contains Mono/Gtk2 code and no longer builds. `Hyena`, `Hyena.Data.Sqlite`, and `Hyena.Gui` all build using .NET Core 3.1.
+
+You will need a compatible version of gir.core for this to work (at the time of writing, the one from my repo: [feature/hyena-fixes](https://github.com/firox263/gir.core/tree/feature/hyena-fixes)) cloned as `ext/gir.core` for csproj references to work.
+
+You can run with `dotnet run --project=Hyena.Gui`.
+
+## Original README
 The original README can be seen below:
 
 ```txt
