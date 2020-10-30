@@ -84,7 +84,16 @@ namespace Hyena
 
         public static string FilenameToUri (string localPath)
         {
-            // // TODO: replace with managed conversion to avoid marshalling
+            // TODO: Ensure equivalency
+            // Work towards removing GLib dependency
+            var result = GLib.Filename.ToUri(localPath, String.Empty, out var error);
+
+            if (error != null)
+                throw new ApplicationException(error?.Message);
+
+            return result;
+
+            // TODO: replace with managed conversion to avoid marshalling
             // IntPtr path_ptr = GLib.Marshaller.StringToPtrGStrdup (localPath);
 
             // IntPtr uri_ptr = PlatformDetection.IsWindows
@@ -100,14 +109,20 @@ namespace Hyena
             // string uri = GLib.Marshaller.Utf8PtrToString (uri_ptr);
             // GLib.Marshaller.Free (uri_ptr);
 
-            throw new NotImplementedException("Using SafeUri! Check Implementation");
-
-            var uri = new Uri(localPath);
-            return uri.AbsoluteUri;
+            // return uri;
         }
 
         public static string UriToFilename (string uri)
         {
+            // TODO: Ensure equivalency
+            // Work towards removing GLib dependency
+            var result = GLib.Filename.FromUri(uri, String.Empty, out var error);
+
+            if (error != null)
+                throw new ApplicationException(error?.Message);
+
+            return result;
+
             // TODO: replace with managed conversion to avoid marshalling
             // IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup (uri);
 
@@ -123,10 +138,6 @@ namespace Hyena
 
             // string path = GLib.Marshaller.Utf8PtrToString (path_ptr);
             // GLib.Marshaller.Free (path_ptr);
-
-            throw new NotImplementedException("Using SafeUri! Check Implementation");
-
-            // var path = 
 
             // return path;
         }

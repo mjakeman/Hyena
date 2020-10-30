@@ -4,11 +4,11 @@ at some point.
 
 ## Hyena Core
  - Builds
- - SafeUri doesn't work, as the filename conversions have been
-   replaced with stub code (to remove GLib dependency)
  - Localisation is now handled through NGettext. Unfortunately, the
    library has been designed around Mono.Unix.Catalog so we need a
-   static shim wrapper. Look at resolving this later.
+   static shim wrapper. **Edit 30/10/20:** This might actually be incorrect,
+   as Banshee implements a Catalog that fits this criteria. Look at porting
+   Banshee's Catalog to Hyena and using for both.
 
 ## Hyena Sqlite
  - Builds (apparently successfully?)
