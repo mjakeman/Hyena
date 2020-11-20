@@ -86,12 +86,7 @@ namespace Hyena
         {
             // TODO: Ensure equivalency
             // Work towards removing GLib dependency
-            var result = GLib.Filename.ToUri(localPath, String.Empty, out var error);
-
-            if (error != null)
-                throw new ApplicationException(error?.Message);
-
-            return result;
+            return GLib.Filename.ToUri(localPath, String.Empty);
 
             // TODO: replace with managed conversion to avoid marshalling
             // IntPtr path_ptr = GLib.Marshaller.StringToPtrGStrdup (localPath);
@@ -116,12 +111,7 @@ namespace Hyena
         {
             // TODO: Ensure equivalency
             // Work towards removing GLib dependency
-            var result = GLib.Filename.FromUri(uri, String.Empty, out var error);
-
-            if (error != null)
-                throw new ApplicationException(error?.Message);
-
-            return result;
+            return GLib.Filename.FromUri(uri, String.Empty);
 
             // TODO: replace with managed conversion to avoid marshalling
             // IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup (uri);
