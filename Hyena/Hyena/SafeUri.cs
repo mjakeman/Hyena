@@ -111,7 +111,7 @@ namespace Hyena
         {
             // TODO: Ensure equivalency
             // Work towards removing GLib dependency
-            return GLib.Filename.FromUri(uri, String.Empty);
+            return GLib.Filename.FromUri(uri, out string str);
 
             // TODO: replace with managed conversion to avoid marshalling
             // IntPtr uri_ptr = GLib.Marshaller.StringToPtrGStrdup (uri);
