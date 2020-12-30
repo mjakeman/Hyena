@@ -48,8 +48,6 @@ A typical build might look as follows:
 
 `Hyena.Gui.Old` contains Mono/Gtk2 code and no longer builds. `Hyena`, `Hyena.Data.Sqlite`, and `Hyena.Gui` all build using .NET Core 3.1.
 
-You will need a compatible version of gir.core for this to work (at the time of writing, the one from my repo: [feature/hyena-fixes](https://github.com/firox263/gir.core/tree/feature/hyena-fixes)) cloned as `ext/gir.core` for csproj references to work.
-
 Make sure you have a compatible version of Gtk installed (see gir.core for setup instructions).
 
 You can run with `dotnet run --project=Hyena.Gui`.

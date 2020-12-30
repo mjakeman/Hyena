@@ -1,4 +1,3 @@
 [submodule "ext/gir.core"]
 	path = ext/gir.core
-	url = https://github.com/firox263/gir.core.git
-	branch = feature/hyena-fixes
+	url = https://github.com/gircore/gir.core
