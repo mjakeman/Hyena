@@ -1,0 +1,33 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v2
+        with: 
+          submodules: 'recursive'
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+          
+      - name: Build GirCore
+        run: dotnet run
+        working-directory: './ext/gir.core/Build'
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build Hyena
+        run: dotnet build --no-restore
+      - name: Test Hyena
+        run: dotnet test --no-build --verbosity normal
