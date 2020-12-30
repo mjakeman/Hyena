@@ -1,4 +1,6 @@
 # Hyena
+![CI Build](https://github.com/firox263/Hyena/workflows/CI%20Build/badge.svg)
+
 A utility library primarily used by Banshee.
 
 This is an attempt at porting Hyena to .NET Core and removing mono
