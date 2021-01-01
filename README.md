@@ -33,8 +33,8 @@ A typical build might look as follows:
 
 ```
 # Get repository and *recursively* init submodules (we need ext/gir.core/gir-files)
-> git clone https://github.com/firox263/Hyena.git
-> git submodule update --init --recursive
+> git clone --recursive https://github.com/firox263/Hyena.git
+> cd Hyena
 
 # Run the binding generation tool
 > pushd ext/gir.core/Build
