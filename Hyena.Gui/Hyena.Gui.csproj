@@ -2,7 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hyena\Hyena.csproj" />
-    <ProjectReference Include="..\ext\gir.core\Libs\Gtk3\Gtk3.csproj" />
+    <ProjectReference Include="..\ext\gir.core\Libs\Gtk-3.0\Gtk-3.0.csproj" />
+    <ProjectReference Include="..\ext\gir.core\Libs\GObject-2.0\GObject-2.0.csproj" />
   </ItemGroup>
 
   <ItemGroup>

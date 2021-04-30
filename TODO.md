@@ -15,6 +15,7 @@ at some point.
 
 ## Hyena Gui
  - Ported ExtensionDialog.cs only
+ - Contains some glue for handling stylesheets
  - Uses gir.core/Gtk3
  - Incrementally port over library as gir.core improves
 

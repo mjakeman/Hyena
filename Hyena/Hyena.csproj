@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ext\gir.core\Libs\GLib\GLib.csproj" />
+    <ProjectReference Include="..\ext\gir.core\Libs\GLib-2.0\GLib-2.0.csproj" />
   </ItemGroup>
 
 </Project>

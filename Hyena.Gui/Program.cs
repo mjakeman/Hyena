@@ -8,17 +8,17 @@ namespace Hyena.Gui.Test
     {
         static void Main()
         {
-            Gtk.Global.Init();
+            Functions.Init();
 
             // TODO: Avoid the need for this
             Paths.ApplicationName = "HyenaTest";
 
             var dlg = new ExceptionDialog(new NotImplementedException());
-            dlg.OnDestroy += (o, e) => Gtk.Global.MainQuit();
+            dlg.OnDestroy += (o, e) => Functions.MainQuit();
             dlg.ShowAll();
 
 
-            Gtk.Global.Main();
+            Functions.Main();
         }
     }
 }

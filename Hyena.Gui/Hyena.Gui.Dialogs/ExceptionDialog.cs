@@ -66,53 +66,52 @@ namespace Hyena.Gui.Dialogs
             vbox.Spacing = 12;
 
             // Header
-            var hbox = new Box(Orientation.Horizontal, 12);
+            var hbox = Box.New(Orientation.Horizontal, 12);
             vbox.PackStart(hbox, false, false, 0);
             
             var image = Image.NewFromIconName("dialog-error", IconSize.Dialog);
-            image.VAlign = Align.Start;
+            image.Valign = Align.Start;
             hbox.PackStart(image, false, false, 0);
 
-            Box label_vbox = new Box(Orientation.Vertical, 12);
-            hbox.PackStart(label_vbox, true, true, 0);
+            Box labelVbox = Box.New(Orientation.Vertical, 12);
+            hbox.PackStart(labelVbox, true, true, 0);
 
-            Label label = new Label(String.Format("<b><big>{0}</big></b>", Title));
+            Label label = Label.New($"<b><big>{Title}</big></b>");
             label.UseMarkup = true;
             label.Justify = Justification.Left;
             label.Wrap = true;
-            label.XAlign = 0;
-            label_vbox.PackStart(label, false, false, 0);
+            label.Xalign = 0;
+            labelVbox.PackStart(label, false, false, 0);
 
-            label = new Label(e.Message);
+            label = Label.New(e.Message);
 
             label.UseMarkup = true;
             label.UseUnderline = false;
             label.Justify = Justification.Left;
             label.Wrap = true;
             label.Selectable = true;
-            label.XAlign = 0;
-            label_vbox.PackStart(label, false, false, 0);
+            label.Xalign = 0;
+            labelVbox.PackStart(label, false, false, 0);
 
-            Label details_label = new Label(String.Format("<b>{0}</b>",
-                Catalog.GetString("Error Details")));
-            details_label.UseMarkup = true;
+            Label detailsLabel = Label.New($"<b>{Catalog.GetString("Error Details")}</b>");
+            detailsLabel.UseMarkup = true;
 
-            Expander details_expander = new Expander("Details");
-            details_expander.LabelWidget = details_label;
-            details_expander.ResizeToplevel = true;
-            label_vbox.PackStart(details_expander, true, true, 0);
+            Expander detailsExpander = Expander.New("Details");
+            detailsExpander.LabelWidget = detailsLabel;
+            detailsExpander.ResizeToplevel = true;
+            labelVbox.PackStart(detailsExpander, true, true, 0);
 
-            var scrolledWindow = new ScrolledWindow();
-            var textView = new TextView();
+            var scrolledWindow = ScrolledWindow.New();
+            var textView = TextView.New();
             scrolledWindow.Add(textView);
 
-            scrolledWindow.SetMinContentWidth(450);
+            scrolledWindow.SetMinContentWidth(650);
             scrolledWindow.SetMinContentHeight(250);
             
             textView.Editable = false;
             textView.Buffer.Text = debugInfo;
 
-            details_expander.Add(scrolledWindow);
+            detailsExpander.Add(scrolledWindow);
             
             ShowAll();
 

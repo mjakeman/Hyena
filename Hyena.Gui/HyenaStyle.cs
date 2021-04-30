@@ -48,13 +48,13 @@ namespace Hyena.Gui
             if (!usingStylesheet)
             {
                 var screen = Gdk.Screen.GetDefault();
-                StyleContext.AddProviderForScreen(screen, GlobalCssProvider, 600);
+                StyleContext.AddProviderForScreen(screen, GlobalCssProvider, APPLICATION_PRIORITY);
             }
         }
 
         private static CssProvider CreateProvider(Assembly asm)
         {
-            var provider = new CssProvider();
+            var provider = CssProvider.New();
 
             // Debug Resource Names:
             // foreach (string name in asm.GetManifestResourceNames())
@@ -65,10 +65,7 @@ namespace Hyena.Gui
                 if (stream == null)
                     throw new Exception("Could not load stylesheet 'Hyena.Gui.style.css'");
                 var cssStr = ReadFromStream(stream);
-                provider.LoadFromData(cssStr, out var error);
-
-                if (error != null)
-                    throw new Exception(error?.Message);
+                provider.LoadFromData(cssStr);
             }
 
             return provider;

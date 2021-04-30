@@ -3,9 +3,13 @@
 
 A utility library primarily used by Banshee.
 
-This is an attempt at porting Hyena to .NET Core and removing mono
-from the codebase. Additionally, it has evolved to contain an experimental
-(READ: *very experimental*) port to Gtk3 using the gir.core bindings.
+This is a port of Hyena to .NET Core and Gtk 3 using the gir.core
+bindings. It will hopefully act as a general purpose library to
+ease the development of complex GTK applications in C#.
+
+I aim to keep this library up to date with the most recent
+commits in the gir.core repository. At the moment, it requires
+changes from https://github.com/gircore/gir.core/pull/299.
 
 Please note, this port is *very* incomplete and much of it
 does not compile. The `Hyena.Tests` directory doesn't actually
