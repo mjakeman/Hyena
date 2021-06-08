@@ -1,4 +1,3 @@
-/*
 //
 // VersionInformationDialog.cs
 //
@@ -134,4 +133,3 @@ namespace Hyena.Gui.Dialogs
         }
     }
 }
-*/
