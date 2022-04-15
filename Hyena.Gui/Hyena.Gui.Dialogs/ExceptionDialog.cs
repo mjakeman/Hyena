@@ -50,7 +50,7 @@ namespace Hyena.Gui.Dialogs
             debugInfo = BuildExceptionMessage(e);
 
             Resizable = false;
-            SetBorderWidth(5);
+            BorderWidth = 5;
 
             this.AddHyenaStyleClass("hyena-exception-dialog");
 
@@ -92,8 +92,9 @@ namespace Hyena.Gui.Dialogs
             label.Selectable = true;
             label.Xalign = 0;
             labelVbox.PackStart(label, false, false, 0);
-
-            Label detailsLabel = Label.New($"<b>{Catalog.GetString("Error Details")}</b>");
+            
+            Label detailsLabel = Label.New(String.Format("<b>{0}</b>",
+                Catalog.GetString("Error Details")));
             detailsLabel.UseMarkup = true;
 
             Expander detailsExpander = Expander.New("Details");
@@ -101,13 +102,13 @@ namespace Hyena.Gui.Dialogs
             detailsExpander.ResizeToplevel = true;
             labelVbox.PackStart(detailsExpander, true, true, 0);
 
-            var scrolledWindow = ScrolledWindow.New();
+            var scrolledWindow = ScrolledWindow.New(null, null);
             var textView = TextView.New();
             scrolledWindow.Add(textView);
 
-            scrolledWindow.SetMinContentWidth(650);
-            scrolledWindow.SetMinContentHeight(250);
-            
+            scrolledWindow.MinContentWidth = 450;
+            scrolledWindow.MinContentHeight = 250;
+
             textView.Editable = false;
             textView.Buffer.Text = debugInfo;
 
@@ -115,7 +116,7 @@ namespace Hyena.Gui.Dialogs
             
             ShowAll();
 
-            AddButton("Close", ResponseType.Close);
+            AddButton("Close", (int)ResponseType.Close);
         }
 
         private string BuildExceptionMessage(Exception e)
@@ -124,15 +125,15 @@ namespace Hyena.Gui.Dialogs
 
             msg.Append(Catalog.GetString("An unhandled exception was thrown: "));
 
-            Stack<Exception> exception_chain = new Stack<Exception> ();
+            Stack<Exception> exceptionChain = new Stack<Exception> ();
 
             while (e != null) {
-                exception_chain.Push (e);
+                exceptionChain.Push (e);
                 e = e.InnerException;
             }
 
-            while (exception_chain.Count > 0) {
-                e = exception_chain.Pop ();
+            while (exceptionChain.Count > 0) {
+                e = exceptionChain.Pop ();
                 msg.AppendFormat ("{0}\n\n{1}\n", e.Message, e.StackTrace);
             };
 
