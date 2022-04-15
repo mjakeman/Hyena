@@ -19,15 +19,21 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '6.0.x'
           
+      - name: Generate GirCore
+        run: dotnet fsi GenerateLibs.fsx
+        working-directory: './ext/gir.core/src'
+
       - name: Build GirCore
-        run: dotnet run
-        working-directory: './ext/gir.core/Build'
+        run: dotnet build --nologo
+        working-directory: './ext/gir.core/src'
       
       - name: Restore dependencies
         run: dotnet restore
+        
       - name: Build Hyena
         run: dotnet build --no-restore
+        
       - name: Test Hyena
         run: dotnet test --no-build --verbosity normal
